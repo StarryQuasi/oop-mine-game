@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="OopMineGame.vcxproj" Id="42213950-210d-4e94-bb54-91d5ec7a2f23" />
+</Solution>

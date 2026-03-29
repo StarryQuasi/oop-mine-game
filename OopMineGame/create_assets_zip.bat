@@ -1,0 +1,1 @@
+rm assets.zip & cd assets && 7z a ../assets.zip * && cd ..
