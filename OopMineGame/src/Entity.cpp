@@ -177,7 +177,7 @@ void Entity::handleCollisions(World& world, float elapsed)
 	}
 	//OopMineGame::debugMsg = std::format("blocks: {} collisions: {}", rects.size(), z.size());
 
-	std::sort(z.begin(), z.end(), [](const std::pair<int, float>& a, const std::pair<int, float>& b)
+	std::ranges::sort(z, [](const auto& a, const auto& b)
 		{
 			return a.second < b.second;
 		});
