@@ -39,7 +39,8 @@ void ItemStack::setDamage(int v)
 	damage = v;
 }
 
-ItemStack ItemStack::getValidated()
+// TODO: Make it always valid
+ItemStack ItemStack::getValidated() const
 {
 	ItemStack r = *this;
 	if (r.item->getDurability() > 0)

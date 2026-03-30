@@ -146,17 +146,23 @@ bool OopMineGame::OnUserCreate()
 	guiRoot->setPadding({ 1, 1 });
 	guiRoot->setSize(GetScreenSize() - guiRoot->getPadding() * 2);
 	guiRoot->setDebugName("root");
+	guiHotbarText = guiRoot->addChild<gui::TextContainer>("");
+	guiHotbarText->setAnchor(gui::Anchor::btmMiddle);
+	guiHotbarText->setOrigin(gui::Anchor::btmMiddle);
+	guiHotbarText->setPos({ 0, -25 });
 	guiHotbar = guiRoot->addChild<gui::FlowContainer>();
 	guiHotbar->setSize({ 182, 22 });
 	guiHotbar->setAnchor(gui::Anchor::btmMiddle);
 	guiHotbar->setOrigin(gui::Anchor::btmMiddle);
-	guiHotbar->setPadding({ 1, 0 });
+	guiHotbar->setPadding({ 1, 1 });
 	//guiHotbar->setMargin({ 5, 5 });
 	guiHotbar->setAssetName("gui/hotbar.png");
 	guiHotbar->setDebugName("hotbar");
 	for (int i = 0; i < 9; i++)
 	{
-		guiHotbarSelections[i] = guiHotbar->addChild<gui::Container>(
+		const auto c = guiHotbar->addChild<gui::Container>(olc::vi2d{ 20,20 });
+		guiHotbarSlots[i] = c->addChild<gui::Slot>();
+		guiHotbarSelections[i] = c->addChild<gui::Container>(
 			olc::vi2d{ 20,20 })
 			->setAssetName("gui/hotbar_selection.png")
 			->setVisible(false)
@@ -243,7 +249,12 @@ bool OopMineGame::OnUserCreate()
 			{
 				const olc::vi2d target = targetWorldSpace.floor();
 				if (e.btn == olc::Mouse::LEFT)
+				{
+					const Block& block = world->getBlock(target);
+					ItemStack stack = { block.getItem(), 1 };
+					player.addInvItem(stack);
 					world->setBlock(target, Blocks::air);
+				}
 				if (e.btn == olc::Mouse::RIGHT)
 					world->setBlock(target, Blocks::dirt);
 			}
@@ -330,11 +341,13 @@ bool OopMineGame::OnUserUpdate(float elapsed)
 		if (GetMouseWheel())
 		{
 			guiHotbarSelections[hotbarSelection]->setVisible(false);
-			if (GetMouseWheel() < 0)
-				hotbarSelection = (hotbarSelection + 1) % 9;
-			if (GetMouseWheel() > 0)
-				hotbarSelection = (hotbarSelection - 1 + 9) % 9;
+			hotbarSelection += GetMouseWheel() < 0 ? -1 : 1;
+			hotbarSelection = (hotbarSelection + 9) % 9;
 			guiHotbarSelections[hotbarSelection]->setVisible(true);
+			if (player.getInvItem(hotbarSelection).getItem() != Items::air)
+				guiHotbarText->setText(player.getInvItem(hotbarSelection).getItem().getName());
+			else
+				guiHotbarText->setText("");
 		}
 	}
 
@@ -344,6 +357,9 @@ bool OopMineGame::OnUserUpdate(float elapsed)
 		cameraPos.y -= player.getSize().y / 2.0f;
 	}
 	view.SetWorldOffset(cameraPos - view.ScaleToWorld(GetScreenSize() / 2.0f));
+
+	for (int i = 0; i < 9; i++)
+		guiHotbarSlots[i]->setStack(player.getInvItem(i));
 
 	for (const auto& t : transforms)
 		t.update();

@@ -14,7 +14,9 @@ public:
 	void setCount(int);
 	int getDamage() const;
 	void setDamage(int);
-	ItemStack getValidated();
+	ItemStack getValidated() const;
+
+	bool operator==(const ItemStack& other) const = default;
 
 private:
 	const Item* item = &Items::air;

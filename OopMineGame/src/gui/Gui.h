@@ -12,5 +12,6 @@
 #include "Slider.h"
 #include "Debugger.h"
 #include "WorldSetting.h"
+#include "Slot.h"
 
 #endif

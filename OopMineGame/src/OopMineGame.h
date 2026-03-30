@@ -49,7 +49,9 @@ private:
 	int hotbarSelection = 0;
 	std::unique_ptr<gui::Container> guiRoot = nullptr;
 	gui::FlowContainer* guiHotbar = nullptr;
+	std::array<gui::Slot*, 9> guiHotbarSlots = {};
 	std::array<gui::Container*, 9> guiHotbarSelections = {};
+	gui::TextContainer* guiHotbarText = nullptr;
 	bool inspectorEnabled = false;
 	int inspectorId = 0;
 	bool freecamEnabled = false;
