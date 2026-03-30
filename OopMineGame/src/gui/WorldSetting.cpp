@@ -10,7 +10,7 @@ namespace gui
 		FlowContainer()
 	{
 		FlowContainer::setDirection(gui::Direction::vertical);
-		addFloat("freq", &GenerationSettings::noiseFrequency, 0.001f, 0.15f, 0.001f, 3);
+		addFloat("freq", &GenerationSettings::noiseFrequency, 0.001f, 0.10f, 0.001f, 3);
 		addFloat("diamond", &GenerationSettings::diamondThreshold, 0.0f, 1.0f, 0.01f, 2);
 		addFloatDouble("copper", &GenerationSettings::copperThresholdMin, &GenerationSettings::copperThresholdMax, 0.0f, 1.0f, 0.01f, 2);
 	}

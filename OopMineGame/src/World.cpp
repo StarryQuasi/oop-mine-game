@@ -156,11 +156,15 @@ void World::generateWorld()
 
 	auto begin = std::chrono::steady_clock::now();
 
+	FastNoiseLite noise2;
+	noise2.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+	noise2.SetFrequency(settings.noiseFrequency*4);
+
 	// Place blocks
 	for (int x = 0; x < getSize().x; x++)
 	{
 		const float terrainHeightNoiseY = 8192.0f;
-		const float sample = sampleAt(x, terrainHeightNoiseY);
+		const float sample = (sampleAt(x, terrainHeightNoiseY) + sampleAt(noise2, x, terrainHeightNoiseY)) / 2.0f;
 		const int terrainHeight = settings.terrainHeightMin - (int)(sample * (settings.terrainHeightMax - settings.terrainHeightMin));
 		int y = terrainHeight;
 		setBlock({ x, y++ }, Blocks::grassBlock);
@@ -245,6 +249,11 @@ void World::generateWorld()
 }
 
 float World::sampleAt(int x, int y)
+{
+	return (noise.GetNoise((float)x, (float)y) + 1) / 2.0f;
+}
+
+float World::sampleAt(FastNoiseLite& noise, int x, int y)
 {
 	return (noise.GetNoise((float)x, (float)y) + 1) / 2.0f;
 }

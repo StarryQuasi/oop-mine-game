@@ -64,6 +64,7 @@ private:
 
 	void generateWorld();
 	float sampleAt(int x, int y); // Returns [0, 1]
+	float sampleAt(FastNoiseLite& noise, int x, int y); // Returns [0, 1]
 	float sampleAt(olc::vi2d pos); // Returns [0, 1]
 };
 
