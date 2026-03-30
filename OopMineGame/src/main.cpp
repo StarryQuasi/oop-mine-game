@@ -39,6 +39,7 @@ int main()
 	catch (const std::exception& e)
 	{
 		std::println("Unhandled exception: {}", e.what());
+		return -1;
 	}
 
 	return 0;
