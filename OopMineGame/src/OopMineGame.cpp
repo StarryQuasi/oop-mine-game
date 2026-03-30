@@ -288,6 +288,8 @@ bool OopMineGame::OnUserDestroy()
 
 bool OopMineGame::OnUserUpdate(float elapsed)
 {
+	elapsed = std::min(elapsed, 1.0f / 20);
+
 	const olc::vi2d pixelSize = GetPixelSize();
 	if (GetWindowSize() / pixelSize != GetScreenSize())
 	{
@@ -302,8 +304,6 @@ bool OopMineGame::OnUserUpdate(float elapsed)
 
 	if (GetKey(olc::Key::ESCAPE).bPressed)
 		return false;
-	//if (GetKey(olc::Key::F2).bPressed)
-	//	genNewWorld();
 
 	for (; !scheduledFunctions.empty(); scheduledFunctions.pop_front())
 		scheduledFunctions.front()();
@@ -323,7 +323,7 @@ bool OopMineGame::OnUserUpdate(float elapsed)
 				vel.x -= acceleration * elapsed;
 			if (GetKey(olc::Key::D).bHeld)
 				vel.x += acceleration * elapsed;
-			if (GetKey(olc::Key::SPACE).bPressed && player.isOnGround())
+			if (GetKey(olc::Key::SPACE).bHeld && player.isOnGround())
 				vel.y -= 256 * 1024 * 1.5f * elapsed;
 			player.setVel(vel);
 		}

@@ -213,7 +213,7 @@ void Entity::checkOnGround(World& world)
 	onGround = false;
 	auto bb = getBb();
 	bb.first.y = bb.second.y;
-	bb.second.y += 0.0001f;
+	bb.second.y += 0.00001f;
 	//OopMineGame::debugCallbacks.push_back([bb](OopMineGame& game)
 	//	{
 	//		Utils::drawRectOutline(game.getView(), bb.first.floor(), bb.second.ceil(), olc::CYAN);
