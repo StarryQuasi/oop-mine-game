@@ -8,13 +8,20 @@ class ItemStack
 {
 public:
 	ItemStack(const Item& item = Items::air, int count = 0, int damage = 0);
+
 	const Item& getItem() const;
-	bool isEmpty() const;
 	int getCount() const;
-	void setCount(int);
 	int getDamage() const;
-	void setDamage(int);
+
+	ItemStack& setCount(int);
+	ItemStack& setDamage(int);
+
+	ItemStack& decrease();
+	ItemStack& increase();
+
 	ItemStack getValidated() const;
+
+	bool isEmpty() const;
 
 	bool operator==(const ItemStack& other) const = default;
 

@@ -24,9 +24,10 @@ int ItemStack::getCount() const
 	return count;
 }
 
-void ItemStack::setCount(int v)
+ItemStack& ItemStack::setCount(int v)
 {
 	count = v;
+	return *this;
 }
 
 int ItemStack::getDamage() const
@@ -34,9 +35,22 @@ int ItemStack::getDamage() const
 	return 0;
 }
 
-void ItemStack::setDamage(int v)
+ItemStack& ItemStack::setDamage(int v)
 {
 	damage = v;
+	return *this;
+}
+
+ItemStack& ItemStack::decrease()
+{
+	count--;
+	return *this;
+}
+
+ItemStack& ItemStack::increase()
+{
+	count++;
+	return *this;
 }
 
 // TODO: Make it always valid
@@ -55,7 +69,7 @@ ItemStack ItemStack::getValidated() const
 	{
 		r.damage = 0;
 	}
-	if (r.count < 0)
+	if (r.count <= 0)
 		r = ItemStack();
 	else if (r.count > r.item->getMaxStackSize())
 		r.count = r.item->getMaxStackSize();

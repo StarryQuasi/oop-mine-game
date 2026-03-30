@@ -256,7 +256,14 @@ bool OopMineGame::OnUserCreate()
 					world->setBlock(target, Blocks::air);
 				}
 				if (e.btn == olc::Mouse::RIGHT)
-					world->setBlock(target, Blocks::dirt);
+				{
+					const Block& block = player.getInvItem(hotbarSelection).getItem().getBlock();
+					if (block != Blocks::air)
+					{
+						player.setInvItem(hotbarSelection, player.getInvItem(hotbarSelection).decrease());
+						world->setBlock(target, block);
+					}
+				}
 			}
 			return true;
 		});
