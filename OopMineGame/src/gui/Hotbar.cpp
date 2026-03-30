@@ -15,7 +15,7 @@ namespace gui
 			selectors[i] = slotContainer->addChild<Container>(olc::vi2d{ 24, 23 });
 			selectors[i]->setAnchor(Anchor::midMiddle);
 			selectors[i]->setOrigin(Anchor::midMiddle);
-			selectors[i]->setPos({0, -1});
+			selectors[i]->setPos({ 0, -1 });
 			selectors[i]->setVisible(false);
 			selectors[i]->setAssetName("gui/hotbar_selection.png");
 			slots[i] = slotContainer->addChild<Slot>();
