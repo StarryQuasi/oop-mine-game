@@ -1,5 +1,4 @@
-#ifndef UTILS_H
-#define UTILS_H
+#pragma once
 
 #include <ranges>
 
@@ -54,5 +53,3 @@ public:
 		return over((olc::vi2d)min.floor(), (olc::vi2d)max.ceil());
 	}
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef ITEMS_H
-#define ITEMS_H
+#pragma once
 
 #include <unordered_map>
 #include <string>
@@ -26,5 +25,3 @@ public:
 private:
 	static const std::vector<const Item*> list;
 };
-
-#endif

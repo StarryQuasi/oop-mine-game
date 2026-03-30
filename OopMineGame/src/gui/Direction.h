@@ -1,5 +1,4 @@
-#ifndef DIRECTION_H
-#define DIRECTION_H
+#pragma once
 
 #include <olcPixelGameEngine.h>
 
@@ -22,5 +21,3 @@ namespace gui
 		olc::vi2d vector2;
 	};
 }
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef ITEM_H
-#define ITEM_H
+#pragma once
 
 #include <string>
 
@@ -27,5 +26,3 @@ private:
 	const int durability;
 	const Block* block = nullptr;
 };
-
-#endif

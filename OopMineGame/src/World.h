@@ -1,5 +1,4 @@
-#ifndef WORLD_H
-#define WORLD_H
+#pragma once
 
 #include <vector>
 #include <mdspan>
@@ -82,5 +81,3 @@ std::optional<std::reference_wrapper<T>> World::getEntity(int id) const
 			return std::ref(*t);
 	return {};
 }
-
-#endif

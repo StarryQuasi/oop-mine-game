@@ -1,5 +1,4 @@
-#ifndef GUI_FLOWCONTAINER_H
-#define GUI_FLOWCONTAINER_H
+#pragma once
 
 #include "Container.h"
 #include "Direction.h"
@@ -24,5 +23,3 @@ namespace gui
 		bool autoSizing = true;
 	};
 }
-
-#endif

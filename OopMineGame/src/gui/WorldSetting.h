@@ -1,5 +1,4 @@
-#ifndef GUI_WORLDSETTING_H
-#define GUI_WORLDSETTING_H
+#pragma once
 
 #include "FlowContainer.h"
 #include "../World.h"
@@ -26,5 +25,3 @@ namespace gui
 			float min, float max, float step, int labelPrecision = 2);
 	};
 }
-
-#endif

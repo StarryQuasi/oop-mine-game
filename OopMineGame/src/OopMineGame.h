@@ -1,5 +1,4 @@
-#ifndef OOPMINEGAME_H
-#define OOPMINEGAME_H
+#pragma once
 
 #include <print>
 #include <vector>
@@ -63,5 +62,3 @@ private:
 	void drawDebugUi();
 	void emitUiEvents();
 };
-
-#endif

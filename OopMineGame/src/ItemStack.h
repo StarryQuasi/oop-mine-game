@@ -1,5 +1,4 @@
-#ifndef ITEMSTACK_H
-#define ITEMSTACK_H
+#pragma once
 
 #include "Item.h"
 #include "Items.h"
@@ -31,5 +30,3 @@ private:
 	int count = 0;
 	int damage = 0;
 };
-
-#endif

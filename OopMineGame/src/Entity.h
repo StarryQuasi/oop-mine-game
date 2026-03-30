@@ -1,5 +1,4 @@
-#ifndef ENTITY_H
-#define ENTITY_H
+#pragma once
 
 #include <utility>
 
@@ -58,5 +57,3 @@ private:
 	void handleCollisions(World& world, float elapsed);
 	void checkOnGround(World& world);
 };
-
-#endif

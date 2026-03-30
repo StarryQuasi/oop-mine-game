@@ -1,5 +1,4 @@
-#ifndef VERYFY_H
-#define VERIFY_H
+#pragma once
 
 #include <olcPixelGameEngine.h>
 
@@ -64,5 +63,3 @@ public:
 		return elems(v, std::greater_equal{}, 0);
 	}
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef GUI_EVENTS_H
-#define GUI_EVENTS_H
+#pragma once
 
 #include <olcPixelGameEngine.h>
 
@@ -21,5 +20,3 @@ namespace gui
 		olc::vi2d elePosStart = {};
 	};
 }
-
-#endif

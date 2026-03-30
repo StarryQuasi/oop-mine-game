@@ -1,5 +1,4 @@
-#ifndef BLOCK_H
-#define BLOCK_H
+#pragma once
 
 #include <string>
 
@@ -41,5 +40,3 @@ public:
 	TransparentBlock(const std::string& name, const Item* item);
 	bool isReplaceable() const override;
 };
-
-#endif

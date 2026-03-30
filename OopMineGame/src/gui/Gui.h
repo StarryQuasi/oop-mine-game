@@ -1,5 +1,4 @@
-#ifndef GUI_H
-#define GUI_H
+#pragma once
 
 #include "Anchor.h"
 #include "Direction.h"
@@ -13,5 +12,3 @@
 #include "Debugger.h"
 #include "WorldSetting.h"
 #include "Slot.h"
-
-#endif

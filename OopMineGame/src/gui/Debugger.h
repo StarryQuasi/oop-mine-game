@@ -1,5 +1,4 @@
-#ifndef GUI_DEBUGGER_H
-#define GUI_DEBUGGER_H
+#pragma once
 
 #include <format>
 
@@ -24,5 +23,3 @@ namespace gui
 		std::string format(olc::vi2d);
 	};
 }
-
-#endif

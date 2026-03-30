@@ -1,5 +1,4 @@
-#ifndef GUI_ANCHOR_H
-#define GUI_ANCHOR_H
+#pragma once
 
 #include <utility>
 
@@ -31,5 +30,3 @@ namespace gui
 		olc::vf2d value;
 	};
 }
-
-#endif

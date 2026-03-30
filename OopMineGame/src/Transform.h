@@ -1,5 +1,4 @@
-#ifndef TRANSFORM_H
-#define TRANSFORM_H
+#pragma once
 
 #include <functional>
 #include <chrono>
@@ -53,5 +52,3 @@ private:
 	std::function<float(float)> easer;
 	std::function<void(float)> setter;
 };
-
-#endif

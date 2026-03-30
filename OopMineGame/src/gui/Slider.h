@@ -1,5 +1,4 @@
-#ifndef GUI_SLIDER_H
-#define GUI_SLIDER_H
+#pragma once
 
 #include <functional>
 
@@ -40,5 +39,3 @@ namespace gui
 		bool handleDragHandler(Container& me, const MouseDragEvent& e);
 	};
 }
-
-#endif

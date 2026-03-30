@@ -1,5 +1,4 @@
-#ifndef GUI_CONTAINER_H
-#define GUI_CONTAINER_H
+#pragma once
 
 #include <vector>
 #include <memory>
@@ -126,5 +125,3 @@ namespace gui
 		return ptr;
 	}
 }
-
-#endif

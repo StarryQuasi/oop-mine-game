@@ -1,5 +1,4 @@
-#ifndef GUI_BUTTON_H
-#define GUI_BUTTON_H
+#pragma once
 
 #include "Container.h"
 #include "FlowContainer.h"
@@ -23,5 +22,3 @@ namespace gui
 		std::function<void(Container&)> clickHandler = {};
 	};
 }
-
-#endif

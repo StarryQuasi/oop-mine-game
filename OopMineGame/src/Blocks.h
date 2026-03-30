@@ -1,5 +1,4 @@
-#ifndef BLOCKS_H
-#define BLOCKS_H
+#pragma once
 
 #include <unordered_map>
 #include <string>
@@ -26,5 +25,3 @@ public:
 private:
 	static const std::vector<const Block*> list;
 };
-
-#endif

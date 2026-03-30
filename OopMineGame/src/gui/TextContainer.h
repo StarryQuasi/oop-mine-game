@@ -1,5 +1,4 @@
-#ifndef GUI_TEXTCONTAINER_H
-#define GUI_TEXTCONTAINER_H
+#pragma once
 
 #include "FlowContainer.h"
 
@@ -26,5 +25,3 @@ namespace gui
 		olc::vf2d scale;
 	};
 }
-
-#endif

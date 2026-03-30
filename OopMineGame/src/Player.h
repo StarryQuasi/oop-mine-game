@@ -1,5 +1,4 @@
-#ifndef PLAYER_H
-#define PLAYER_H
+#pragma once
 
 #include "Entity.h"
 
@@ -28,5 +27,3 @@ private:
 
 	olc::vf2d getHairOrigin() const;
 };
-
-#endif
