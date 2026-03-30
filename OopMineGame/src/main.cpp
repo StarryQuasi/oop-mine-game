@@ -1,6 +1,9 @@
 #include <filesystem>
 #include <print>
 
+#define NOMINMAX
+#include <Windows.h>
+
 #define OLC_IMAGE_STB
 #define OLC_PGE_APPLICATION
 #include <olcPixelGameEngine.h>
@@ -10,14 +13,10 @@
 
 #include "OopMineGame.h"
 
-// Needs to be included after olcPixelGameEngine.h due to the max/min defines in minwindef.h
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-#include <Windows.h>
-
 int main()
 {
-	// Set the current working directory to the exe's directory
+	// Set the current working directory to the exe's directory,
+	// so the game can find the asset archive
 	{
 		wchar_t path[MAX_PATH];
 		GetModuleFileNameW(nullptr, path, MAX_PATH);
