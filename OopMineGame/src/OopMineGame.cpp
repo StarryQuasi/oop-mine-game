@@ -338,6 +338,33 @@ bool OopMineGame::OnUserUpdate(float elapsed)
 		if (GetKey(olc::Key::MINUS).bPressed)
 			view.ZoomAtScreenPos(0.75, GetScreenSize() / 2);
 
+		const auto numKeys =
+		{
+			olc::Key::K1,
+			olc::Key::K2,
+			olc::Key::K3,
+			olc::Key::K4,
+			olc::Key::K5,
+			olc::Key::K6,
+			olc::Key::K7,
+			olc::Key::K8,
+			olc::Key::K9,
+		};
+		for (const auto [i, key] : std::views::enumerate(numKeys))
+		{
+			if (GetKey(key).bPressed)
+			{
+				guiHotbarSelections[hotbarSelection]->setVisible(false);
+				hotbarSelection = i;
+				hotbarSelection = (hotbarSelection + 9) % 9;
+				guiHotbarSelections[hotbarSelection]->setVisible(true);
+				if (player.getInvItem(hotbarSelection).getItem() != Items::air)
+					guiHotbarText->setText(player.getInvItem(hotbarSelection).getItem().getName());
+				else
+					guiHotbarText->setText("");
+			}
+		}
+
 		if (GetMouseWheel())
 		{
 			guiHotbarSelections[hotbarSelection]->setVisible(false);
