@@ -6,6 +6,7 @@
 #include "Blocks.h"
 #include "Utils.h"
 #include "Player.h"
+#include "Sheep.h"
 #include "gui/Gui.h"
 
 OopMineGame* OopMineGame::instance = nullptr;
@@ -78,6 +79,7 @@ void OopMineGame::genNewWorld(const GenerationSettings& settings)
 	//settings.noiseFrequency = 0.1f;
 	//settings.seed = (int)std::chrono::steady_clock::now().time_since_epoch().count();
 	world = std::make_unique<World>(settings);
+	world->addEntity<Sheep>(world->getPlayer()->get().getPos());
 	if (!freecamEnabled)
 	{
 		transforms.clear();

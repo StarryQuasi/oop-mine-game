@@ -176,6 +176,7 @@
     <ClCompile Include="src\OopMineGame.cpp" />
     <ClCompile Include="src\OopMineGame.h" />
     <ClCompile Include="src\Player.cpp" />
+    <ClCompile Include="src\Sheep.cpp" />
     <ClCompile Include="src\World.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -202,6 +203,7 @@
     <ClInclude Include="src\Blocks.h" />
     <ClInclude Include="src\Item.h" />
     <ClInclude Include="src\Player.h" />
+    <ClInclude Include="src\Sheep.h" />
     <ClInclude Include="src\Transform.h" />
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\Utils.h" />
