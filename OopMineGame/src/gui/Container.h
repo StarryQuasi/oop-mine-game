@@ -10,12 +10,15 @@ class OopMineGame;
 
 namespace gui
 {
-	// The base gui element that hosts children, can be positioned relatively to its parent, and handles basic hit testing.
-	// Also equipped with fluent interface:
-	//   Set position with `setPos(olc::vi2d)`.
-	//   Set origin on parent with `setAnchor(gui::Anchor)`
-	//     and self with `setOrigin(gui::Anchor)`.
-	//   Add child to it with `addChild<gui::Container>()`.
+	// The base gui component that hosts child elements, can be positioned relatively to its parent, performs layout updates, and handles mouse events.
+	// Also equipped with various layout properties in fluent interface:
+	//   `setPos(olc::vi2d)` - sets position
+	//   `setSize(olc::vi2d)` - sets size of the inner child area
+	//   `setAnchor(gui::Anchor)` - sets origin on parent
+	//   `setOrigin(gui::Anchor)` - sets origin of self
+	//   `setMargin(olc::vi2d)` - sets margin between self and its parent, not related to draw size, but contributes to layout size
+	//   `setPadding(olc::vi2d)` - sets padding between self and the inner child area, expands the draw size by padding * 2
+	//   `addChild<gui::Container>()` - adds child to it
 	class Container
 	{
 	public:
@@ -27,13 +30,13 @@ namespace gui
 		olc::vi2d getSize() const;
 		olc::vi2d getDrawSize() const;
 		olc::vi2d getPos() const;
+		olc::vi2d getAbsolutePos() const;
 		Anchor getAnchor() const;
 		Anchor getOrigin() const;
 		olc::vi2d getMargin() const;
 		olc::vi2d getPadding() const;
 		bool isVisible() const;
 		Container* getParent() const;
-		olc::vi2d getAbsolutePos() const;
 
 		Container* setDebugName(std::string v);
 		Container* setSize(olc::vi2d v);

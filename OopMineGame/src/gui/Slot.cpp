@@ -12,7 +12,7 @@ namespace gui
 			->setOrigin(Anchor::btmRight);
 	}
 
-	ItemStack Slot::getStack() const
+	const ItemStack& Slot::getStack() const
 	{
 		return stack;
 	}

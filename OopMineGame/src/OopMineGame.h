@@ -47,9 +47,7 @@ private:
 	std::vector<Transform> transforms;
 	int hotbarSelection = 0;
 	std::unique_ptr<gui::Container> guiRoot = nullptr;
-	gui::FlowContainer* guiHotbar = nullptr;
-	std::array<gui::Slot*, 9> guiHotbarSlots = {};
-	std::array<gui::Container*, 9> guiHotbarSelections = {};
+	gui::Hotbar* guiHotbar = nullptr;
 	gui::TextContainer* guiHotbarText = nullptr;
 	bool inspectorEnabled = false;
 	int inspectorId = 0;
@@ -59,6 +57,6 @@ private:
 	static std::vector<uint8_t> readFileFromZip(mz_zip_archive& zip, const std::string& path);
 	static std::optional<olc::Renderable> loadAsset(mz_zip_archive& zip, const std::string& path);
 	void genNewWorld(const GenerationSettings&);
-	void drawDebugUi();
 	void emitUiEvents();
+	void setHotbarSelection(int i);
 };

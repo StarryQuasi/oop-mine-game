@@ -12,3 +12,4 @@
 #include "Debugger.h"
 #include "WorldSetting.h"
 #include "Slot.h"
+#include "Hotbar.h"

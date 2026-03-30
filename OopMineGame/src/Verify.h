@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cassert> // Include assert() for users of this class
+
 #include <olcPixelGameEngine.h>
 
 class Verify
@@ -41,7 +43,7 @@ public:
 		return inExclusive(v.x, a.x, b.x) && inExclusive(v.y, a.y, b.y);
 	}
 
-	template<typename T, typename TSize> requires std::is_arithmetic_v<T> && std::is_arithmetic_v<TSize>
+	template<typename T, typename TSize> requires std::is_arithmetic_v<T>&& std::is_arithmetic_v<TSize>
 	static bool index(const T& v, const TSize& size)
 	{
 		return inExclusive(v, 0, (T)size);

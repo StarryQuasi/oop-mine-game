@@ -19,6 +19,8 @@ public:
 	ItemStack& decrease();
 	ItemStack& increase();
 
+	ItemStack copy() const;
+
 	ItemStack& validate();
 
 	bool isEmpty() const;

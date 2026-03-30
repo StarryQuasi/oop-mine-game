@@ -3,6 +3,7 @@
 #include <stb_image.h>
 
 #include "OopMineGame.h"
+#include "Verify.h"
 #include "Blocks.h"
 #include "Utils.h"
 #include "Player.h"
@@ -152,27 +153,9 @@ bool OopMineGame::OnUserCreate()
 	guiHotbarText->setAnchor(gui::Anchor::btmMiddle);
 	guiHotbarText->setOrigin(gui::Anchor::btmMiddle);
 	guiHotbarText->setPos({ 0, -25 });
-	guiHotbar = guiRoot->addChild<gui::FlowContainer>();
-	guiHotbar->setSize({ 182, 22 });
+	guiHotbar = guiRoot->addChild<gui::Hotbar>();
 	guiHotbar->setAnchor(gui::Anchor::btmMiddle);
 	guiHotbar->setOrigin(gui::Anchor::btmMiddle);
-	guiHotbar->setPadding({ 1, 1 });
-	//guiHotbar->setMargin({ 5, 5 });
-	guiHotbar->setAssetName("gui/hotbar.png");
-	guiHotbar->setDebugName("hotbar");
-	for (int i = 0; i < 9; i++)
-	{
-		const auto c = guiHotbar->addChild<gui::Container>(olc::vi2d{ 20,20 });
-		guiHotbarSlots[i] = c->addChild<gui::Slot>();
-		guiHotbarSelections[i] = c->addChild<gui::Container>(
-			olc::vi2d{ 20,20 })
-			->setAssetName("gui/hotbar_selection.png")
-			->setVisible(false)
-			->setDebugName("hotbar sel " + std::to_string(i));
-		//guiHotbarSelections[i]->setPadding({1, 1});
-		//guiHotbarSelections[i]->setMargin({2, 2});
-	}
-	guiHotbarSelections[0]->setVisible(true);
 	{
 		auto flow = guiRoot->addChild<gui::FlowContainer>();
 		flow->setDirection(gui::Direction::vertical);
@@ -359,31 +342,17 @@ bool OopMineGame::OnUserUpdate(float elapsed)
 			olc::Key::K8,
 			olc::Key::K9,
 		};
-		for (const auto [i, key] : std::views::enumerate(numKeys))
+		for (const auto& [i, key] : std::views::enumerate(numKeys))
 		{
 			if (GetKey(key).bPressed)
 			{
-				guiHotbarSelections[hotbarSelection]->setVisible(false);
-				hotbarSelection = i;
-				hotbarSelection = (hotbarSelection + 9) % 9;
-				guiHotbarSelections[hotbarSelection]->setVisible(true);
-				if (player.getInvItem(hotbarSelection).getItem() != Items::air)
-					guiHotbarText->setText(player.getInvItem(hotbarSelection).getItem().getName());
-				else
-					guiHotbarText->setText("");
+				setHotbarSelection(i);
 			}
 		}
 
 		if (GetMouseWheel())
 		{
-			guiHotbarSelections[hotbarSelection]->setVisible(false);
-			hotbarSelection += GetMouseWheel() < 0 ? -1 : 1;
-			hotbarSelection = (hotbarSelection + 9) % 9;
-			guiHotbarSelections[hotbarSelection]->setVisible(true);
-			if (player.getInvItem(hotbarSelection).getItem() != Items::air)
-				guiHotbarText->setText(player.getInvItem(hotbarSelection).getItem().getName());
-			else
-				guiHotbarText->setText("");
+			setHotbarSelection(hotbarSelection + (GetMouseWheel() < 0 ? 1 : -1));
 		}
 	}
 
@@ -395,7 +364,7 @@ bool OopMineGame::OnUserUpdate(float elapsed)
 	view.SetWorldOffset(cameraPos - view.ScaleToWorld(GetScreenSize() / 2.0f));
 
 	for (int i = 0; i < 9; i++)
-		guiHotbarSlots[i]->setStack(player.getInvItem(i));
+		guiHotbar->setStack(i, player.getInvItem(i));
 
 	for (const auto& t : transforms)
 		t.update();
@@ -469,9 +438,6 @@ void OopMineGame::schedule(std::function<void()> func)
 	scheduledFunctions.emplace_back(std::move(func));
 }
 
-void OopMineGame::drawDebugUi()
-{}
-
 void OopMineGame::emitUiEvents()
 {
 	static olc::vi2d mouseDragStart = {};
@@ -517,6 +483,19 @@ void OopMineGame::emitUiEvents()
 		else
 			gui::Container::setFocusedElementId(-1);
 	}
+}
+
+void OopMineGame::setHotbarSelection(int i)
+{
+	assert(Verify::in(i, -1, 10));
+	hotbarSelection = i;
+	hotbarSelection = (hotbarSelection + 9) % 9;
+	guiHotbar->setSelection(hotbarSelection);
+	auto& player = world->getPlayer()->get();
+	if (player.getInvItem(hotbarSelection).getItem() != Items::air)
+		guiHotbarText->setText(player.getInvItem(hotbarSelection).getItem().getName());
+	else
+		guiHotbarText->setText("");
 }
 
 std::string OopMineGame::debugMsg = "";

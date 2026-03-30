@@ -62,6 +62,11 @@ ItemStack& ItemStack::increase()
 	return *this;
 }
 
+ItemStack ItemStack::copy() const
+{
+	return *this;
+}
+
 ItemStack& ItemStack::validate()
 {
 	if (item->getDurability() > 0)

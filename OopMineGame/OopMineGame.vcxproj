@@ -161,6 +161,7 @@
     <ClCompile Include="src\gui\Debugger.cpp" />
     <ClCompile Include="src\gui\Direction.cpp" />
     <ClCompile Include="src\gui\FlowContainer.cpp" />
+    <ClCompile Include="src\gui\Hotbar.cpp" />
     <ClCompile Include="src\gui\Slider.cpp" />
     <ClCompile Include="src\gui\Slot.cpp" />
     <ClCompile Include="src\gui\TextContainer.cpp" />
@@ -188,6 +189,7 @@
     <ClInclude Include="src\gui\Events.h" />
     <ClInclude Include="src\gui\FlowContainer.h" />
     <ClInclude Include="src\gui\Gui.h" />
+    <ClInclude Include="src\gui\Hotbar.h" />
     <ClInclude Include="src\gui\Slider.h" />
     <ClInclude Include="src\gui\Slot.h" />
     <ClInclude Include="src\gui\TextContainer.h" />
