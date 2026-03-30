@@ -5,6 +5,7 @@
 #include "OopMineGame.h"
 #include "Entity.h"
 #include "Utils.h"
+#include "Verify.h"
 
 int Entity::entityIdCounter = 0;
 
@@ -108,27 +109,49 @@ bool Entity::isOnGround() const
 
 ItemStack Entity::getInvItem(int i)
 {
-	return i >= maxInvSize ? ItemStack() : inv[i];
+	assert(Verify::index(i, maxInvSize));
+	return inv[i];
 }
 
 void Entity::setInvItem(int i, ItemStack v)
 {
-	if (i < maxInvSize)
-		inv[i] = v;
+	assert(Verify::index(i, maxInvSize));
+	inv[i] = v = v.getValidated();
 }
 
 ItemStack Entity::addInvItem(ItemStack v)
 {
-	//v.validate();
-	for (int i = 0; i < inv.size(); i++)
+	v = v.getValidated();
+	if (v.getItem().getMaxStackSize() > 0)
 	{
-		ItemStack& cur = inv[i];
-		if (cur.getItem() == v.getItem())
+		for (int i = 0; i < inv.size(); i++)
 		{
-			//if (cur.getItem().get)
+			ItemStack& cur = inv[i];
+			if ((cur.getItem() == Items::air || cur.getItem() == v.getItem()) &&
+				cur.getDamage() == v.getDamage() &&
+				cur.getCount() < cur.getItem().getMaxStackSize())
+			{
+				const int toAdd = std::min(cur.getItem().getMaxStackSize() - cur.getCount(), v.getCount());
+				v.setCount(v.getCount() - toAdd);
+				cur = ItemStack(v.getItem(), cur.getCount() + toAdd, v.getDamage());
+				if (v.getCount() == 0)
+					break;
+			}
 		}
 	}
-	return {};
+	else
+	{
+		for (int i = 0; i < inv.size(); i++)
+		{
+			ItemStack& cur = inv[i];
+			if (cur.getItem() != Items::air)
+			{
+				cur = v;
+				return {};
+			}
+		}
+	}
+	return v.getValidated();
 }
 
 void Entity::update(World& world, float elapsed)
