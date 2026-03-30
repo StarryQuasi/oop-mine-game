@@ -19,11 +19,10 @@ namespace gui
 
 	Slot* Slot::setStack(const ItemStack& v)
 	{
-		auto v2 = v.getValidated();
-		if (stack != v2)
+		if (stack != v)
 		{
 			invalidate();
-			stack = v2;
+			stack = v;
 			if (stack.getCount() != 0)
 				textEle->setText(std::to_string(stack.getCount()));
 			else

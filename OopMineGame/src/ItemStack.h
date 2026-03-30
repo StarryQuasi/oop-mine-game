@@ -7,7 +7,8 @@
 class ItemStack
 {
 public:
-	ItemStack(const Item& item = Items::air, int count = 0, int damage = 0);
+	ItemStack();
+	ItemStack(const Item& item, int count = 0, int damage = 0);
 
 	const Item& getItem() const;
 	int getCount() const;
@@ -19,7 +20,7 @@ public:
 	ItemStack& decrease();
 	ItemStack& increase();
 
-	ItemStack getValidated() const;
+	ItemStack& validate();
 
 	bool isEmpty() const;
 

@@ -3,11 +3,16 @@
 #include "ItemStack.h"
 #include "Items.h"
 
+ItemStack::ItemStack()
+{}
+
 ItemStack::ItemStack(const Item& item, int count, int damage) :
 	item(&item),
 	count(count),
 	damage(damage)
-{}
+{
+	validate();
+}
 
 const Item& ItemStack::getItem() const
 {
@@ -27,51 +32,53 @@ int ItemStack::getCount() const
 ItemStack& ItemStack::setCount(int v)
 {
 	count = v;
+	validate();
 	return *this;
 }
 
 int ItemStack::getDamage() const
 {
-	return 0;
+	return damage;
 }
 
 ItemStack& ItemStack::setDamage(int v)
 {
 	damage = v;
+	validate();
 	return *this;
 }
 
 ItemStack& ItemStack::decrease()
 {
 	count--;
+	validate();
 	return *this;
 }
 
 ItemStack& ItemStack::increase()
 {
 	count++;
+	validate();
 	return *this;
 }
 
-// TODO: Make it always valid
-ItemStack ItemStack::getValidated() const
+ItemStack& ItemStack::validate()
 {
-	ItemStack r = *this;
-	if (r.item->getDurability() > 0)
+	if (item->getDurability() > 0)
 	{
-		if (r.damage < 0 || r.damage >= r.item->getDurability())
+		if (damage < 0 || damage >= item->getDurability())
 		{
-			r.damage = 0;
-			r.count--;
+			damage = 0;
+			count--;
 		}
 	}
 	else
 	{
-		r.damage = 0;
+		damage = 0;
 	}
-	if (r.count <= 0)
-		r = ItemStack();
-	else if (r.count > r.item->getMaxStackSize())
-		r.count = r.item->getMaxStackSize();
-	return r;
+	if (count <= 0)
+		*this = {};
+	else if (count > item->getMaxStackSize())
+		count = item->getMaxStackSize();
+	return *this;
 }

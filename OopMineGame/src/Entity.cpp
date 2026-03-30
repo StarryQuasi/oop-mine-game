@@ -116,12 +116,11 @@ ItemStack Entity::getInvItem(int i)
 void Entity::setInvItem(int i, ItemStack v)
 {
 	assert(Verify::index(i, maxInvSize));
-	inv[i] = v = v.getValidated();
+	inv[i] = v;
 }
 
 ItemStack Entity::addInvItem(ItemStack v)
 {
-	v = v.getValidated();
 	if (v.getItem().getMaxStackSize() > 0)
 	{
 		for (int i = 0; i < inv.size(); i++)
@@ -132,9 +131,9 @@ ItemStack Entity::addInvItem(ItemStack v)
 				cur.getCount() < cur.getItem().getMaxStackSize())
 			{
 				const int toAdd = std::min(cur.getItem().getMaxStackSize() - cur.getCount(), v.getCount());
-				v.setCount(v.getCount() - toAdd);
 				cur = ItemStack(v.getItem(), cur.getCount() + toAdd, v.getDamage());
-				if (v.getCount() == 0)
+				v.setCount(v.getCount() - toAdd);
+				if (v.isEmpty())
 					break;
 			}
 		}
@@ -151,7 +150,7 @@ ItemStack Entity::addInvItem(ItemStack v)
 			}
 		}
 	}
-	return v.getValidated();
+	return v;
 }
 
 void Entity::update(World& world, float elapsed)
