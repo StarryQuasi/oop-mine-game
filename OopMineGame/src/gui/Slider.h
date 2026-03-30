@@ -34,7 +34,7 @@ namespace gui
 		float value;
 		Container* handleContainer;
 		Container* handleEle;
-		std::function<void(float, float)> valueChangedHandler;
+		std::function<void(float, float)> valueChangedHandler = {};
 
 		void commit(float newValue);
 		bool handleDragHandler(Container& me, const MouseDragEvent& e);

@@ -17,9 +17,9 @@ public:
 	ItemStack getValidated();
 
 private:
-	const Item* item;
-	int count;
-	int damage;
+	const Item* item = &Items::air;
+	int count = 0;
+	int damage = 0;
 };
 
 #endif

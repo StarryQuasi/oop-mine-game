@@ -58,9 +58,9 @@ private:
 	std::vector<int> blocksRaw;
 	// std::dextents = dynamic extents, std::layout_left = column major (access by x, y)
 	std::mdspan<int, std::dextents<size_t, 2>, std::layout_left> blocks;
-	std::unordered_map<int, std::unique_ptr<Entity>> entities;
-	std::vector<olc::vf2d> drawBufPos;
-	std::vector<olc::vf2d> drawBufUv;
+	std::unordered_map<int, std::unique_ptr<Entity>> entities = {};
+	std::vector<olc::vf2d> drawBufPos = {};
+	std::vector<olc::vf2d> drawBufUv = {};
 
 	void generateWorld();
 	float sampleAt(int x, int y); // Returns [0, 1]

@@ -146,11 +146,10 @@ bool OopMineGame::OnUserCreate()
 	guiRoot->setPadding({ 1, 1 });
 	guiRoot->setSize(GetScreenSize() - guiRoot->getPadding() * 2);
 	guiRoot->setDebugName("root");
-	guiHotbar = guiRoot->addChild<gui::FlowContainer>(
-		olc::vi2d{ 182, 22 },
-		olc::vi2d{ 0, 0 },
-		gui::Anchor::btmMiddle,
-		gui::Anchor::btmMiddle);
+	guiHotbar = guiRoot->addChild<gui::FlowContainer>();
+	guiHotbar->setSize({ 182, 22 });
+	guiHotbar->setAnchor(gui::Anchor::btmMiddle);
+	guiHotbar->setOrigin(gui::Anchor::btmMiddle);
 	guiHotbar->setPadding({ 1, 0 });
 	//guiHotbar->setMargin({ 5, 5 });
 	guiHotbar->setAssetName("gui/hotbar.png");

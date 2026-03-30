@@ -23,8 +23,8 @@ public:
 	void draw(OopMineGame&) const override;
 
 private:
-	std::vector<olc::vf2d> hairPoints;
-	olc::Renderable hairBuffer;
+	std::vector<olc::vf2d> hairPoints = {};
+	olc::Renderable hairBuffer = {};
 
 	olc::vf2d getHairOrigin() const;
 };

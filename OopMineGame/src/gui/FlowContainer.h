@@ -9,11 +9,7 @@ namespace gui
 	class FlowContainer : public Container
 	{
 	public:
-		FlowContainer(
-			olc::vi2d s = olc::vi2d{ 10,10 },
-			olc::vi2d p = olc::vi2d{ 0,0 },
-			Anchor a = Anchor::topLeft,
-			Anchor o = Anchor::topLeft);
+		FlowContainer();
 
 		Direction getDirection() const;
 		bool getAutoSizing() const;
@@ -24,8 +20,8 @@ namespace gui
 		void updateLayout() override;
 
 	private:
-		Direction direction;
-		bool autoSizing;
+		Direction direction = Direction::horizontal;
+		bool autoSizing = true;
 	};
 }
 

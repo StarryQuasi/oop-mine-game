@@ -20,10 +20,7 @@ namespace gui
 	class Container
 	{
 	public:
-		Container(olc::vi2d s = olc::vi2d{ 10,10 },
-			olc::vi2d p = olc::vi2d{ 0,0 },
-			Anchor a = Anchor::topLeft,
-			Anchor o = Anchor::topLeft);
+		Container(olc::vi2d s = olc::vi2d{ 10,10 });
 		virtual ~Container() = default;
 
 		const std::string& getDebugName() const;
@@ -96,21 +93,21 @@ namespace gui
 		std::string name = {};
 #endif
 		int id;
-		std::vector<std::unique_ptr<Container>> children;
-		Anchor anchor;     // Point on parent my origin is attached to
-		Anchor origin;	   // Point of my origin
-		olc::vi2d size;    // Size of content
-		olc::vi2d pos;     // Local offset
-		olc::vi2d margin;  // Exterior spacing
-		olc::vi2d padding; // Interior spacing
-		olc::vi2d absPos;
+		std::vector<std::unique_ptr<Container>> children = {};
+		Anchor anchor = Anchor::topLeft;     // Point on parent my origin is attached to
+		Anchor origin = Anchor::topLeft;	   // Point of my origin
+		olc::vi2d size = { 10,10 };    // Size of content
+		olc::vi2d pos = {};     // Local offset
+		olc::vi2d margin = {};  // Exterior spacing
+		olc::vi2d padding = {}; // Interior spacing
+		olc::vi2d absPos = {};
 		Container* parent = nullptr;
-		std::string assetName;
+		std::string assetName = "";
 		bool visible = true;
 		bool dirty = true;
-		std::function<bool(Container&, const MouseEvent&)> mouseDownHandler;
-		std::function<bool(Container&, const MouseDragEvent&)> mouseDragHandler;
-		std::function<bool(Container&, const MouseEvent&)> mouseUpHandler;
+		std::function<bool(Container&, const MouseEvent&)> mouseDownHandler = {};
+		std::function<bool(Container&, const MouseDragEvent&)> mouseDragHandler = {};
+		std::function<bool(Container&, const MouseEvent&)> mouseUpHandler = {};
 	};
 
 	template<typename T, typename... Args> requires std::derived_from<T, Container>

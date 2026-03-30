@@ -35,7 +35,7 @@ public:
 	bool isDead() const;
 	void kill();
 	bool isOnGround() const;
-	
+
 	ItemStack getInvItem(int);
 	void setInvItem(int, ItemStack);
 	ItemStack addInvItem(ItemStack); // Returns the remaining
@@ -46,13 +46,13 @@ public:
 private:
 	static int entityIdCounter;
 	const int id;
-	olc::vf2d pos; // Origin is bottom middle
-	olc::vf2d size;
-	olc::vf2d vel;
-	bool direction; // Direction of last horizontal velocity, true = right, false = left
-	bool dead;
-	bool onGround;
-	std::vector<ItemStack> inv;
+	olc::vf2d pos = {}; // Origin is bottom middle
+	olc::vf2d size = { 1,1 };
+	olc::vf2d vel = {};
+	bool direction = true; // Direction of last horizontal velocity, true = right, false = left
+	bool dead = false;
+	bool onGround = true;
+	std::vector<ItemStack> inv = {};
 	const int maxInvSize;
 
 	void handleCollisions(World& world, float elapsed);

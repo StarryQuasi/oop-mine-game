@@ -12,18 +12,9 @@ namespace gui
 	int Container::focusedElementId = -1;
 
 	Container::Container(
-		olc::vi2d s,
-		olc::vi2d p,
-		Anchor a,
-		Anchor o) :
+		olc::vi2d s) :
 		id(idCounter++),
-		size(s),
-		pos(p),
-		anchor(a),
-		origin(o),
-		margin({ 0,0 }),
-		padding({ 0,0 }),
-		assetName()
+		size(s)
 	{}
 
 	const std::string& Container::getDebugName() const

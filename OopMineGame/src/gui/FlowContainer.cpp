@@ -2,10 +2,7 @@
 
 namespace gui
 {
-	FlowContainer::FlowContainer(olc::vi2d s, olc::vi2d p, Anchor a, Anchor o) :
-		Container(s, p, a, o),
-		direction(Direction::horizontal),
-		autoSizing(true)
+	FlowContainer::FlowContainer()
 	{}
 
 	Direction FlowContainer::getDirection() const

@@ -12,11 +12,7 @@ Entity::Entity(olc::vf2d pos, olc::vf2d size, int maxInvSize) :
 	id(entityIdCounter++),
 	pos(pos),
 	size(size),
-	vel(),
-	direction(false),
-	dead(false),
-	onGround(false),
-	inv(),
+	inv(maxInvSize, {}),
 	maxInvSize(maxInvSize)
 {}
 

@@ -20,7 +20,7 @@ namespace gui
 
 	private:
 		TextContainer* textEle;
-		std::function<void(Container&)> clickHandler;
+		std::function<void(Container&)> clickHandler = {};
 	};
 }
 
