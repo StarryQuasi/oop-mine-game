@@ -273,6 +273,7 @@ bool OopMineGame::OnUserDestroy()
 
 bool OopMineGame::OnUserUpdate(float elapsed)
 {
+	// Clamp it to prevent physics from going insane
 	elapsed = std::min(elapsed, 1.0f / 20);
 
 	const olc::vi2d pixelSize = GetPixelSize();
@@ -300,9 +301,9 @@ bool OopMineGame::OnUserUpdate(float elapsed)
 
 	Player& player = world->getPlayer().value();
 	{
-		olc::vf2d vel = player.getVel();
 		if (!freecamEnabled)
 		{
+			olc::vf2d vel = player.getVel();
 			const float acceleration = (GetKey(olc::Key::SHIFT).bHeld ? 1.35f : 1.0f) * (256 + 64);
 			if (GetKey(olc::Key::A).bHeld)
 				vel.x -= acceleration * elapsed;
@@ -377,11 +378,11 @@ bool OopMineGame::OnUserUpdate(float elapsed)
 
 	// Set layer to 1 below
 	SetDrawTarget(layerMain);
-	Clear(olc::BLACK);
-	//FillRectDecal({}, GetScreenSize(), olc::BLACK);
+	//Clear(olc::BLACK);
+	// TODO: Make fast clear work
+	FillRectDecal({}, GetScreenSize(), olc::BLACK);
 
 	world->draw(*this);
-	//DrawDecal({}, getAsset("atlas").value().Decal());
 
 	const olc::vf2d targetWorldSpace = view.ScreenToWorld(GetMousePos());
 	const float reach = 6;
@@ -395,8 +396,6 @@ bool OopMineGame::OnUserUpdate(float elapsed)
 	// Set layer to front most
 	SetDrawTarget(nullptr);
 	Clear(olc::BLANK);
-	//DrawLine(GetScreenSize() / 2 - olc::vi2d(5, 0), GetScreenSize() / 2 + olc::vi2d(5, 0), olc::GREY);
-	//DrawLine(GetScreenSize() / 2 - olc::vi2d(0, 5), GetScreenSize() / 2 + olc::vi2d(0, 5), olc::GREY);
 
 	guiRoot->draw(*this);
 
