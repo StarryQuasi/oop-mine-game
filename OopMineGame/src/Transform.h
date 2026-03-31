@@ -11,31 +11,11 @@ public:
 		float change,
 		std::chrono::milliseconds duration,
 		std::function<float(float)> easer,
-		std::function<void(float)> setter) :
-		start(current),
-		end(current + change),
-		startTime(std::chrono::steady_clock::now()),
-		endTime(startTime + duration),
-		easer(std::move(easer)),
-		setter(std::move(setter))
-	{}
-	void update() const
-	{
-		const auto now = std::chrono::steady_clock::now();
-		if (now >= endTime)
-		{
-			setter(end);
-			return;
-		}
-		const float t = std::chrono::duration<float>(now - startTime).count() / std::chrono::duration<float>(endTime - startTime).count();
-		const float easedT = easer(t);
-		const float newValue = start + (end - start) * easedT;
-		setter(newValue);
-	}
-	bool isFinished() const
-	{
-		return std::chrono::steady_clock::now() >= endTime;
-	}
+		std::function<void(float)> setter);
+
+	void update(const std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now());
+
+	bool isFinished() const;
 
 	class Easing
 	{
@@ -51,4 +31,5 @@ private:
 	std::chrono::steady_clock::time_point endTime;
 	std::function<float(float)> easer;
 	std::function<void(float)> setter;
+	bool ended = false;
 };

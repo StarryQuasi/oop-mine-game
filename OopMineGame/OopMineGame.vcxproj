@@ -178,6 +178,7 @@
     <ClCompile Include="src\OopMineGame.h" />
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\Sheep.cpp" />
+    <ClCompile Include="src\Transform.cpp" />
     <ClCompile Include="src\World.cpp" />
   </ItemGroup>
   <ItemGroup>

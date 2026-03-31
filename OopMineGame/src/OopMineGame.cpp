@@ -77,8 +77,6 @@ fail:
 
 void OopMineGame::genNewWorld(const GenerationSettings& settings)
 {
-	//settings.noiseFrequency = 0.1f;
-	//settings.seed = (int)std::chrono::steady_clock::now().time_since_epoch().count();
 	world = std::make_unique<World>(settings);
 	world->addEntity<Sheep>(world->getPlayer()->get().getPos());
 	if (!freecamEnabled)
@@ -88,8 +86,8 @@ void OopMineGame::genNewWorld(const GenerationSettings& settings)
 			8.0f,
 			8.0f,
 			std::chrono::seconds(1),
-			[](float v) { return 1 - std::pow(1 - v, 4); },
-			[&](float v) { view.SetWorldScale({ v,v }); }));
+			Transform::Easing::outQuart,
+			[this](float v) { this->view.SetWorldScale({ v,v }); }));
 	}
 }
 
@@ -367,20 +365,21 @@ bool OopMineGame::OnUserUpdate(float elapsed)
 	for (int i = 0; i < 9; i++)
 		guiHotbar->setStack(i, player.getInvItem(i));
 
-	for (const auto& t : transforms)
+	for (auto& t : transforms)
 		t.update();
 	std::erase_if(transforms, std::mem_fn(&Transform::isFinished));
 
 	world->update(elapsed);
+
 	guiRoot->update(*this);
 	while (guiRoot->needsLayout())
 		guiRoot->updateLayout();
 
 	// Set layer to 1 below
 	SetDrawTarget(layerMain);
-	//Clear(olc::BLACK);
-	// TODO: Make fast clear work
-	FillRectDecal({}, GetScreenSize(), olc::BLACK);
+	Clear(olc::BLACK);
+	// TODO: Make fast clear work with the hair, buffer it onto a decal to maintain the draw order
+	//FillRectDecal({}, GetScreenSize(), olc::BLACK);
 
 	world->draw(*this);
 
