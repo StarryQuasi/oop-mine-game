@@ -114,7 +114,7 @@ void World::draw(OopMineGame& game)
 
 	// TODO: This sometimes loops indefinitely when regenerating world while zoomed out 
 	const olc::vi2d tl = view.GetTopLeftTile().max({ 0,0 });
-	const olc::vi2d br = view.GetBottomRightTile().min(getSize() - 1);
+	const olc::vi2d br = view.GetBottomRightTile().min(getSize());
 	for (const auto& pos : Iterate::over(tl, br))
 	{
 		const Block& block = getBlock(pos);
