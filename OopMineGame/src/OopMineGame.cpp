@@ -188,31 +188,6 @@ bool OopMineGame::OnUserCreate()
 					else
 						static_cast<gui::Button*>(&me)->setText("enable freecam");
 				});
-		//flow->addChild<gui::Button>("reload world")
-		//	->onClick([this](auto& me)
-		//		{
-		//			schedule([this]()
-		//				{
-		//					genNewWorld();
-		//				});
-		//		})
-		//	->setAnchor(gui::Anchor::topMiddle)
-		//	->setOrigin(gui::Anchor::topMiddle)
-		//	->setDebugName("reload btn");
-		//auto sliderText = flow->addChild<gui::TextContainer>("0.05");
-		//sliderText
-		//	->setAnchor(gui::Anchor::topMiddle)
-		//	->setOrigin(gui::Anchor::topMiddle)
-		//	->setDebugName("slider text");
-		//flow->addChild<gui::Slider>(0.01f, 0.5f, 0.01f, GenerationSettings().noiseFrequency)
-		//	->onValueChanged([sliderText](float old, float $new)
-		//		{
-		//			sliderText->setText(std::format("{:.2f}", $new));
-		//		})
-		//	->setSize({ 40, 8 })
-		//	->setAnchor(gui::Anchor::topMiddle)
-		//	->setOrigin(gui::Anchor::topMiddle)
-		//	->setDebugName("slider");
 		flow->addChild<gui::WorldSetting>()
 			->onValueChanged([this](const GenerationSettings& v)
 				{
@@ -227,28 +202,11 @@ bool OopMineGame::OnUserCreate()
 	guiRoot->onMouseDown([this](gui::Container& me, const gui::MouseEvent& e)
 		{
 			const olc::vf2d targetWorldSpace = view.ScreenToWorld(GetMousePos());
-			const float reach = 6;
-			Player& player = world->getPlayer().value();
-			if ((targetWorldSpace - player.getEyePos()).mag2() <= reach * reach)
-			{
-				const olc::vi2d target = targetWorldSpace.floor();
-				if (e.btn == olc::Mouse::LEFT)
-				{
-					const Block& block = world->getBlock(target);
-					ItemStack stack = { block.getItem(), 1 };
-					player.addInvItem(stack);
-					world->setBlock(target, Blocks::air);
-				}
-				if (e.btn == olc::Mouse::RIGHT)
-				{
-					const Block& block = player.getInvItem(hotbarSelection).getItem().getBlock();
-					if (block != Blocks::air)
-					{
-						player.setInvItem(hotbarSelection, player.getInvItem(hotbarSelection).decrease());
-						world->setBlock(target, block);
-					}
-				}
-			}
+			queuedInput.target = targetWorldSpace;
+			if (e.btn == olc::Mouse::LEFT)
+				queuedInput.attack = true;
+			if (e.btn == olc::Mouse::RIGHT)
+				queuedInput.use = true;
 			return true;
 		});
 	guiRoot->onMouseUp([](gui::Container& me, const gui::MouseEvent& e)
@@ -272,7 +230,7 @@ bool OopMineGame::OnUserDestroy()
 
 bool OopMineGame::OnUserUpdate(float elapsed)
 {
-	// Clamp it to prevent physics from going insane
+	// Clamp it to prevent physics from going insane when debugging or lagged
 	elapsed = std::min(elapsed, 1.0f / 20);
 
 	const olc::vi2d pixelSize = GetPixelSize();
@@ -293,66 +251,10 @@ bool OopMineGame::OnUserUpdate(float elapsed)
 	for (; !scheduledFunctions.empty(); scheduledFunctions.pop_front())
 		scheduledFunctions.front()();
 
-	while (guiRoot->needsLayout())
-		guiRoot->updateLayout();
-
 	emitUiEvents();
+	handleInput(elapsed);
 
 	Player& player = world->getPlayer().value();
-	{
-		if (!freecamEnabled)
-		{
-			Entity::Input input = {};
-			input.left = GetKey(olc::Key::A).bHeld;
-			input.right = GetKey(olc::Key::D).bHeld;
-			input.jump = GetKey(olc::Key::SPACE).bHeld;
-			input.sprint = GetKey(olc::Key::SHIFT).bHeld;
-			player.setInput(input);
-		}
-		else
-		{
-			const float speed = 32;
-			if (GetKey(olc::Key::W).bHeld)
-				cameraPos.y -= speed * elapsed;
-			if (GetKey(olc::Key::S).bHeld)
-				cameraPos.y += speed * elapsed;
-			if (GetKey(olc::Key::A).bHeld)
-				cameraPos.x -= speed * elapsed;
-			if (GetKey(olc::Key::D).bHeld)
-				cameraPos.x += speed * elapsed;
-		}
-
-		if (GetKey(olc::Key::EQUALS).bPressed)
-			view.ZoomAtScreenPos(1 / 0.75f, GetScreenSize() / 2);
-		if (GetKey(olc::Key::MINUS).bPressed)
-			view.ZoomAtScreenPos(0.75, GetScreenSize() / 2);
-
-		const auto numKeys =
-		{
-			olc::Key::K1,
-			olc::Key::K2,
-			olc::Key::K3,
-			olc::Key::K4,
-			olc::Key::K5,
-			olc::Key::K6,
-			olc::Key::K7,
-			olc::Key::K8,
-			olc::Key::K9,
-		};
-		for (const auto& [i, key] : std::views::enumerate(numKeys))
-		{
-			if (GetKey(key).bPressed)
-			{
-				setHotbarSelection(i);
-			}
-		}
-
-		if (GetMouseWheel())
-		{
-			setHotbarSelection(hotbarSelection + (GetMouseWheel() < 0 ? 1 : -1));
-		}
-	}
-
 	if (!freecamEnabled)
 	{
 		cameraPos = player.getPos();
@@ -360,15 +262,14 @@ bool OopMineGame::OnUserUpdate(float elapsed)
 	}
 	view.SetWorldOffset(cameraPos - view.ScaleToWorld(GetScreenSize() / 2.0f));
 
-	for (int i = 0; i < 9; i++)
-		guiHotbar->setStack(i, player.getInvItem(i));
-
 	for (auto& t : transforms)
 		t.update();
 	std::erase_if(transforms, std::mem_fn(&Transform::isFinished));
 
 	world->update(elapsed);
 
+	for (int i = 0; i < 9; i++)
+		guiHotbar->setStack(i, player.getInvItem(i));
 	guiRoot->update(*this);
 	while (guiRoot->needsLayout())
 		guiRoot->updateLayout();
@@ -492,6 +393,66 @@ void OopMineGame::setHotbarSelection(int i)
 		guiHotbarText->setText(player.getInvItem(hotbarSelection).getItem().getName());
 	else
 		guiHotbarText->setText("");
+}
+
+void OopMineGame::handleInput(float elapsed)
+{
+	Player& player = world->getPlayer().value();
+	{
+		if (!freecamEnabled)
+		{
+			Entity::Input& input = queuedInput;
+			input.left = GetKey(olc::Key::A).bHeld;
+			input.right = GetKey(olc::Key::D).bHeld;
+			input.jump = GetKey(olc::Key::SPACE).bHeld;
+			input.sprint = GetKey(olc::Key::SHIFT).bHeld;
+			input.invSelection = hotbarSelection;
+			player.setInput(input);
+			queuedInput = {};
+		}
+		else
+		{
+			const float speed = 32;
+			if (GetKey(olc::Key::W).bHeld)
+				cameraPos.y -= speed * elapsed;
+			if (GetKey(olc::Key::S).bHeld)
+				cameraPos.y += speed * elapsed;
+			if (GetKey(olc::Key::A).bHeld)
+				cameraPos.x -= speed * elapsed;
+			if (GetKey(olc::Key::D).bHeld)
+				cameraPos.x += speed * elapsed;
+		}
+
+		if (GetKey(olc::Key::EQUALS).bPressed)
+			view.ZoomAtScreenPos(1 / 0.75f, GetScreenSize() / 2);
+		if (GetKey(olc::Key::MINUS).bPressed)
+			view.ZoomAtScreenPos(0.75, GetScreenSize() / 2);
+
+		const auto numKeys =
+		{
+			olc::Key::K1,
+			olc::Key::K2,
+			olc::Key::K3,
+			olc::Key::K4,
+			olc::Key::K5,
+			olc::Key::K6,
+			olc::Key::K7,
+			olc::Key::K8,
+			olc::Key::K9,
+		};
+		for (const auto& [i, key] : std::views::enumerate(numKeys))
+		{
+			if (GetKey(key).bPressed)
+			{
+				setHotbarSelection(i);
+			}
+		}
+
+		if (GetMouseWheel())
+		{
+			setHotbarSelection(hotbarSelection + (GetMouseWheel() < 0 ? 1 : -1));
+		}
+	}
 }
 
 std::string OopMineGame::debugMsg = "";

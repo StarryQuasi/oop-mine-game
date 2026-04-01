@@ -52,6 +52,7 @@ private:
 	bool inspectorEnabled = false;
 	int inspectorId = 0;
 	bool freecamEnabled = false;
+	Entity::Input queuedInput = {};
 
 	static std::vector<uint8_t> readFileData(const std::filesystem::path& path);
 	static std::vector<uint8_t> readFileFromZip(mz_zip_archive& zip, const std::string& path);
@@ -59,4 +60,5 @@ private:
 	void genNewWorld(const GenerationSettings&);
 	void emitUiEvents();
 	void setHotbarSelection(int i);
+	void handleInput(float elapsed);
 };

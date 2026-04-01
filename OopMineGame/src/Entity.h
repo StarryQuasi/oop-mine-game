@@ -21,6 +21,7 @@ public:
 		bool attack = false;
 		bool use = false;
 		olc::vf2d target = {};
+		int invSelection = 0;
 	};
 
 	Entity(olc::vf2d pos, olc::vf2d size, int maxInvSize = 9);

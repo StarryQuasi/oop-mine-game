@@ -4,6 +4,7 @@
 
 #include "OopMineGame.h"
 #include "Entity.h"
+#include "Blocks.h"
 #include "Utils.h"
 #include "Verify.h"
 
@@ -165,6 +166,28 @@ ItemStack Entity::addInvItem(ItemStack v)
 
 void Entity::updateInput(World& world, float elapsed)
 {
+	const float reach = 6;
+	if ((input.target - getEyePos()).mag2() <= reach * reach)
+	{
+		const olc::vi2d target = input.target.floor();
+		if (input.attack)
+		{
+			const Block& block = world.getBlock(target);
+			ItemStack stack = { block.getItem(), 1 };
+			addInvItem(stack);
+			world.setBlock(target, Blocks::air);
+		}
+		if (input.use)
+		{
+			const Block& block = getInvItem(input.invSelection).getItem().getBlock();
+			if (block != Blocks::air && world.getBlock(target).isReplaceable())
+			{
+				setInvItem(input.invSelection, getInvItem(input.invSelection).decrease());
+				world.setBlock(target, block);
+			}
+		}
+	}
+
 	olc::vf2d vel = getVel();
 	const float acceleration = (input.sprint ? 1.35f : 1.0f) * (256 + 64);
 	if (input.left)
@@ -178,6 +201,7 @@ void Entity::updateInput(World& world, float elapsed)
 		vel.y -= 256 * 1024 * 1.5f * elapsed;
 	}
 	setVel(vel);
+
 	input = {};
 }
 
