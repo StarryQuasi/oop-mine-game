@@ -212,11 +212,11 @@ bool OopMineGame::OnUserCreate()
 				queuedInput.use = true;
 			return true;
 		});
-	guiRoot->onMouseUp([](gui::Container& me, const gui::MouseEvent& e)
+	guiRoot->onMouseUp([this](gui::Container& me, const gui::MouseEvent& e)
 		{
 			return true;
 		});
-	guiRoot->onMouseDrag([](gui::Container& me, const gui::MouseDragEvent& e)
+	guiRoot->onMouseDrag([this](gui::Container& me, const gui::MouseDragEvent& e)
 		{
 			return true;
 		});

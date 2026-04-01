@@ -2,7 +2,7 @@
 #include "Blocks.h"
 #include "Verify.h"
 
-const Item Items::air("Air", &Blocks::air);
+const Item Items::air("Air", &Blocks::air, 0);
 const Item Items::grassBlock("Grass Block", &Blocks::grassBlock);
 const Item Items::dirt("Dirt", &Blocks::dirt);
 const Item Items::stone("Stone", &Blocks::stone);

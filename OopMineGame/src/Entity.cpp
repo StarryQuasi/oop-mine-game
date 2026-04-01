@@ -55,6 +55,11 @@ olc::vf2d Entity::getVel() const
 	return vel;
 }
 
+Entity::Input Entity::getInput() const
+{
+	return input;
+}
+
 Entity* Entity::setVel(olc::vf2d v)
 {
 	const float maxSpeed = 64;
@@ -132,16 +137,19 @@ void Entity::setInvItem(int i, const ItemStack& v)
 
 ItemStack Entity::addInvItem(ItemStack v)
 {
-	if (v.getItem().getMaxStackSize() > 0)
+	if (v.isEmpty())
+		return {};
+	if (v.getItem().getMaxStackSize() > 1)
 	{
 		for (int i = 0; i < inv.size(); i++)
 		{
 			ItemStack& cur = inv[i];
-			if ((cur.getItem() == Items::air || cur.getItem() == v.getItem()) &&
+			if (cur.isEmpty() ||
+				(cur.getItem() == v.getItem() &&
 				cur.getDamage() == v.getDamage() &&
-				cur.getCount() < cur.getItem().getMaxStackSize())
+				cur.getCount() < v.getItem().getMaxStackSize()))
 			{
-				const int toAdd = std::min(cur.getItem().getMaxStackSize() - cur.getCount(), v.getCount());
+				const int toAdd = std::min(v.getItem().getMaxStackSize() - cur.getCount(), v.getCount());
 				cur = ItemStack(v.getItem(), cur.getCount() + toAdd, v.getDamage());
 				v.setCount(v.getCount() - toAdd);
 				if (v.isEmpty())
@@ -154,7 +162,7 @@ ItemStack Entity::addInvItem(ItemStack v)
 		for (int i = 0; i < inv.size(); i++)
 		{
 			ItemStack& cur = inv[i];
-			if (cur.getItem() != Items::air)
+			if (cur.isEmpty())
 			{
 				cur = v;
 				return {};
@@ -170,20 +178,23 @@ void Entity::updateInput(World& world, float elapsed)
 	if ((input.target - getEyePos()).mag2() <= reach * reach)
 	{
 		const olc::vi2d target = input.target.floor();
-		if (input.attack)
+		if (world.isValidPosition(target))
 		{
-			const Block& block = world.getBlock(target);
-			ItemStack stack = { block.getItem(), 1 };
-			addInvItem(stack);
-			world.setBlock(target, Blocks::air);
-		}
-		if (input.use)
-		{
-			const Block& block = getInvItem(input.invSelection).getItem().getBlock();
-			if (block != Blocks::air && world.getBlock(target).isReplaceable())
+			if (input.attack)
 			{
-				setInvItem(input.invSelection, getInvItem(input.invSelection).decrease());
-				world.setBlock(target, block);
+				const Block& block = world.getBlock(target);
+				ItemStack stack = { block.getItem(), 1 };
+				addInvItem(stack);
+				world.setBlock(target, Blocks::air);
+			}
+			if (input.use)
+			{
+				const Block& block = getInvItem(input.invSelection).getItem().getBlock();
+				if (block != Blocks::air && world.getBlock(target).isReplaceable())
+				{
+					setInvItem(input.invSelection, getInvItem(input.invSelection).decrease());
+					world.setBlock(target, block);
+				}
 			}
 		}
 	}
@@ -273,7 +284,7 @@ void Entity::checkOnGround(World& world)
 	//	});
 	for (const auto& pos : Iterate::over(bb.first, bb.second))
 	{
-		if (world.isSolidBlock(pos))
+		if (world.isValidPosition(pos) && world.isSolidBlock(pos))
 		{
 			//OopMineGame::debugMsg = std::format("on ground");
 			//OopMineGame::debugCallbacks.push_back([pos](OopMineGame& game)

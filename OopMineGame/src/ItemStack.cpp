@@ -2,6 +2,7 @@
 
 #include "ItemStack.h"
 #include "Items.h"
+#include "Verify.h"
 
 ItemStack::ItemStack()
 {}
@@ -31,6 +32,7 @@ int ItemStack::getCount() const
 
 ItemStack& ItemStack::setCount(int v)
 {
+	assert(v >= 0);
 	count = v;
 	validate();
 	return *this;
@@ -43,21 +45,24 @@ int ItemStack::getDamage() const
 
 ItemStack& ItemStack::setDamage(int v)
 {
+	assert(v >= 0);
 	damage = v;
 	validate();
 	return *this;
 }
 
-ItemStack& ItemStack::decrease()
+ItemStack& ItemStack::decrease(int v)
 {
-	count--;
+	assert(v >= 0);
+	count -= v;
 	validate();
 	return *this;
 }
 
-ItemStack& ItemStack::increase()
+ItemStack& ItemStack::increase(int v)
 {
-	count++;
+	assert(v >= 0);
+	count += v;
 	validate();
 	return *this;
 }
@@ -79,8 +84,11 @@ ItemStack& ItemStack::validate()
 	}
 	else
 	{
+		if (damage < 0)
+			count--;
 		damage = 0;
 	}
+
 	if (count <= 0)
 		*this = {};
 	else if (count > item->getMaxStackSize())
