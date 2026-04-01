@@ -37,14 +37,16 @@ float Entity::getY() const
 	return pos.y;
 }
 
-void Entity::setX(float v)
+Entity* Entity::setX(float v)
 {
 	pos.x = v;
+	return this;
 }
 
-void Entity::setY(float v)
+Entity* Entity::setY(float v)
 {
 	pos.y = v;
+	return this;
 }
 
 olc::vf2d Entity::getVel() const
@@ -52,17 +54,25 @@ olc::vf2d Entity::getVel() const
 	return vel;
 }
 
-void Entity::setVel(olc::vf2d v)
+Entity* Entity::setVel(olc::vf2d v)
 {
 	const float maxSpeed = 64;
 	if (v.mag() > maxSpeed)
 		v = v.norm() * maxSpeed;
 	vel = v;
+	return this;
 }
 
-void Entity::setPos(olc::vf2d v)
+Entity* Entity::setInput(Input v)
+{
+	input = v;
+	return this;
+}
+
+Entity* Entity::setPos(olc::vf2d v)
 {
 	pos = v;
+	return this;
 }
 
 olc::vf2d Entity::getSize() const
@@ -76,9 +86,9 @@ std::pair<olc::vf2d, olc::vf2d> Entity::getBb() const
 	return { tl, tl + size };
 }
 
-std::pair<olc::vf2d, olc::vf2d> Entity::getBbAt(olc::vf2d pos) const
+std::pair<olc::vf2d, olc::vf2d> Entity::getBbAt(olc::vf2d p) const
 {
-	const olc::vf2d tl = { pos.x - size.x / 2.0f, pos.y - size.y };
+	const olc::vf2d tl = { p.x - size.x / 2.0f, p.y - size.y };
 	return { tl, tl + size };
 }
 
@@ -113,7 +123,7 @@ ItemStack Entity::getInvItem(int i)
 	return inv[i];
 }
 
-void Entity::setInvItem(int i, ItemStack v)
+void Entity::setInvItem(int i, const ItemStack& v)
 {
 	assert(Verify::index(i, maxInvSize));
 	inv[i] = v;
@@ -153,8 +163,27 @@ ItemStack Entity::addInvItem(ItemStack v)
 	return v;
 }
 
+void Entity::updateInput(World& world, float elapsed)
+{
+	olc::vf2d vel = getVel();
+	const float acceleration = (input.sprint ? 1.35f : 1.0f) * (256 + 64);
+	if (input.left)
+		vel.x -= acceleration * elapsed;
+	if (input.right)
+		vel.x += acceleration * elapsed;
+	if (input.jump && isOnGround() &&
+		std::chrono::steady_clock::now() - lastJumpTime >= std::chrono::milliseconds(250))
+	{
+		lastJumpTime = std::chrono::steady_clock::now();
+		vel.y -= 256 * 1024 * 1.5f * elapsed;
+	}
+	setVel(vel);
+	input = {};
+}
+
 void Entity::update(World& world, float elapsed)
 {
+	updateInput(world, elapsed);
 	const olc::vf2d gravity = { 0.0f, 256.0f + 128.0f };
 	//const olc::vf2d gravity = { 0.0f, 8.0f };
 	vel += gravity * elapsed;

@@ -6,6 +6,7 @@
 #include "Verify.h"
 #include "Blocks.h"
 #include "Utils.h"
+#include "Entity.h"
 #include "Player.h"
 #include "Sheep.h"
 #include "gui/Gui.h"
@@ -301,15 +302,12 @@ bool OopMineGame::OnUserUpdate(float elapsed)
 	{
 		if (!freecamEnabled)
 		{
-			olc::vf2d vel = player.getVel();
-			const float acceleration = (GetKey(olc::Key::SHIFT).bHeld ? 1.35f : 1.0f) * (256 + 64);
-			if (GetKey(olc::Key::A).bHeld)
-				vel.x -= acceleration * elapsed;
-			if (GetKey(olc::Key::D).bHeld)
-				vel.x += acceleration * elapsed;
-			if (GetKey(olc::Key::SPACE).bHeld && player.isOnGround())
-				vel.y -= 256 * 1024 * 1.5f * elapsed;
-			player.setVel(vel);
+			Entity::Input input = {};
+			input.left = GetKey(olc::Key::A).bHeld;
+			input.right = GetKey(olc::Key::D).bHeld;
+			input.jump = GetKey(olc::Key::SPACE).bHeld;
+			input.sprint = GetKey(olc::Key::SHIFT).bHeld;
+			player.setInput(input);
 		}
 		else
 		{

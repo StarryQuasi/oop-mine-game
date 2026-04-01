@@ -5,17 +5,6 @@
 class Player : public Entity
 {
 public:
-	// TODO: Should this be handled inside Player?
-	struct Input
-	{
-		const bool left = false;
-		const bool right = false;
-		const bool jump = false;
-		const bool attack = false;
-		const bool use = false;
-		const olc::vf2d target = {};
-	};
-
 	Player(olc::vf2d pos);
 
 	void update(World& world, float elapsed) override;
