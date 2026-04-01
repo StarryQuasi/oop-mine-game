@@ -35,15 +35,24 @@ namespace gui
 	{
 		if (stack.getItem() == Items::air)
 			return;
-		const std::string ns = stack.getItem().getBlock() != Blocks::air ? "block/" : "item/";
-		const std::string assetName = ns + stack.getItem().getTextureName() + ".png";
-		if (const auto& asset = game.getAsset(assetName); asset.has_value())
+		const bool isBlock = stack.getItem().getBlock() != Blocks::air;
+		const auto& decalPatch = isBlock
+			? game.getBlockAssetPatch(stack.getItem().getBlock().getId())
+			: game.getAsset("item/" + stack.getItem().getTextureName() + ".png")
+			.transform([](const olc::Renderable& r)
+				{
+					return (olc::DecalPatch)r.Decal();
+				});
+		if (decalPatch.has_value())
 		{
 			const olc::vi2d fakePadding = { 3, 3 };
+			const olc::vf2d realDrawSize = (olc::vf2d)(getDrawSize() - fakePadding * 2);
+			//const olc::vi2d patchSize = isBlock ? olc::vi2d{ 32, 32 } : decalPatch.value().decal->sprite->Size();
+			// The scale argument here for the olc::DecalPatch overload is actually the size
 			game.DrawDecal(
 				getAbsolutePos() + fakePadding,
-				asset->Decal(),
-				(olc::vf2d)(getDrawSize() - fakePadding * 2) / asset->Sprite()->Size());
+				decalPatch.value(),
+				realDrawSize);
 		}
 
 		Container::draw(game);
