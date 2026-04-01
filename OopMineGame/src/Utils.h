@@ -30,6 +30,16 @@ public:
 		else
 			view.DrawDecal(pos, decal, scale, tint);
 	}
+
+	static std::string toString(const olc::vi2d& v)
+	{
+		return std::format("({},{})", v.x, v.y);
+	}
+
+	static std::string toString(const olc::vf2d& v)
+	{
+		return std::format("({:.3f},{:.3f})", v.x, v.y);
+	}
 };
 
 class Iterate

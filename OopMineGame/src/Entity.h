@@ -44,7 +44,7 @@ public:
 	std::pair<olc::vf2d, olc::vf2d> getBb() const;
 	std::pair<olc::vf2d, olc::vf2d> getBbAt(olc::vf2d p) const;
 	olc::vf2d getEyePos() const;
-	bool getDirection() const;
+	bool getDirection() const; // Gets direction of last horizontal velocity, true = right, false = left
 	bool isDead() const;
 	void kill();
 	bool isOnGround() const;
@@ -63,7 +63,7 @@ private:
 	olc::vf2d pos = {}; // Origin is bottom middle
 	olc::vf2d size = { 1,1 };
 	olc::vf2d vel = {};
-	bool direction = true; // Direction of last horizontal velocity, true = right, false = left
+	bool direction = true;
 	bool dead = false;
 	bool onGround = true;
 	std::vector<ItemStack> inv = {};

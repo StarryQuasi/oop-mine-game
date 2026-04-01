@@ -49,6 +49,7 @@ private:
 	std::unique_ptr<gui::Container> guiRoot = nullptr;
 	gui::Hotbar* guiHotbar = nullptr;
 	gui::TextContainer* guiHotbarText = nullptr;
+	gui::TextContainer* guiDebugText = nullptr;
 	bool inspectorEnabled = false;
 	int inspectorId = 0;
 	bool freecamEnabled = false;

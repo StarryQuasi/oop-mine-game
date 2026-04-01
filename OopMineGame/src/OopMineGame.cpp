@@ -197,6 +197,9 @@ bool OopMineGame::OnUserCreate()
 						});
 				});
 	}
+	guiDebugText = guiRoot->addChild<gui::TextContainer>("");
+	guiDebugText->setAnchor(gui::Anchor::btmRight);
+	guiDebugText->setOrigin(gui::Anchor::btmRight);
 
 	// Root element mouse handling
 	guiRoot->onMouseDown([this](gui::Container& me, const gui::MouseEvent& e)
@@ -268,6 +271,9 @@ bool OopMineGame::OnUserUpdate(float elapsed)
 
 	world->update(elapsed);
 
+	guiDebugText->setText(debugMsg);
+	debugMsg = "";
+
 	for (int i = 0; i < 9; i++)
 		guiHotbar->setStack(i, player.getInvItem(i));
 	guiRoot->update(*this);
@@ -296,12 +302,9 @@ bool OopMineGame::OnUserUpdate(float elapsed)
 	Clear(olc::BLANK);
 
 	guiRoot->draw(*this);
-
-	DrawStringDecal({ 10, 10 }, debugMsg, olc::WHITE, { 0.4f, 0.5f });
 	for (const auto& callback : debugCallbacks)
 		callback(*this);
 
-	debugMsg = "";
 	debugCallbacks.clear();
 
 	return true;
