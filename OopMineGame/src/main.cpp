@@ -1,8 +1,10 @@
 #include <filesystem>
 #include <print>
 
+#ifdef _WIN32
 #define NOMINMAX
 #include <Windows.h>
+#endif
 
 #define OLC_IMAGE_STB
 #define OLC_PGE_APPLICATION
@@ -45,8 +47,10 @@ int main()
 	return 0;
 }
 
+#ifdef _WIN32
 // Entry point for Windows app
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
 	return main();
 }
+#endif

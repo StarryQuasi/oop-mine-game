@@ -20,6 +20,10 @@ OopMineGame::OopMineGame()
 
 std::vector<uint8_t> OopMineGame::readFileData(const std::filesystem::path& path)
 {
+	if (!std::filesystem::exists(path)) {
+		std::println("Failed to read file \"{}\"", path.string());
+		return {};
+	}
 	const auto size = std::filesystem::file_size(path);
 	if (size == 0) {
 		std::println("Failed to read file \"{}\"", path.string());
