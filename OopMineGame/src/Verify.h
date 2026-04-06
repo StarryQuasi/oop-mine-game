@@ -20,25 +20,25 @@ public:
 	}
 
 	template<>
-	static bool in<olc::vi2d>(const olc::vi2d& v, const olc::vi2d& a, const olc::vi2d& b)
+	bool in<olc::vi2d>(const olc::vi2d& v, const olc::vi2d& a, const olc::vi2d& b)
 	{
 		return in(v.x, a.x, b.x) && in(v.y, a.y, b.y);
 	}
 
 	template<>
-	static bool in<olc::vf2d>(const olc::vf2d& v, const olc::vf2d& a, const olc::vf2d& b)
+	bool in<olc::vf2d>(const olc::vf2d& v, const olc::vf2d& a, const olc::vf2d& b)
 	{
 		return in(v.x, a.x, b.x) && in(v.y, a.y, b.y);
 	}
 
 	template<>
-	static bool inExclusive<olc::vi2d>(const olc::vi2d& v, const olc::vi2d& a, const olc::vi2d& b)
+	bool inExclusive<olc::vi2d>(const olc::vi2d& v, const olc::vi2d& a, const olc::vi2d& b)
 	{
 		return inExclusive(v.x, a.x, b.x) && inExclusive(v.y, a.y, b.y);
 	}
 
 	template<>
-	static bool inExclusive<olc::vf2d>(const olc::vf2d& v, const olc::vf2d& a, const olc::vf2d& b)
+	bool inExclusive<olc::vf2d>(const olc::vf2d& v, const olc::vf2d& a, const olc::vf2d& b)
 	{
 		return inExclusive(v.x, a.x, b.x) && inExclusive(v.y, a.y, b.y);
 	}

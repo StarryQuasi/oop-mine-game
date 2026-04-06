@@ -1,4 +1,5 @@
 #include <ranges>
+#include <cctype>
 
 #include "Item.h"
 #include "Block.h"
@@ -10,7 +11,7 @@ Item::Item(std::string name, const Block* block, int maxStackSize) :
 	id(itemIdCounter++),
 	name(name),
 	textureName(name
-		| std::views::transform(std::tolower)
+		| std::views::transform([](char c) { return std::tolower(c); })
 		| std::views::split(std::string(" "))
 		| std::views::join_with(std::string("_"))
 		| std::ranges::to<std::string>()),

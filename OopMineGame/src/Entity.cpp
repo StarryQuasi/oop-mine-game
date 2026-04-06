@@ -14,7 +14,7 @@ Entity::Entity(olc::vf2d pos, olc::vf2d size, int maxInvSize) :
 	id(entityIdCounter++),
 	pos(pos),
 	size(size),
-	inv(maxInvSize, {}),
+	inv(maxInvSize, ItemStack{}),
 	maxInvSize(maxInvSize)
 {}
 

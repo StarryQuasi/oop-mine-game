@@ -45,20 +45,18 @@ public:
 class Iterate
 {
 public:
-	static auto over(const olc::vi2d& min, const olc::vi2d& max)
+  static auto over(const olc::vi2d &min, const olc::vi2d &max)
 	{
-		return
-			std::views::cartesian_product(
-				std::views::iota(min.y, max.y),
-				std::views::iota(min.x, max.x))
-			| std::views::transform([](std::tuple<int, int>&& tuple)
-				{
-					const auto [y, x] = tuple;
-					return olc::vi2d{ x, y };
-				});
-	}
+    return std::views::iota(min.y, max.y) |
+           std::views::transform([min, max](int y) {
+             return std::views::iota(min.x, min.y) |
+                    std::views::transform(
+                        [y](int x) { return olc::vi2d{x, y}; });
+           }) |
+           std::views::join;
+  }
 
-	static auto over(const olc::vf2d& min, const olc::vf2d& max)
+        static auto over(const olc::vf2d& min, const olc::vf2d& max)
 	{
 		return over((olc::vi2d)min.floor(), (olc::vi2d)max.ceil());
 	}

@@ -1,5 +1,3 @@
-#include <string_view>
-
 #include <stb_image.h>
 
 #include "OopMineGame.h"
@@ -9,7 +7,7 @@
 #include "Entity.h"
 #include "Player.h"
 #include "Sheep.h"
-#include "gui/Gui.h"
+#include "miniz.h"
 
 OopMineGame* OopMineGame::instance = nullptr;
 
@@ -34,6 +32,23 @@ std::vector<uint8_t> OopMineGame::readFileData(const std::filesystem::path& path
 	fs.read((char*)(buffer.data()), size);
 	fs.close();
 	return buffer;
+}
+
+void OopMineGame::printZipInfo(mz_zip_archive& zip)
+{
+	for (int i = 0; i < zip.m_total_files; i++)
+	{
+		mz_zip_archive_file_stat stat;
+		if (!mz_zip_reader_file_stat(&zip, i, &stat))
+		{
+			std::println("File {}: mz_zip_reader_file_stat() failed", i + 1);
+			continue;
+		}
+		if (stat.m_is_directory)
+			std::println("Dir  {}: {}", i + 1, stat.m_filename);
+		else
+			std::println("File {}: {}", i + 1, stat.m_filename);
+	}
 }
 
 std::vector<uint8_t> OopMineGame::readFileFromZip(mz_zip_archive& zip, const std::string& path)
@@ -102,6 +117,7 @@ bool OopMineGame::OnUserCreate()
 	assetsBuffer = readFileData("assets.zip");
 	if (!mz_zip_reader_init_mem(&assetsZip, assetsBuffer.data(), assetsBuffer.size(), 0))
 		return false;
+	printZipInfo(assetsZip);
 	// Create block atlas
 	assetsBlock.resize(Blocks::getAllBlocks().size());
 	assetsBlockPatch.resize(Blocks::getAllBlocks().size());
@@ -447,12 +463,14 @@ void OopMineGame::handleInput(float elapsed)
 			olc::Key::K8,
 			olc::Key::K9,
 		};
-		for (const auto& [i, key] : std::views::enumerate(numKeys))
+		int i = 0;
+		for (const auto key : numKeys)
 		{
 			if (GetKey(key).bPressed)
 			{
 				setHotbarSelection(i);
 			}
+			i++;
 		}
 
 		if (GetMouseWheel())

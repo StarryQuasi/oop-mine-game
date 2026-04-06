@@ -1,0 +1,17 @@
+{
+    "configurations": [
+        {
+            "name": "Debug lldb",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/OopMineGame",
+            "args": [
+                "-arg1",
+                "-arg2"
+            ],
+            "cwd": "${workspaceFolder}/build",
+            "preLaunchTask": "CMake: build"
+        }
+    ],
+    "version": "2.0.0"
+}

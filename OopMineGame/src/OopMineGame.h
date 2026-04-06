@@ -55,7 +55,8 @@ private:
 	bool freecamEnabled = false;
 	Entity::Input queuedInput = {};
 
-	static std::vector<uint8_t> readFileData(const std::filesystem::path& path);
+	static std::vector<uint8_t>	readFileData(const std::filesystem::path &path);
+    static void printZipInfo(mz_zip_archive& zip);    
 	static std::vector<uint8_t> readFileFromZip(mz_zip_archive& zip, const std::string& path);
 	static std::optional<olc::Renderable> loadAsset(mz_zip_archive& zip, const std::string& path);
 	void genNewWorld(const GenerationSettings&);

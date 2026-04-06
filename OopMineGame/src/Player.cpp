@@ -4,7 +4,7 @@
 
 Player::Player(olc::vf2d pos) :
 	Entity(pos, olc::vf2d{ 0.9f, 1.5f }, 36),
-	hairPoints(4, {})
+	hairPoints(4, olc::vf2d{})
 {
 	hairBuffer.Create(32, 32);
 }

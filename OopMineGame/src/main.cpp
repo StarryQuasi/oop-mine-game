@@ -1,9 +1,11 @@
 #include <filesystem>
 #include <print>
 
-#ifdef _WIN32
+#if defined(_WIN32)
 #define NOMINMAX
 #include <Windows.h>
+#elif defined(__APPLE__)
+#include <unistd.h>
 #endif
 
 #define OLC_IMAGE_STB
@@ -15,19 +17,33 @@
 
 #include "OopMineGame.h"
 
-int main()
+// Sets the current working directory to the exe's directory,
+// so the game can find the asset archive
+void setCwd()
 {
-	// Set the current working directory to the exe's directory,
-	// so the game can find the asset archive
+#if defined(_WIN32)
+	wchar_t path[MAX_PATH];
+	GetModuleFileNameW(nullptr, path, MAX_PATH);
+	std::filesystem::path exePath(path);
+	std::filesystem::current_path(exePath.parent_path());
+#elif defined(__APPLE__)
+	char path[PATH_MAX];
+	ssize_t count = readlink("/proc/self/exe", path, PATH_MAX);
+	if (count > 0)
 	{
-		wchar_t path[MAX_PATH];
-		GetModuleFileNameW(nullptr, path, MAX_PATH);
-		std::filesystem::path exePath(path);
+		std::filesystem::path exePath(std::string(path, count));
 		std::filesystem::current_path(exePath.parent_path());
 	}
+#else
+	throw std::runtime_error("setCwd() not implemented");
+#endif
+}
 
+int main()
+{
 	try
 	{
+		setCwd();
 		OopMineGame game;
 		OopMineGame::instance = &game;
 		const olc::vi2d windowSize = { 768, 432 };
@@ -35,7 +51,9 @@ int main()
 		const int pixelScale = 1;
 		//const int pixelScale = 2;
 		const olc::vi2d screenSize = windowSize / pixelSize;
-		if (game.Construct(screenSize.x, screenSize.y, pixelSize.x * pixelScale, pixelSize.y * pixelScale))
+		const bool fullScreen = false;
+		// const bool fullScreen = true;
+		if (game.Construct(screenSize.x, screenSize.y, pixelSize.x * pixelScale, pixelSize.y * pixelScale, fullScreen))
 			game.Start();
 	}
 	catch (const std::exception& e)
@@ -47,7 +65,7 @@ int main()
 	return 0;
 }
 
-#ifdef _WIN32
+#if defined(_WIN32)
 // Entry point for Windows app
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
