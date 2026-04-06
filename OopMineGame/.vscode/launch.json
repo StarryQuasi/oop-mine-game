@@ -5,10 +5,7 @@
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/build/OopMineGame",
-            "args": [
-                "-arg1",
-                "-arg2"
-            ],
+            "args": [],
             "cwd": "${workspaceFolder}/build",
             "preLaunchTask": "CMake: build"
         }
