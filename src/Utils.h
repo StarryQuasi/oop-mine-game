@@ -64,7 +64,7 @@ public:
 			   std::views::transform(
 				   [min, max](int y)
 				   {
-					   return std::views::iota(min.x, min.y) |
+					   return std::views::iota(min.x, max.x) |
 							  std::views::transform(
 								  [y](int x) { return olc::vi2d{x, y}; });
 				   }) |
