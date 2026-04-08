@@ -1,4 +1,4 @@
-#include <limits>
+#include <bit>
 #include <mdspan>
 #include <random>
 #include <ranges>
@@ -223,10 +223,8 @@ void World::generateWorld()
 		for (int _ = 0; _ < tries; _++)
 		{
 			const int xsub = rng() % 16;
-			const unsigned rand = rng();
-			const unsigned sample =
-				(unsigned)((noise.GetNoise((float)(x + xsub), treeNoiseY) + 1) /
-						   2.0f * std::numeric_limits<unsigned>::max());
+			const float rand = randToFloat(rng());
+			const float sample = sampleAt((float)x + xsub, treeNoiseY);
 			if (x + xsub < getSize().x && rand > sample)
 			{
 				int y = findTopmostBlock(x + xsub, Blocks::grassBlock);
@@ -277,4 +275,10 @@ float World::sampleAt(FastNoiseLite& noise, int x, int y)
 float World::sampleAt(olc::vi2d pos)
 {
 	return (noise.GetNoise((float)pos.x, (float)pos.y) + 1) / 2.0f;
+}
+
+float World::randToFloat(unsigned v)
+{
+	// https://blog.bithole.dev/blogposts/random-float/
+	return std::bit_cast<float>(v >> 9 | 0x3f800000) - 1.0f;
 }

@@ -69,6 +69,7 @@ private:
 	float sampleAt(int x, int y);						// Returns [0, 1]
 	float sampleAt(FastNoiseLite& noise, int x, int y); // Returns [0, 1]
 	float sampleAt(olc::vi2d pos);						// Returns [0, 1]
+	float randToFloat(unsigned v); // Converts random unsigned to float [0, 1)
 };
 
 template <typename T, typename... Args>
