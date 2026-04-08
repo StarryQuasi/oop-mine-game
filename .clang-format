@@ -6,6 +6,7 @@ BinPackArguments: false
 BinPackParameters: OnePerLine
 BreakBeforeBraces: Allman
 BreakConstructorInitializers: AfterColon
+BreakTemplateDeclarations: Yes
 IndentWidth: 4
 PackConstructorInitializers: Never
 PointerAlignment: Left

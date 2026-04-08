@@ -34,9 +34,10 @@ public:
 
 	void setBlock(olc::vi2d p, const Block& block);
 
-	int findTopmostSolid(int x) const; // Returns -1 if not found
-	int findTopmostBlock(
-		int x, const Block& block) const; // Returns -1 if not found
+	// Returns -1 if not found
+	int findTopmostSolid(int x) const;
+	// Returns -1 if not found
+	int findTopmostBlock(int x, const Block& block) const;
 
 	bool isValidPosition(olc::vi2d p) const;
 	bool isSolidBlock(olc::vi2d p) const;
@@ -58,18 +59,22 @@ private:
 	const GenerationSettings settings;
 	FastNoiseLite noise;
 	std::vector<int> blocksRaw;
-	// std::dextents = dynamic extents, std::layout_left = column major (access
-	// by x, y)
+	// std::dextents = dynamic extents
+	// std::layout_left = column major (access by x, y)
 	std::mdspan<int, std::dextents<size_t, 2>, std::layout_left> blocks;
 	std::unordered_map<int, std::unique_ptr<Entity>> entities = {};
 	std::vector<olc::vf2d> drawBufPos = {};
 	std::vector<olc::vf2d> drawBufUv = {};
 
 	void generateWorld();
-	float sampleAt(int x, int y);						// Returns [0, 1]
-	float sampleAt(FastNoiseLite& noise, int x, int y); // Returns [0, 1]
-	float sampleAt(olc::vi2d pos);						// Returns [0, 1]
-	float randToFloat(unsigned v); // Converts random unsigned to float [0, 1)
+	// Returns [0, 1]
+	float sampleAt(int x, int y);
+	// Returns [0, 1]
+	float sampleAt(FastNoiseLite& noise, int x, int y);
+	// Returns [0, 1]
+	float sampleAt(olc::vi2d pos);
+	// Converts random unsigned to float [0, 1)
+	float randToFloat(unsigned v);
 };
 
 template <typename T, typename... Args>

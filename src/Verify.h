@@ -7,7 +7,8 @@
 class Verify
 {
 public:
-	template <typename T> static bool in(const T& v, const T& a, const T& b)
+	template <typename T>
+	static bool in(const T& v, const T& a, const T& b)
 	{
 		return v >= a && v <= b;
 	}
@@ -64,7 +65,8 @@ public:
 		return true;
 	}
 
-	template <typename T> static bool elemsNonNeg(const olc::v_2d<T>& v)
+	template <typename T>
+	static bool elemsNonNeg(const olc::v_2d<T>& v)
 	{
 		return elems(v, std::greater_equal{}, 0);
 	}

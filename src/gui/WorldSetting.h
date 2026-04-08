@@ -3,8 +3,6 @@
 #include "FlowContainer.h"
 #include "World.h"
 
-// struct GenerationSettings;
-
 namespace gui
 {
 class WorldSetting : public FlowContainer
@@ -13,8 +11,8 @@ public:
 	WorldSetting();
 
 	void valueChanged() const;
-	WorldSetting* onValueChanged(
-		std::function<void(const GenerationSettings&)> handler);
+	WorldSetting*
+	onValueChanged(std::function<void(const GenerationSettings&)> handler);
 
 private:
 	GenerationSettings value = {};
