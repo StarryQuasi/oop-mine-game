@@ -47,9 +47,10 @@ target_sources(OopMineGame PRIVATE
 )
 
 # Enable hardening so it caches std::views::iota(max, min)
+# https://libcxx.llvm.org/Hardening.html
 if (CMAKE_CXX_COMPILER_ID STREQUAL Clang OR CMAKE_CXX_COMPILER_ID STREQUAL AppleClang)
 	target_compile_definitions(OopMineGame PRIVATE
-		$<$<CONFIG:Debug>:_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_DEBUG>
+		$<$<CONFIG:Debug>:_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE>
 	)
 endif()
 
