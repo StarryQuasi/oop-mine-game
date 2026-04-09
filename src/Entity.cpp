@@ -1,5 +1,3 @@
-#include <format>
-
 #include <olcAabb.h>
 
 #include "Blocks.h"
@@ -43,6 +41,8 @@ olc::vf2d Entity::getVel() const { return vel; }
 
 Entity::Input Entity::getInput() const { return input; }
 
+float Entity::getWalkSpeed() const { return walkSpeed; }
+
 Entity* Entity::setVel(olc::vf2d v)
 {
 	const float maxSpeed = 64;
@@ -55,6 +55,12 @@ Entity* Entity::setVel(olc::vf2d v)
 Entity* Entity::setInput(Input v)
 {
 	input = v;
+	return this;
+}
+
+Entity* Entity::setWalkSpeed(float v)
+{
+	walkSpeed = v;
 	return this;
 }
 
@@ -175,7 +181,7 @@ void Entity::updateInput(World& world, float elapsed)
 	}
 
 	olc::vf2d vel = getVel();
-	const float acceleration = (input.sprint ? 1.35f : 1.0f) * (256 + 64);
+	const float acceleration = (input.sprint ? 1.35f : 1.0f) * getWalkSpeed();
 	if (input.left)
 		vel.x -= acceleration * elapsed;
 	if (input.right)

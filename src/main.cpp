@@ -28,6 +28,7 @@ void setCwd()
 	std::filesystem::current_path(exePath.parent_path());
 #elif defined(__APPLE__)
 	char path[PATH_MAX];
+	// This no work?
 	ssize_t count = readlink("/proc/self/exe", path, PATH_MAX);
 	if (count > 0)
 	{
@@ -46,7 +47,7 @@ int main()
 		setCwd();
 		OopMineGame game;
 		OopMineGame::instance = &game;
-		const olc::vi2d windowSize = {768, 432};
+		const olc::vi2d windowSize = olc::vi2d{768, 432} * 2;
 		const olc::vi2d pixelSize = {4, 4};
 		const int pixelScale = 1;
 		// const int pixelScale = 2;

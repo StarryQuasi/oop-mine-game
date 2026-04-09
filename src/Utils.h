@@ -53,6 +53,12 @@ public:
 	{
 		return std::format("({:.3f},{:.3f})", v.x, v.y);
 	}
+
+	static int manhattanDist(olc::vi2d a, olc::vi2d b)
+	{
+		const olc::vi2d diff = b - a;
+		return std::abs(diff.x) + std::abs(diff.y);
+	}
 };
 
 class Iterate
@@ -74,5 +80,13 @@ public:
 	static auto over(const olc::vf2d& min, const olc::vf2d& max)
 	{
 		return over((olc::vi2d)min.floor(), (olc::vi2d)max.ceil());
+	}
+};
+
+struct vi2dHash
+{
+	std::size_t operator()(const olc::vi2d& v) const
+	{
+		return std::hash<int>()(v.x) ^ std::hash<int>()(v.y);
 	}
 };

@@ -34,12 +34,14 @@ public:
 	float getY() const;
 	olc::vf2d getVel() const;
 	Input getInput() const;
+	float getWalkSpeed() const;
 
 	Entity* setPos(olc::vf2d v);
 	Entity* setX(float v);
 	Entity* setY(float v);
 	Entity* setVel(olc::vf2d v);
 	Entity* setInput(Input v);
+	Entity* setWalkSpeed(float v);
 
 	std::pair<olc::vf2d, olc::vf2d> getBb() const;
 	std::pair<olc::vf2d, olc::vf2d> getBbAt(olc::vf2d p) const;
@@ -71,6 +73,7 @@ private:
 	const int maxInvSize;
 	Input input = {};
 	std::chrono::steady_clock::time_point lastJumpTime = {};
+	float walkSpeed = 256 + 64;
 
 	void handleCollisions(World& world, float elapsed);
 	void checkOnGround(World& world);
