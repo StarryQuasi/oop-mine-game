@@ -3,8 +3,8 @@
 #include <mdspan>
 #include <vector>
 
-#include <FastNoiseLite.h>
-#include <olcPixelGameEngine.h>
+#include <libs/FastNoiseLite.h>
+#include <libs/olcPixelGameEngine.h>
 
 #include "Block.h"
 #include "Entity.h"

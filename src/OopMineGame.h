@@ -6,9 +6,9 @@
 #include <unordered_map>
 #include <vector>
 
-#include <miniz.h>
-#include <olcPGEX_TransformedView.h>
-#include <olcPixelGameEngine.h>
+#include <libs/miniz-3.1.1/miniz.h>
+#include <libs/olcPGEX_TransformedView.h>
+#include <libs/olcPixelGameEngine.h>
 
 #include "Transform.h"
 #include "World.h"

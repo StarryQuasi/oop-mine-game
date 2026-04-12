@@ -12,10 +12,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 add_executable(OopMineGame)
 
 target_include_directories(OopMineGame PRIVATE
-	libs
-	libs/miniz-3.1.1
+	${CMAKE_CURRENT_SOURCE_DIR}
 	src
-	src/gui
 )
 
 target_sources(OopMineGame PRIVATE

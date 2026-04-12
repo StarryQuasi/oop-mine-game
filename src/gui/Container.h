@@ -27,6 +27,7 @@ struct Props
 	std::optional<Direction> direction = {}; // FlowContainer
 	std::optional<bool> autoSizing = {};	 // FlowContainer
 };
+
 // The base gui component that hosts child elements, can be positioned
 // relatively to its parent, performs layout updates, and handles mouse events.
 // Also equipped with various layout properties in fluent interface:
