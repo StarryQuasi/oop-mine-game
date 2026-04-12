@@ -31,15 +31,15 @@ struct Props
 // The base gui component that hosts child elements, can be positioned
 // relatively to its parent, performs layout updates, and handles mouse events.
 // Also equipped with various layout properties in fluent interface:
-//   `setPos(olc::vi2d)` - sets position
-//   `setSize(olc::vi2d)` - sets size of the inner child area
-//   `setAnchor(gui::Anchor)` - sets origin on parent
-//   `setOrigin(gui::Anchor)` - sets origin of self
+//   `setPos(olc::vi2d)` - sets position.
+//   `setSize(olc::vi2d)` - sets size of the inner child area.
+//   `setAnchor(gui::Anchor)` - sets origin on parent.
+//   `setOrigin(gui::Anchor)` - sets origin of self.
 //   `setMargin(olc::vi2d)` - sets margin between self and its parent, not
-//   related to draw size, but contributes to layout size
+//   related to draw size, but contributes to layout size.
 //   `setPadding(olc::vi2d)` - sets padding between self and the inner child
-//   area, expands the draw size by padding * 2 `addChild<gui::Container>()` -
-//   adds child to it
+//   area, expands the draw size by padding * 2.
+// 	 `addChild<gui::Container>()` - adds child to it.
 class Container
 {
 public:
