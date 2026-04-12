@@ -8,7 +8,7 @@ namespace gui
 class FlowContainer : public Container
 {
 public:
-	FlowContainer();
+	FlowContainer(Props props = {});
 
 	Direction getDirection() const;
 	bool getAutoSizing() const;

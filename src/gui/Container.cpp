@@ -11,10 +11,25 @@ bool Container::debug = false;
 int Container::idCounter = 0;
 int Container::focusedElementId = -1;
 
-Container::Container(olc::vi2d s) :
-	id(idCounter++),
-	size(s)
+Container::Container(Props props) :
+	id(idCounter++)
 {
+	if (props.size.has_value())
+		size = props.size.value();
+	if (props.pos.has_value())
+		pos = props.pos.value();
+	if (props.anchor.has_value())
+		anchor = props.anchor.value();
+	if (props.origin.has_value())
+		origin = props.origin.value();
+	if (props.margin.has_value())
+		margin = props.margin.value();
+	if (props.padding.has_value())
+		padding = props.padding.value();
+	if (props.visible.has_value())
+		visible = props.visible.value();
+	if (props.assetName.has_value())
+		assetName = props.assetName.value();
 }
 
 const std::string& Container::getDebugName() const

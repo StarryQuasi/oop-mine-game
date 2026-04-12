@@ -1,13 +1,14 @@
 #include <cassert>
 
+#include "Anchor.h"
 #include "Slider.h"
 #include "TextContainer.h"
 #include "WorldSetting.h"
 
 namespace gui
 {
-WorldSetting::WorldSetting() :
-	FlowContainer()
+WorldSetting::WorldSetting(Props props) :
+	FlowContainer(props)
 {
 	FlowContainer::setDirection(gui::Direction::vertical);
 	addFloat(
@@ -44,16 +45,26 @@ void WorldSetting::addFloat(
 	assert(min <= max);
 	const float def = GenerationSettings().*p;
 	auto flow = addChild<FlowContainer>();
-	flow->addChild<TextContainer>(std::move(name))
-		->setAnchor(Anchor::midLeft)
-		->setOrigin(Anchor::midLeft);
-	auto slider = flow->addChild<Slider>(min, max, step, def);
-	slider->setSize({50, 8})
-		->setAnchor(Anchor::midLeft)
-		->setOrigin(Anchor::midLeft);
-	auto label = flow->addChild<TextContainer>(
-		std::format("{:.{}f}", def, labelPrecision));
-	label->setAnchor(Anchor::midLeft)->setOrigin(Anchor::midLeft);
+	flow->addChild<TextContainer>({
+		.anchor = Anchor::midLeft,
+		.origin = Anchor::midLeft,
+		.text = std::move(name),
+	});
+	auto slider = flow->addChild<Slider>(
+		{
+			.size = {{50, 8}},
+			.anchor = Anchor::midLeft,
+			.origin = Anchor::midLeft,
+		},
+		min,
+		max,
+		step,
+		def);
+	auto label = flow->addChild<TextContainer>({
+		.anchor = Anchor::midLeft,
+		.origin = Anchor::midLeft,
+		.text = std::format("{:.{}f}", def, labelPrecision),
+	});
 
 	slider->onValueChanged(
 		[this, p, label, def, labelPrecision](float old, float $new)
@@ -79,28 +90,48 @@ void WorldSetting::addFloatDouble(
 	assert(def1 <= def2);
 
 	auto flow1 = addChild<FlowContainer>();
-	flow1->addChild<TextContainer>(name)
-		->setAnchor(Anchor::midLeft)
-		->setOrigin(Anchor::midLeft);
-	auto slider1 = flow1->addChild<Slider>(min, def2, step, def1);
-	slider1->setSize({50, 8})
-		->setAnchor(Anchor::midLeft)
-		->setOrigin(Anchor::midLeft);
-	auto label1 = flow1->addChild<TextContainer>(
-		std::format("{:.{}f}", def1, labelPrecision));
-	label1->setAnchor(Anchor::midLeft)->setOrigin(Anchor::midLeft);
+	flow1->addChild<TextContainer>({
+		.anchor = Anchor::midLeft,
+		.origin = Anchor::midLeft,
+		.text = name,
+	});
+	auto slider1 = flow1->addChild<Slider>(
+		{
+			.size = {{50, 8}},
+			.anchor = Anchor::midLeft,
+			.origin = Anchor::midLeft,
+		},
+		min,
+		def2,
+		step,
+		def1);
+	auto label1 = flow1->addChild<TextContainer>({
+		.anchor = Anchor::midLeft,
+		.origin = Anchor::midLeft,
+		.text = std::format("{:.{}f}", def1, labelPrecision),
+	});
 
 	auto flow2 = addChild<FlowContainer>();
-	flow2->addChild<TextContainer>(name)
-		->setAnchor(Anchor::midLeft)
-		->setOrigin(Anchor::midLeft);
-	auto slider2 = flow2->addChild<Slider>(def1, max, step, def2);
-	slider2->setSize({50, 8})
-		->setAnchor(Anchor::midLeft)
-		->setOrigin(Anchor::midLeft);
-	auto label2 = flow2->addChild<TextContainer>(
-		std::format("{:.{}f}", def2, labelPrecision));
-	label2->setAnchor(Anchor::midLeft)->setOrigin(Anchor::midLeft);
+	flow2->addChild<TextContainer>({
+		.anchor = Anchor::midLeft,
+		.origin = Anchor::midLeft,
+		.text = name,
+	});
+	auto slider2 = flow2->addChild<Slider>(
+		{
+			.size = {{50, 8}},
+			.anchor = Anchor::midLeft,
+			.origin = Anchor::midLeft,
+		},
+		def1,
+		max,
+		step,
+		def2);
+	auto label2 = flow2->addChild<TextContainer>({
+		.anchor = Anchor::midLeft,
+		.origin = Anchor::midLeft,
+		.text = std::format("{:.{}f}", def2, labelPrecision),
+	});
 
 	slider1->onValueChanged(
 		[this, p1, label1, def1, labelPrecision, slider2](float old, float $new)

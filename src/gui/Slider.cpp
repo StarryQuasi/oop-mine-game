@@ -1,22 +1,27 @@
-#include <print>
+#include <format>
 
+#include "Anchor.h"
 #include "Slider.h"
 
 namespace gui
 {
-Slider::Slider(float min, float max, float step, float value) :
+Slider::Slider(Props props, float min, float max, float step, float value) :
+	Container(props),
 	min(min),
 	max(max),
 	step(step),
 	value(value)
 {
-	handleContainer = addChild<Container>();
-	handleContainer->setOrigin(Anchor::midLeft);
-	handleContainer->setAnchor(Anchor::midLeft);
-	handleContainer->setAssetName("gui/slider.png");
+	handleContainer = addChild<Container>({
+		.anchor = Anchor::midLeft,
+		.origin = Anchor::midLeft,
+		.assetName = "gui/slider.png",
+	});
 	handleContainer->setDebugName(std::format("slider {} inner", getId()));
-	handleEle = handleContainer->addChild<Container>(olc::vi2d{4, 8});
-	handleEle->setAssetName("gui/slider_handle.png");
+	handleEle = handleContainer->addChild<Container>({
+		.size = {{4, 8}},
+		.assetName = "gui/slider_handle.png",
+	});
 	handleEle->setDebugName(std::format("slider {} handle", getId()));
 	handleEle->onMouseDown(
 		[](auto& _, const auto& __)

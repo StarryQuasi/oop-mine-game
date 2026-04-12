@@ -1,23 +1,27 @@
 #include "Hotbar.h"
+#include "Anchor.h"
 #include "Slot.h"
 #include "Verify.h"
 
 namespace gui
 {
-Hotbar::Hotbar() :
-	FlowContainer()
+Hotbar::Hotbar(Props props) :
+	FlowContainer(props)
 {
-	setPadding({1, 1});
-	setAssetName("gui/hotbar.png");
+	setPadding(props.padding.value_or({1, 1}));
+	setAssetName(props.assetName.value_or("gui/hotbar.png"));
+
 	for (int i = 0; i < slots.size(); i++)
 	{
-		Container* slotContainer = addChild<Container>(olc::vi2d{20, 20});
-		selectors[i] = slotContainer->addChild<Container>(olc::vi2d{24, 23});
-		selectors[i]->setAnchor(Anchor::midMiddle);
-		selectors[i]->setOrigin(Anchor::midMiddle);
-		selectors[i]->setPos({0, -1});
-		selectors[i]->setVisible(false);
-		selectors[i]->setAssetName("gui/hotbar_selection.png");
+		Container* slotContainer = addChild<Container>({.size = {{20, 20}}});
+		selectors[i] = slotContainer->addChild<Container>({
+			.size = {{24, 23}},
+			.pos = {{0, -1}},
+			.anchor = Anchor::midMiddle,
+			.origin = Anchor::midMiddle,
+			.visible = false,
+			.assetName = "gui/hotbar_selection.png",
+		});
 		slots[i] = slotContainer->addChild<Slot>();
 	}
 	selectors[selectedSlot]->setVisible(true);

@@ -57,8 +57,11 @@ void Mob::findPath(World& world, float elapsed)
 	cameFromMap[start] = start;
 	std::queue<olc::vi2d> frontier = {};
 	frontier.push(start);
-	debugPathCandidates.clear();
-	debugPathCandidates.push_back({start, PathCandidate::Kind::Valid});
+	if (OopMineGame::debugEntity)
+	{
+		debugPathCandidates.clear();
+		debugPathCandidates.push_back({start, PathCandidate::Kind::Valid});
+	}
 	bool found = false;
 	while (!frontier.empty())
 	{
@@ -100,9 +103,12 @@ void Mob::findPath(World& world, float elapsed)
 		{
 			path.push_back(cur);
 			cur = cameFromMap[cur];
-			debugPathCandidates.push_back({cur, PathCandidate::Kind::Final});
+			if (OopMineGame::debugEntity)
+				debugPathCandidates.push_back(
+					{cur, PathCandidate::Kind::Final});
 		}
-		debugPathCandidates.push_back({cur, PathCandidate::Kind::Final});
+		if (OopMineGame::debugEntity)
+			debugPathCandidates.push_back({cur, PathCandidate::Kind::Final});
 		std::ranges::reverse(path);
 	}
 	cachedPath = std::move(path);
@@ -138,24 +144,27 @@ void Mob::update(World& world, float elapsed)
 			setInput(input);
 		}
 	}
-	OopMineGame::debugCallbacks.push_back(
-		[path = debugPathCandidates](OopMineGame& game)
-		{
-			for (const auto& cand : path)
+	if (OopMineGame::debugEntity)
+	{
+		OopMineGame::debugCallbacks.push_back(
+			[path = debugPathCandidates](OopMineGame& game)
 			{
-				if (cand.kind == PathCandidate::Kind::Valid)
-					game.getView().FillRectDecal(
-						cand.pos, {1, 1}, olc::Pixel{0, 255, 0, 64});
-				else if (cand.kind == PathCandidate::Kind::Invalid)
-					game.getView().FillRectDecal(
-						cand.pos, {1, 1}, olc::Pixel{255, 0, 0, 64});
-			}
-			for (const auto& cand : path)
-			{
-				if (cand.kind == PathCandidate::Kind::Final)
-					game.getView().DrawRectDecal(
-						cand.pos, {1, 1}, olc::Pixel{255, 255, 255, 128});
-			}
-		});
+				for (const auto& cand : path)
+				{
+					if (cand.kind == PathCandidate::Kind::Valid)
+						game.getView().FillRectDecal(
+							cand.pos, {1, 1}, olc::Pixel{0, 255, 0, 64});
+					else if (cand.kind == PathCandidate::Kind::Invalid)
+						game.getView().FillRectDecal(
+							cand.pos, {1, 1}, olc::Pixel{255, 0, 0, 64});
+				}
+				for (const auto& cand : path)
+				{
+					if (cand.kind == PathCandidate::Kind::Final)
+						game.getView().DrawRectDecal(
+							cand.pos, {1, 1}, olc::Pixel{255, 255, 255, 128});
+				}
+			});
+	}
 	Entity::update(world, elapsed);
 }

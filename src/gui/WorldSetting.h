@@ -8,7 +8,7 @@ namespace gui
 class WorldSetting : public FlowContainer
 {
 public:
-	WorldSetting();
+	WorldSetting(Props props = {});
 
 	void valueChanged() const;
 	WorldSetting*

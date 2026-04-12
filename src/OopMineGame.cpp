@@ -8,7 +8,15 @@
 #include "Sheep.h"
 #include "Utils.h"
 #include "Verify.h"
+#include "gui/Anchor.h"
+#include "gui/Button.h"
+#include "gui/Debugger.h"
+#include "gui/WorldSetting.h"
 
+bool OopMineGame::debugGui = false;
+bool OopMineGame::debugEntity = false;
+std::string OopMineGame::debugMsg = "";
+std::vector<std::function<void(OopMineGame&)>> OopMineGame::debugCallbacks = {};
 OopMineGame* OopMineGame::instance = nullptr;
 
 OopMineGame::OopMineGame() { sAppName = "OopMineGame"; }
@@ -124,7 +132,7 @@ bool OopMineGame::OnUserCreate()
 	if (!mz_zip_reader_init_mem(
 			&assetsZip, assetsBuffer.data(), assetsBuffer.size(), 0))
 		return false;
-	printZipInfo(assetsZip);
+	// printZipInfo(assetsZip);
 	// Create block atlas
 	assetsBlock.resize(Blocks::getAllBlocks().size());
 	assetsBlockPatch.resize(Blocks::getAllBlocks().size());
@@ -175,22 +183,25 @@ bool OopMineGame::OnUserCreate()
 	EnableLayer(layerMain, true);
 
 	// Create gui
-	guiRoot = std::make_unique<gui::Container>();
-	guiRoot->setPadding({1, 1});
+	guiRoot = std::make_unique<gui::Container>(gui::Props{
+		.padding = {{1, 1}},
+	});
 	guiRoot->setSize(GetScreenSize() - guiRoot->getPadding() * 2);
 	guiRoot->setDebugName("root");
-	guiHotbarText = guiRoot->addChild<gui::TextContainer>("");
-	guiHotbarText->setAnchor(gui::Anchor::btmMiddle);
-	guiHotbarText->setOrigin(gui::Anchor::btmMiddle);
-	guiHotbarText->setPos({0, -25});
-	guiHotbar = guiRoot->addChild<gui::Hotbar>();
-	guiHotbar->setAnchor(gui::Anchor::btmMiddle);
-	guiHotbar->setOrigin(gui::Anchor::btmMiddle);
+	guiHotbarText = guiRoot->addChild<gui::TextContainer>({
+		.pos = {{0, -25}},
+		.anchor = gui::Anchor::btmMiddle,
+		.origin = gui::Anchor::btmMiddle,
+	});
+	guiHotbar = guiRoot->addChild<gui::Hotbar>({
+		.anchor = gui::Anchor::btmMiddle,
+		.origin = gui::Anchor::btmMiddle,
+	});
 	{
 		auto flow = guiRoot->addChild<gui::FlowContainer>();
 		flow->setDirection(gui::Direction::vertical);
 		// c->setMargin({ 5, 5 });
-		flow->addChild<gui::Button>("enable debug")
+		flow->addChild<gui::Button>({.text = "enable debug"})
 			->onClick(
 				[this](auto& me)
 				{
@@ -200,9 +211,13 @@ bool OopMineGame::OnUserCreate()
 						static_cast<gui::Button*>(&me)->setText(
 							"disable debug");
 						inspectorId =
-							guiRoot->addChild<gui::Debugger>(guiRoot.get())
-								->setAnchor(gui::Anchor::topRight)
-								->setOrigin(gui::Anchor::topRight)
+							guiRoot
+								->addChild<gui::Debugger>(
+									{
+										.anchor = gui::Anchor::topRight,
+										.origin = gui::Anchor::topRight,
+									},
+									guiRoot.get())
 								->getId();
 						gui::Container::setDebug(inspectorEnabled);
 					}
@@ -213,7 +228,7 @@ bool OopMineGame::OnUserCreate()
 						gui::Container::setDebug(inspectorEnabled);
 					}
 				});
-		flow->addChild<gui::Button>("enable freecam")
+		flow->addChild<gui::Button>({.text = "enable freecam"})
 			->onClick(
 				[this](auto& me)
 				{
@@ -229,9 +244,10 @@ bool OopMineGame::OnUserCreate()
 			[this](const GenerationSettings& v)
 			{ this->schedule([this, v]() { this->genNewWorld(v); }); });
 	}
-	guiDebugText = guiRoot->addChild<gui::TextContainer>("");
-	guiDebugText->setAnchor(gui::Anchor::btmRight);
-	guiDebugText->setOrigin(gui::Anchor::btmRight);
+	guiDebugText = guiRoot->addChild<gui::TextContainer>({
+		.anchor = gui::Anchor::btmRight,
+		.origin = gui::Anchor::btmRight,
+	});
 
 	// Root element mouse handling
 	guiRoot->onMouseDown(
@@ -498,7 +514,3 @@ void OopMineGame::handleInput(float elapsed)
 		}
 	}
 }
-
-std::string OopMineGame::debugMsg = "";
-
-std::vector<std::function<void(OopMineGame&)>> OopMineGame::debugCallbacks = {};

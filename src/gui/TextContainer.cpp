@@ -3,11 +3,13 @@
 
 namespace gui
 {
-TextContainer::TextContainer(const std::string& text, olc::vf2d scale) :
-	Container(),
-	text(text),
-	scale(scale)
+TextContainer::TextContainer(Props props) :
+	Container(props)
 {
+	if (props.text.has_value())
+		text = props.text.value();
+	if (props.scale.has_value())
+		scale = props.scale.value();
 }
 
 std::string TextContainer::getText() const { return text; }

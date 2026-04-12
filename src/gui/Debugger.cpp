@@ -3,11 +3,11 @@
 
 namespace gui
 {
-Debugger::Debugger(Container* root) :
-	FlowContainer(),
+Debugger::Debugger(Props props, Container* root) :
+	FlowContainer(props),
 	root(root)
 {
-	text = addChild<TextContainer>("");
+	text = addChild<TextContainer>();
 	text->setDebugName("debugger text");
 }
 

@@ -1,14 +1,19 @@
 #include "Slot.h"
+#include "Anchor.h"
 #include "Blocks.h"
 #include "OopMineGame.h"
 
 namespace gui
 {
-Slot::Slot(olc::vi2d size) :
-	Container(size)
+Slot::Slot(Props props) :
+	Container(props)
 {
-	textEle = addChild<TextContainer>("");
-	textEle->setAnchor(Anchor::btmRight)->setOrigin(Anchor::btmRight);
+	setSize(props.size.value_or({20, 20}));
+
+	textEle = addChild<TextContainer>({
+		.anchor = Anchor::btmRight,
+		.origin = Anchor::btmRight,
+	});
 }
 
 const ItemStack& Slot::getStack() const { return stack; }

@@ -7,7 +7,7 @@ namespace gui
 class TextContainer : public Container
 {
 public:
-	TextContainer(const std::string& text, olc::vf2d scale = {0.4f, 0.5f});
+	TextContainer(Props props);
 
 	std::string getText() const;
 	olc::vf2d getScale() const;
@@ -19,7 +19,7 @@ public:
 	void draw(OopMineGame& game) const override;
 
 private:
-	std::string text;
-	olc::vf2d scale;
+	std::string text = "";
+	olc::vf2d scale = {0.4f, 0.5f};
 };
 } // namespace gui

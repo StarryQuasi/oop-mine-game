@@ -4,13 +4,11 @@
 
 namespace gui
 {
-Button::Button(const std::string& text) :
-	FlowContainer(),
-	textEle(nullptr),
-	clickHandler()
+Button::Button(Props props) :
+	FlowContainer(props)
 {
-	textEle = addChild<TextContainer>(text);
-	textEle->setDebugName(std::format("button {} text", getId()));
+	setAssetName(props.assetName.value_or("gui/button.png"));
+	setPadding(props.padding.value_or({4, 2}));
 	onMouseDown(
 		[this](Container& me, const MouseEvent& e)
 		{
@@ -18,8 +16,9 @@ Button::Button(const std::string& text) :
 				this->clickHandler(me);
 			return true;
 		});
-	setAssetName("gui/button.png");
-	setPadding({4, 2});
+
+	textEle = addChild<TextContainer>({.text = std::move(props.text)});
+	textEle->setDebugName(std::format("button {} text", getId()));
 }
 
 std::string Button::getText() const { return textEle->getText(); }

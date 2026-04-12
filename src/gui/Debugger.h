@@ -1,7 +1,5 @@
 #pragma once
 
-#include <format>
-
 #include "FlowContainer.h"
 #include "TextContainer.h"
 
@@ -12,7 +10,7 @@ namespace gui
 class Debugger : public FlowContainer
 {
 public:
-	Debugger(Container* root);
+	Debugger(Props props, Container* root);
 
 	void update(OopMineGame& game) override;
 

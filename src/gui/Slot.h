@@ -9,7 +9,7 @@ namespace gui
 class Slot : public Container
 {
 public:
-	Slot(olc::vi2d size = {20, 20});
+	Slot(Props props);
 
 	const ItemStack& getStack() const;
 

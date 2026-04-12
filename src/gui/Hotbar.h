@@ -8,7 +8,7 @@ namespace gui
 class Hotbar : public FlowContainer
 {
 public:
-	Hotbar();
+	Hotbar(Props props = {});
 
 	int getSelection() const;
 	Slot* getSlot(int i);

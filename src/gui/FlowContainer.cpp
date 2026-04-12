@@ -1,8 +1,15 @@
 #include "FlowContainer.h"
+#include "Container.h"
+#include "Direction.h"
 
 namespace gui
 {
-FlowContainer::FlowContainer() {}
+FlowContainer::FlowContainer(Props props) :
+	Container(props)
+{
+	direction = props.direction.value_or(Direction::horizontal);
+	autoSizing = props.autoSizing.value_or(true);
+}
 
 Direction FlowContainer::getDirection() const { return direction; }
 

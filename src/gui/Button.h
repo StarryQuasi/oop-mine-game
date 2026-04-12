@@ -9,7 +9,7 @@ namespace gui
 class Button : public FlowContainer
 {
 public:
-	Button(const std::string& text);
+	Button(Props props = {});
 
 	std::string getText() const;
 

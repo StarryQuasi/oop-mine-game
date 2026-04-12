@@ -1,15 +1,32 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "Anchor.h"
+#include "Direction.h"
 #include "Events.h"
 
 class OopMineGame;
 
 namespace gui
 {
+struct Props
+{
+	std::optional<olc::vi2d> size = {};
+	std::optional<olc::vi2d> pos = {};
+	std::optional<Anchor> anchor = {};
+	std::optional<Anchor> origin = {};
+	std::optional<olc::vi2d> margin = {};
+	std::optional<olc::vi2d> padding = {};
+	std::optional<bool> visible = {};
+	std::optional<std::string> assetName = {};
+	std::optional<std::string> text = {};	 // TextContainer
+	std::optional<olc::vf2d> scale = {};	 // TextContainer
+	std::optional<Direction> direction = {}; // FlowContainer
+	std::optional<bool> autoSizing = {};	 // FlowContainer
+};
 // The base gui component that hosts child elements, can be positioned
 // relatively to its parent, performs layout updates, and handles mouse events.
 // Also equipped with various layout properties in fluent interface:
@@ -25,7 +42,7 @@ namespace gui
 class Container
 {
 public:
-	Container(olc::vi2d s = olc::vi2d{10, 10});
+	Container(Props props = {});
 	virtual ~Container() = default;
 
 	const std::string& getDebugName() const;
@@ -53,10 +70,13 @@ public:
 
 	template <typename T, typename... Args>
 		requires std::derived_from<T, Container>
-	T* addChild(Args&&... args);
+	T* addChild();
+	template <typename T, typename... Args>
+		requires std::derived_from<T, Container>
+	T* addChild(Props props, Args&&... args);
 	template <typename T>
 		requires std::derived_from<T, Container>
-	T* addChild(std::unique_ptr<T> v);
+	T* adoptChild(std::unique_ptr<T> v);
 	void removeChild(int id);
 	std::vector<std::unique_ptr<Container>>& getChildren();
 
@@ -126,14 +146,22 @@ private:
 
 template <typename T, typename... Args>
 	requires std::derived_from<T, Container>
-T* Container::addChild(Args&&... args)
+T* Container::addChild()
 {
-	return addChild(std::make_unique<T>(std::forward<Args>(args)...));
+	return adoptChild(std::make_unique<T>(Props{}));
+}
+
+template <typename T, typename... Args>
+	requires std::derived_from<T, Container>
+T* Container::addChild(Props props, Args&&... args)
+{
+	return adoptChild(
+		std::make_unique<T>(std::move(props), std::forward<Args>(args)...));
 }
 
 template <typename T>
 	requires std::derived_from<T, Container>
-T* Container::addChild(std::unique_ptr<T> v)
+T* Container::adoptChild(std::unique_ptr<T> v)
 {
 	T* ptr = v.get();
 	v->parent = this;

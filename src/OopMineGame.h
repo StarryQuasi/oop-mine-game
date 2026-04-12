@@ -2,7 +2,6 @@
 
 #include <deque>
 #include <memory>
-#include <print>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -13,11 +12,15 @@
 
 #include "Transform.h"
 #include "World.h"
-#include "gui/Gui.h"
+#include "gui/Container.h"
+#include "gui/Hotbar.h"
+
 
 class OopMineGame : public olc::PixelGameEngine
 {
 public:
+	static bool debugGui;
+	static bool debugEntity;
 	static std::string debugMsg;
 	static std::vector<std::function<void(OopMineGame&)>> debugCallbacks;
 	static OopMineGame* instance;

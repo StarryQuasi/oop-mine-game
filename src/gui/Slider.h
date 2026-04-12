@@ -9,7 +9,7 @@ namespace gui
 class Slider : public Container
 {
 public:
-	Slider(float min, float max, float step, float value);
+	Slider(Props props, float min, float max, float step, float value);
 
 	float getMin() const;
 	float getMax() const;
