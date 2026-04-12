@@ -19,7 +19,7 @@ Anchor::Anchor(olc::vf2d value) :
 
 olc::vf2d Anchor::apply(olc::vf2d size) const { return size * value; }
 
-std::string_view Anchor::toString() const
+std::string Anchor::toString() const
 {
 	if (*this == topLeft)
 		return "topLeft";

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string_view>
+#include <string>
 
 #include <libs/olcPixelGameEngine.h>
 
@@ -21,7 +21,7 @@ public:
 
 	Anchor(olc::vf2d);
 	olc::vf2d apply(olc::vf2d size) const;
-	std::string_view toString() const;
+	std::string toString() const;
 
 	bool operator==(const Anchor&) const = default;
 
