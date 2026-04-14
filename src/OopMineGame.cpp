@@ -269,6 +269,8 @@ bool OopMineGame::OnUserCreate()
 		{ return true; });
 
 	genNewWorld({});
+
+	debugEntity = true;
 	return true;
 }
 
@@ -481,9 +483,16 @@ void OopMineGame::handleInput(float elapsed)
 				cameraPos.x += speed * elapsed;
 		}
 
-		if (GetKey(olc::Key::EQUALS).bPressed)
+#if defined(__APPLE__)
+		const auto zoomOut = olc::Key::O;
+		const auto zoomIn = olc::Key::P;
+#else
+		const auto zoomOut = olc::Key::MINUS;
+		const auto zoomIn = olc::Key::EQUALS;
+#endif
+		if (GetKey(zoomIn).bPressed)
 			view.ZoomAtScreenPos(1 / 0.75f, GetScreenSize() / 2);
-		if (GetKey(olc::Key::MINUS).bPressed)
+		if (GetKey(zoomOut).bPressed)
 			view.ZoomAtScreenPos(0.75, GetScreenSize() / 2);
 
 		const auto numKeys = {

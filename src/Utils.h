@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Entity.h"
 #include <ranges>
 
 #include <libs/olcPGEX_TransformedView.h>
@@ -42,6 +43,25 @@ public:
 				tint);
 		else
 			view.DrawDecal(pos, decal, scale, tint);
+	}
+
+	static void drawDecalPatch(
+		olc::TileTransformedView& view,
+		const olc::vf2d& pos,
+		const olc::DecalPatch& patch,
+		const olc::vf2d& size)
+	{
+		const olc::vf2d sourceSize =
+			olc::vf2d{
+				patch.coords[2].x - patch.coords[1].x,
+				patch.coords[0].y - patch.coords[1].y} /
+			patch.decal->vUVScale;
+		view.DrawPartialDecal(
+			pos,
+			size * olc::vi2d{32, 32},
+			patch.decal,
+			patch.coords[1] / patch.decal->vUVScale,
+			sourceSize);
 	}
 
 	static std::string toString(const olc::vi2d& v)

@@ -1,10 +1,13 @@
 #include <bit>
+#include <chrono>
 #include <mdspan>
 #include <random>
 #include <ranges>
 
 #include "Blocks.h"
+#include "DroppedItem.h"
 #include "Entity.h"
+#include "ItemStack.h"
 #include "OopMineGame.h"
 #include "Player.h"
 #include "Utils.h"
@@ -15,11 +18,22 @@ World::World(GenerationSettings settings) :
 	settings(settings),
 	noise(settings.seed),
 	blocksRaw(settings.size.area()),
-	blocks(blocksRaw.data(), settings.size.x, settings.size.y)
+	blocks(blocksRaw.data(), settings.size.x, settings.size.y),
+	random(std::random_device()())
 {
 	noise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
 	noise.SetFrequency(settings.noiseFrequency);
 	generateWorld();
+}
+
+int World::randomInt(int min, int maxInclusive)
+{
+	return std::uniform_int_distribution<int>(min, maxInclusive)(random);
+}
+
+float World::randomFloat(float min, float maxExclusive)
+{
+	return std::uniform_real_distribution<float>(min, maxExclusive)(random);
 }
 
 olc::vi2d World::getSize() const { return settings.size; }
@@ -36,6 +50,27 @@ void World::setBlock(olc::vi2d p, const Block& block)
 {
 	assert(isValidPosition(p));
 	blocks[p.x, p.y] = block.getId();
+}
+
+void World::breakBlock(olc::vi2d p)
+{
+	assert(isValidPosition(p));
+	const Block& block = getBlock(p);
+	setBlock(p, Blocks::air);
+	if (block != Blocks::air)
+	{
+		olc::vf2d pos = p;
+		const float posscale = 0.35f;
+		pos.x += 0.5f + randomFloat(-posscale, posscale);
+		pos.y += 0.5f + randomFloat(-posscale, posscale);
+		DroppedItem& item =
+			addEntity<DroppedItem>(pos, ItemStack{block.getItem(), 1});
+		olc::vf2d vel = {};
+		const float velscale = 16;
+		vel.x = randomFloat(-velscale, velscale);
+		vel.y = randomFloat(-velscale * 2, velscale);
+		item.setVel(vel);
+	}
 }
 
 int World::findTopmostSolid(int x) const
@@ -63,13 +98,6 @@ bool World::isSolidBlock(olc::vi2d p) const
 {
 	assert(isValidPosition(p));
 	return !getBlock(p).isReplaceable();
-}
-
-int World::addEntity(std::unique_ptr<Entity> entity)
-{
-	const int id = entity->getId();
-	entities[id] = std::move(entity);
-	return id;
 }
 
 std::optional<std::reference_wrapper<Entity>> World::getEntity(int id) const

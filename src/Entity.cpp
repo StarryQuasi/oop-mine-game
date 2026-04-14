@@ -161,8 +161,7 @@ void Entity::updateInput(World& world, float elapsed)
 			{
 				const Block& block = world.getBlock(target);
 				ItemStack stack = {block.getItem(), 1};
-				addInvItem(stack);
-				world.setBlock(target, Blocks::air);
+				world.breakBlock(target);
 			}
 			if (input.use)
 			{

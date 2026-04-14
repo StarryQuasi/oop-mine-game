@@ -1,6 +1,12 @@
 #pragma once
 
+#include <cassert>
+#include <concepts>
+#include <functional>
 #include <mdspan>
+#include <memory>
+#include <random>
+#include <ranges>
 #include <vector>
 
 #include <libs/FastNoiseLite.h>
@@ -28,11 +34,15 @@ class World
 public:
 	World(GenerationSettings settings);
 
+	int randomInt(int min, int maxInclusive);
+	float randomFloat(float min, float maxExclusive);
+
 	olc::vi2d getSize() const;
 	int getSeed() const;
 	const Block& getBlock(olc::vi2d p) const;
 
 	void setBlock(olc::vi2d p, const Block& block);
+	void breakBlock(olc::vi2d p);
 
 	// Returns -1 if not found
 	int findTopmostSolid(int x) const;
@@ -44,13 +54,19 @@ public:
 
 	template <typename T, typename... Args>
 		requires std::derived_from<T, Entity>
-	int addEntity(Args&&... args);
-	int addEntity(std::unique_ptr<Entity> v);
+	T& addEntity(Args&&... args);
+	template <typename T, typename... Args>
+		requires std::derived_from<T, Entity>
+	T& adoptEntity(std::unique_ptr<T> v);
 	std::optional<std::reference_wrapper<Entity>> getEntity(int id) const;
-	template <class T>
+	template <typename T>
 		requires std::derived_from<T, Entity>
 	std::optional<std::reference_wrapper<T>> getEntity(int id) const;
 	std::optional<std::reference_wrapper<Player>> getPlayer() const;
+	template <typename T>
+		requires std::derived_from<T, Entity>
+	std::vector<std::reference_wrapper<T>>
+	getEntities(std::pair<olc::vf2d, olc::vf2d> bb) const;
 
 	void update(float elapsedTime);
 	void draw(OopMineGame&);
@@ -63,6 +79,7 @@ private:
 	// std::layout_left = column major (access by x, y)
 	std::mdspan<int, std::dextents<size_t, 2>, std::layout_left> blocks;
 	std::unordered_map<int, std::unique_ptr<Entity>> entities = {};
+	std::mt19937 random = {};
 	std::vector<olc::vf2d> drawBufPos = {};
 	std::vector<olc::vf2d> drawBufUv = {};
 
@@ -79,9 +96,18 @@ private:
 
 template <typename T, typename... Args>
 	requires std::derived_from<T, Entity>
-int World::addEntity(Args&&... args)
+T& World::addEntity(Args&&... args)
 {
-	return addEntity(std::make_unique<T>(std::forward<Args>(args)...));
+	return adoptEntity(std::make_unique<T>(std::forward<Args>(args)...));
+}
+
+template <typename T, typename... Args>
+	requires std::derived_from<T, Entity>
+T& World::adoptEntity(std::unique_ptr<T> entity)
+{
+	const int id = entity->getId();
+	entities[id] = std::move(entity);
+	return *static_cast<T*>(entities[id].get());
 }
 
 template <class T>
@@ -89,7 +115,36 @@ template <class T>
 std::optional<std::reference_wrapper<T>> World::getEntity(int id) const
 {
 	if (const auto it = entities.find(id); it != entities.end())
-		if (T* t = dynamic_cast<T*>(&*it->second); t != nullptr)
+		if (T* t = dynamic_cast<T*>(&*it->second); t != nullptr && !t->isdead())
 			return std::ref(*t);
 	return {};
+}
+
+template <typename T>
+	requires std::derived_from<T, Entity>
+std::vector<std::reference_wrapper<T>>
+World::getEntities(std::pair<olc::vf2d, olc::vf2d> bb) const
+{
+	assert(bb.second.x >= bb.first.x && bb.second.y >= bb.first.y);
+	return entities | std::views::values |
+		   std::views::transform(
+			   [&bb](const std::unique_ptr<Entity>& e) -> T*
+			   {
+				   Entity* ep = e.get();
+				   if (ep->isDead())
+					   return nullptr;
+				   if (T* tp = dynamic_cast<T*>(ep); tp != nullptr)
+				   {
+					   const std::pair<olc::vf2d, olc::vf2d> ebb = e->getBb();
+					   if (ebb.first.x < bb.second.x &&
+						   ebb.second.x > bb.first.x &&
+						   ebb.first.y < bb.second.y &&
+						   ebb.second.y > bb.first.y)
+						   return tp;
+				   }
+				   return nullptr;
+			   }) |
+		   std::views::filter([](T* e) { return e != nullptr; }) |
+		   std::views::transform([](T* e) { return std::ref(*e); }) |
+		   std::ranges::to<std::vector>();
 }

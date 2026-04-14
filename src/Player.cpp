@@ -1,4 +1,6 @@
 #include "Player.h"
+#include "DroppedItem.h"
+#include "Entity.h"
 #include "OopMineGame.h"
 #include "Utils.h"
 
@@ -15,6 +17,17 @@ void Player::update(World& world, float elapsed)
 	Entity::update(world, elapsed);
 	const olc::vf2d posOffset = getPos() - lastPos;
 
+	const auto bb = getBb();
+	const auto expand = olc::vf2d{0.25f, 0.25f};
+	const auto entities =
+		world.getEntities<DroppedItem>({bb.first - expand, bb.second + expand});
+	for (const auto& droppedItem : entities)
+	{
+		addInvItem(droppedItem.get().getStack());
+		droppedItem.get().kill();
+	}
+
+	// Update hair points
 	// Modified from https://www.youtube.com/watch?v=imkT4kFP43k
 	const olc::vf2d hairGravity =
 		olc::vf2d{3.0f * (getDirection() ? -1 : 1), 4.5f} * 3.0f;
