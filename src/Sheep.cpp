@@ -12,7 +12,7 @@ void Sheep::updateAi(World& world, float elapsed)
 {
 	const auto& player = world.getPlayer()->get();
 	const float dist = (player.getPos() - getPos()).mag();
-	if (dist <= 16 && dist >= 1.5f)
+	if (dist <= 16 && dist >= 3.0f)
 	{
 		setTargetPos(player.getPos());
 	}
