@@ -9,8 +9,8 @@
 #include <ranges>
 #include <vector>
 
-#include <libs/FastNoiseLite.h>
-#include <libs/olcPixelGameEngine.h>
+#include "libs/FastNoiseLite.h"
+#include "libs/olcPixelGameEngine.h"
 
 #include "Block.h"
 #include "Entity.h"

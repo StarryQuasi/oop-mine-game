@@ -6,15 +6,14 @@
 #include <unordered_map>
 #include <vector>
 
-#include <libs/miniz-3.1.1/miniz.h>
-#include <libs/olcPGEX_TransformedView.h>
-#include <libs/olcPixelGameEngine.h>
+#include "libs/miniz-3.1.1/miniz.h"
+#include "libs/olcPGEX_TransformedView.h"
+#include "libs/olcPixelGameEngine.h"
 
 #include "Transform.h"
 #include "World.h"
 #include "gui/Container.h"
 #include "gui/Hotbar.h"
-
 
 class OopMineGame : public olc::PixelGameEngine
 {

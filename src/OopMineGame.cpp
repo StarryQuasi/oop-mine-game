@@ -1,5 +1,5 @@
-#include <libs/miniz-3.1.1/miniz.h>
-#include <libs/stb_image.h>
+#include "libs/miniz-3.1.1/miniz.h"
+#include "libs/stb_image.h"
 
 #include "Blocks.h"
 #include "Entity.h"
