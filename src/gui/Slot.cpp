@@ -50,8 +50,8 @@ void Slot::draw(OopMineGame& game) const
 			(olc::vf2d)(getDrawSize() - fakePadding * 2);
 		// const olc::vi2d patchSize = isBlock ? olc::vi2d{ 32, 32 } :
 		// decalPatch.value().decal->sprite->Size();
-		//  The scale argument here for the olc::DecalPatch overload is actually
-		//  the size
+		// The scale argument here for the olc::DecalPatch overload is actually
+		// the size
 		game.DrawDecal(
 			getAbsolutePos() + fakePadding, decalPatch.value(), realDrawSize);
 	}

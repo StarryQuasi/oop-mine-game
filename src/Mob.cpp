@@ -130,8 +130,9 @@ void Mob::update(World& world, float elapsed)
 	}
 	if (targetPos.has_value() && !cachedPath.empty())
 	{
+		// TODO: Use compile time pow(dist)
 		const olc::vf2d pos = getPos() - olc::vf2d{0, 0.01f};
-		if ((cachedPath.front() - pos).mag() <= 0.25f)
+		if ((cachedPath.front() - pos).mag() < 0.25f)
 			cachedPath.erase(cachedPath.begin());
 		if (!cachedPath.empty())
 		{
