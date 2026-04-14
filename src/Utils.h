@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Entity.h"
 #include <ranges>
+#include <format>
 
 #include "libs/olcPGEX_TransformedView.h"
 

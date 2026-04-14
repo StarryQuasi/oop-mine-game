@@ -1,3 +1,5 @@
+#include <print>
+
 #include "libs/miniz-3.1.1/miniz.h"
 #include "libs/stb_image.h"
 
