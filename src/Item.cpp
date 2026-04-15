@@ -83,5 +83,5 @@ Item ItemBuilder::build()
 	assert(_maxStackSize >= 0);
 	assert(_durability >= 0);
 	assert(_tier >= 0);
-	return Item{_name, _block, _maxStackSize, _durability, _tier};
+	return Item{std::move(_name), _block, _maxStackSize, _durability, _tier};
 }
