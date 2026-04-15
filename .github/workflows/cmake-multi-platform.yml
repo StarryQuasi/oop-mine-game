@@ -90,7 +90,7 @@ jobs:
 
     - name: Produce asset artifact
       if: runner.os == 'macOS'
-      uses: actions/upload-artifact@v8
+      uses: actions/upload-artifact@v4
       with:
         name: assets.zip
         path: ${{ github.workspace }}/assets.zip
