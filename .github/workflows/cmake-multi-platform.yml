@@ -10,6 +10,8 @@ jobs:
   build:
     name: Publish for ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
 
     strategy:
       # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
@@ -61,6 +63,7 @@ jobs:
       run: where clang++
     
     - name: Build asset archive
+      if: runner.os == 'macOS'
       run: |
         chmod +x "${{ github.workspace }}/create_assets_zip.sh"
         "${{ github.workspace }}/create_assets_zip.sh"
@@ -105,7 +108,7 @@ jobs:
     - name: Download build
       uses: actions/download-artifact@v5
       with:
-        name: windows-latest
+        name: macos-latest
           
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@v2
