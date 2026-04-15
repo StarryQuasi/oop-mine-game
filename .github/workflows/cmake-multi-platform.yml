@@ -29,7 +29,7 @@ jobs:
             c_compiler: C:/Program Files/LLVM/bin/clang
             cpp_compiler: C:/Program Files/LLVM/bin/clang++
             artifact_name: OopMineGame.exe
-            asset_name: OopMineGame-windows-amd64
+            asset_name: OopMineGame-windows-amd64.exe
           - os: macos-latest
             c_compiler: /opt/homebrew/opt/llvm@22/bin/clang
             cpp_compiler: /opt/homebrew/opt/llvm@22/bin/clang++
