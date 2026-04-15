@@ -68,7 +68,7 @@ endif()
 add_custom_target(CopyAsset
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_CURRENT_SOURCE_DIR}/assets.zip"
-        "$<TARGET_FILE_DIR:OopMineGame>/"
+        "$<TARGET_FILE_DIR:OopMineGame>/assets.zip"
     COMMENT "Copying asset.zip"
 )
 
