@@ -259,21 +259,10 @@ void Entity::checkOnGround(World& world)
 	auto bb = getBb();
 	bb.first.y = bb.second.y;
 	bb.second.y += 0.00001f;
-	// OopMineGame::debugCallbacks.push_back([bb](OopMineGame& game)
-	//	{
-	//		Utils::drawRectOutline(game.getView(), bb.first.floor(),
-	// bb.second.ceil(), olc::CYAN);
-	//	});
 	for (const auto& pos : Iterate::over(bb.first, bb.second))
 	{
-		if (world.isValidPosition(pos) && world.isSolidBlock(pos))
+		if (!world.isValidPosition(pos) || world.isSolidBlock(pos))
 		{
-			// OopMineGame::debugMsg = std::format("on ground");
-			// OopMineGame::debugCallbacks.push_back([pos](OopMineGame& game)
-			//	{
-			//		Utils::drawRectOutline(game.getView(), pos, pos +
-			// olc::vf2d{ 1.0f, 1.0f }, olc::GREY);
-			//	});
 			onGround = true;
 			break;
 		}

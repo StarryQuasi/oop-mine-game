@@ -46,8 +46,9 @@ public:
 	std::pair<olc::vf2d, olc::vf2d> getBb() const;
 	std::pair<olc::vf2d, olc::vf2d> getBbAt(olc::vf2d p) const;
 	olc::vf2d getEyePos() const;
-	bool getDirection() const; // Gets direction of last horizontal velocity,
-							   // true = right, false = left
+	// Gets direction of last horizontal velocity,
+	// true = right, false = left
+	bool getDirection() const;
 	bool isDead() const;
 	void kill();
 	bool isOnGround() const;
