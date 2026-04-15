@@ -3,9 +3,8 @@
 name: CMake on multiple platforms
 
 on:
-  push:
-    tags:
-      - v*
+  release:
+    types: [published]
 
 jobs:
   build:
