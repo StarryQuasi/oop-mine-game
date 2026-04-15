@@ -26,15 +26,15 @@ jobs:
       matrix:
         include:
           - os: windows-latest
-            c_compiler: clang
-            cpp_compiler: clang++
+            c_compiler: C:/Program Files/LLVM/bin/clang
+            cpp_compiler: C:/Program Files/LLVM/bin/clang++
             artifact_name: OopMineGame.exe
             asset_name: OopMineGame-windows-amd64
           - os: macos-latest
             c_compiler: /opt/homebrew/opt/llvm@22/bin/clang
             cpp_compiler: /opt/homebrew/opt/llvm@22/bin/clang++
             artifact_name: OopMineGame
-            asset_name: OopMineGame-mac-amd64
+            asset_name: OopMineGame-macos-arm64
 
     steps:
     - uses: actions/checkout@v4
@@ -80,8 +80,8 @@ jobs:
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: >
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
-        -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
-        -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+        "-DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}"
+        "-DCMAKE_C_COMPILER=${{ matrix.c_compiler }}"
         -S ${{ github.workspace }}
 
     - name: Build
@@ -90,16 +90,16 @@ jobs:
 
     - name: Produce asset artifact
       if: runner.os == 'macOS'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v8
       with:
-        name: ${{ matrix.os }}
+        name: assets.zip
         path: ${{ github.workspace }}/assets.zip
 
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: ${{ steps.strings.outputs.build-output-dir }}/${{ matrix.artifact_name }}
+        file: ${{ steps.strings.outputs.build-output-dir }}/${{ runner.os == 'Windows' && 'Release/OopMineGame.exe' || 'OopMineGame' }}
         asset_name: ${{ matrix.asset_name }}
         tag: ${{ github.ref }}
           
@@ -112,9 +112,9 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Download build
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v8
       with:
-        name: macos-latest
+        name: assets.zip
           
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@v2
