@@ -3,11 +3,13 @@
 name: CMake on multiple platforms
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - v*
 
 jobs:
   build:
+    name: Publish for ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -21,21 +23,17 @@ jobs:
       #
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
       matrix:
-        os: [macos-latest, windows-latest]
-        build_type: [Release]
-        c_compiler: [clang, cl]
         include:
           - os: windows-latest
             c_compiler: cl
             cpp_compiler: cl
+            artifact_name: OopMineGame.exe
+            asset_name: OopMineGame-windows-amd64
           - os: macos-latest
             c_compiler: clang
             cpp_compiler: clang++
-        exclude:
-          - os: windows-latest
-            c_compiler: clang
-          - os: macos-latest
-            c_compiler: cl
+            artifact_name: OopMineGame
+            asset_name: OopMineGame-mac-amd64
 
     steps:
     - uses: actions/checkout@v4
@@ -46,6 +44,12 @@ jobs:
       shell: bash
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+    
+    - name: Build asset archive
+      run: |
+        chmod +x "${{ github.workspace }}/create_assets_zip.sh"
+        "${{ github.workspace }}/create_assets_zip.sh"
+      shell: bash
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
@@ -54,12 +58,47 @@ jobs:
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
-        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -S ${{ github.workspace }}
 
     - name: Build
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+
+      
+    - name: Produce asset artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.os }}
+        path: ${{ github.workspace }}/assets.zip
+
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{ steps.strings.outputs.build-output-dir }}/${{ matrix.artifact_name }}
+        asset_name: ${{ matrix.asset_name }}
+        tag: ${{ github.ref }}
+          
+  release:
+    name: Publish asset
+    needs:
+    - build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Download build
+      uses: actions/download-artifact@v5
+      with:
+        name: windows-latest
+          
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: assets.zip
+        asset_name: assets.zip
+        tag: ${{ github.ref }}
 
     # - name: Test
       # working-directory: ${{ steps.strings.outputs.build-output-dir }}
