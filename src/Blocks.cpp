@@ -1,17 +1,25 @@
 #include "Blocks.h"
+#include "Block.h"
 #include "Items.h"
 #include "Verify.h"
 
-const TransparentBlock Blocks::air("Air", &Items::air);
-const Block Blocks::grassBlock("Grass Block", &Items::grassBlock);
-const Block Blocks::dirt("Dirt", &Items::dirt);
-const Block Blocks::stone("Stone", &Items::stone);
-const Block Blocks::coalOre("Coal Ore", &Items::coalOre);
-const Block Blocks::copperOre("Copper Ore", &Items::copperOre);
-const Block Blocks::diamondOre("Diamond Ore", &Items::diamondOre);
-const Block Blocks::oakLog("Oak Log", &Items::oakLog);
-const TransparentBlock Blocks::oakLeaves("Oak Leaves", &Items::oakLeaves);
-const Block Blocks::ladder("Ladder", &Items::ladder);
+namespace
+{
+constexpr BlockBuilder builder() { return {}; }
+} // namespace
+
+// clang-format off
+const Block Blocks::air        = builder().name("Air").item(Items::air).transparent(true).build();
+const Block Blocks::grassBlock = builder().name("Grass Block").item(Items::grassBlock).build();
+const Block Blocks::dirt       = builder().name("Dirt").item(Items::dirt).build();
+const Block Blocks::stone      = builder().name("Stone").item(Items::stone).build();
+const Block Blocks::coalOre    = builder().name("Coal Ore").item(Items::coalOre).build();
+const Block Blocks::copperOre  = builder().name("Copper Ore").item(Items::copperOre).build();
+const Block Blocks::diamondOre = builder().name("Diamond Ore").item(Items::diamondOre).build();
+const Block Blocks::oakLog     = builder().name("Oak Log").item(Items::oakLog).build();
+const Block Blocks::oakLeaves  = builder().name("Oak Leaves").item(Items::oakLeaves).transparent(true).build();
+const Block Blocks::ladder     = builder().name("Ladder").item(Items::ladder).build();
+// clang-format on
 
 const std::vector<const Block*> Blocks::list = {
 	&Blocks::air,

@@ -1,3 +1,4 @@
+#include <cassert>
 #include <cctype>
 #include <ranges>
 
@@ -7,7 +8,7 @@
 
 int Block::blockIdCounter = 0;
 
-Block::Block(std::string name, const Item* item) :
+Block::Block(std::string name, const Item* item, bool transparent) :
 	id(blockIdCounter++),
 	name(name),
 	textureName(
@@ -16,15 +17,8 @@ Block::Block(std::string name, const Item* item) :
 		std::views::split(std::string(" ")) |
 		std::views::join_with(std::string("_")) |
 		std::ranges::to<std::string>()),
-	item(item)
-{
-}
-
-Block::Block(std::string name, std::string textureName, const Item* item) :
-	id(blockIdCounter++),
-	name(std::move(name)),
-	textureName(std::move(textureName)),
-	item(item)
+	item(item),
+	transparent(transparent)
 {
 }
 
@@ -40,9 +34,9 @@ bool Block::requiresUpdate() const { return false; }
 
 bool Block::requiresRenderUpdate() const { return false; }
 
-bool Block::canCollide() const { return true; }
+bool Block::isSolid() const { return !transparent; }
 
-bool Block::isReplaceable() const { return false; }
+bool Block::isReplaceable() const { return transparent; }
 
 const Item& Block::getItem() const
 {
@@ -57,9 +51,28 @@ Block::operator int() const { return id; }
 
 bool Block::operator==(const Block& other) const { return id == other.id; }
 
-TransparentBlock::TransparentBlock(const std::string& name, const Item* item) :
-	Block(name, item)
+BlockBuilder& BlockBuilder::name(std::string v)
 {
+	_name = std::move(v);
+	return *this;
 }
 
-bool TransparentBlock::isReplaceable() const { return true; }
+BlockBuilder& BlockBuilder::item(const Item& v)
+{
+	_item = &v;
+	return *this;
+}
+
+BlockBuilder& BlockBuilder::transparent(bool v)
+{
+	_transparent = v;
+	return *this;
+}
+
+Block BlockBuilder::build()
+{
+	assert(!_name.empty());
+	if (_item == nullptr)
+		_item = &Items::air;
+	return Block{_name, _item, _transparent};
+}

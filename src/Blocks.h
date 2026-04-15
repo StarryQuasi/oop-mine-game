@@ -7,7 +7,7 @@
 class Blocks
 {
 public:
-	static const TransparentBlock air;
+	static const Block air;
 	static const Block grassBlock;
 	static const Block dirt;
 	static const Block stone;
@@ -15,7 +15,7 @@ public:
 	static const Block copperOre;
 	static const Block diamondOre;
 	static const Block oakLog;
-	static const TransparentBlock oakLeaves;
+	static const Block oakLeaves;
 	static const Block ladder;
 
 	static const Block& getById(int id);

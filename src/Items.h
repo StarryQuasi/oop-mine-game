@@ -17,6 +17,11 @@ public:
 	static const Item oakLog;
 	static const Item oakLeaves;
 	static const Item ladder;
+	static const Item coal;
+	static const Item copperIngot;
+	static const Item diamond;
+	static const Item copperPick;
+	static const Item diamondPick;
 
 	static const Item& getById(int id);
 	static const std::vector<const Item*>& getAllItems();

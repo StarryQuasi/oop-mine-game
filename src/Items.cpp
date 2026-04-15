@@ -1,17 +1,30 @@
 #include "Items.h"
 #include "Blocks.h"
+#include "Item.h"
 #include "Verify.h"
 
-const Item Items::air("Air", &Blocks::air, 0);
-const Item Items::grassBlock("Grass Block", &Blocks::grassBlock);
-const Item Items::dirt("Dirt", &Blocks::dirt);
-const Item Items::stone("Stone", &Blocks::stone);
-const Item Items::coalOre("Coal Ore", &Blocks::coalOre);
-const Item Items::copperOre("Copper Ore", &Blocks::copperOre);
-const Item Items::diamondOre("Diamond Ore", &Blocks::diamondOre);
-const Item Items::oakLog("Oak Log", &Blocks::oakLog);
-const Item Items::oakLeaves("Oak Leaves", &Blocks::oakLeaves);
-const Item Items::ladder("Ladder", &Blocks::ladder);
+namespace
+{
+constexpr ItemBuilder builder() { return {}; }
+} // namespace
+
+// clang-format off
+const Item Items::air         = builder().name("Air").block(Blocks::air).build();
+const Item Items::grassBlock  = builder().name("Grass Block").block(Blocks::grassBlock).build();
+const Item Items::dirt        = builder().name("Dirt").block(Blocks::dirt).build();
+const Item Items::stone       = builder().name("Stone").block(Blocks::stone).build();
+const Item Items::coalOre     = builder().name("Coal Ore").block(Blocks::coalOre).build();
+const Item Items::copperOre   = builder().name("Copper Ore").block(Blocks::copperOre).build();
+const Item Items::diamondOre  = builder().name("Diamond Ore").block(Blocks::diamondOre).build();
+const Item Items::oakLog      = builder().name("Oak Log").block(Blocks::oakLog).build();
+const Item Items::oakLeaves   = builder().name("Oak Leaves").block(Blocks::oakLeaves).build();
+const Item Items::ladder      = builder().name("Ladder").block(Blocks::ladder).build();
+const Item Items::coal        = builder().name("Coal").build();
+const Item Items::copperIngot = builder().name("Copper Ingot").build();
+const Item Items::diamond     = builder().name("Diamond").build();
+const Item Items::copperPick  = builder().name("Copper Pickaxe").maxStackSize(1).durability(64).tier(1).build();
+const Item Items::diamondPick = builder().name("Diamond Pickaxe").maxStackSize(1).durability(256).tier(1).build();
+// clang-format on
 
 const std::vector<const Item*> Items::list = {
 	&Items::air,

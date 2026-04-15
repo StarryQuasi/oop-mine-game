@@ -77,7 +77,7 @@ void World::breakBlock(olc::vi2d p)
 int World::findTopmostSolid(int x) const
 {
 	for (int y = 0; y < getSize().y; y++)
-		if (!getBlock({x, y}).isReplaceable())
+		if (getBlock({x, y}).isSolid())
 			return y;
 	return -1;
 }
@@ -98,7 +98,7 @@ bool World::isValidPosition(olc::vi2d p) const
 bool World::isSolidBlock(olc::vi2d p) const
 {
 	assert(isValidPosition(p));
-	return !getBlock(p).isReplaceable();
+	return getBlock(p).isSolid();
 }
 
 std::optional<std::reference_wrapper<Entity>> World::getEntity(int id) const
