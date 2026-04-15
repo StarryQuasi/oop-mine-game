@@ -24,8 +24,8 @@ jobs:
       matrix:
         include:
           - os: windows-latest
-            c_compiler: cl
-            cpp_compiler: cl
+            c_compiler: clang
+            cpp_compiler: clang++
             artifact_name: OopMineGame.exe
             asset_name: OopMineGame-windows-amd64
           - os: macos-latest
@@ -43,7 +43,21 @@ jobs:
       shell: bash
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-    
+        
+    - name: Install llvm
+      if: runner.os == 'macOS'
+      run: |
+        brew install llvm@22 \
+        && echo 'export PATH="/opt/homebrew/opt/llvm@22/bin:$PATH"' >> /Users/runner/.bash_profile \
+        && source /Users/runner/.bash_profile \
+        && which clang++
+
+    - name: Install llvm
+      if: runner.os == 'Windows'
+      run: |
+        choco install llvm --version 22.1.0 -y \
+        && where clang++
+        
     - name: Build asset archive
       run: |
         chmod +x "${{ github.workspace }}/create_assets_zip.sh"
@@ -64,6 +78,7 @@ jobs:
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release
 
     - name: Produce asset artifact
+      if: runner.os == 'macOS'
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.os }}
