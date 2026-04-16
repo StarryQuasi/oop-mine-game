@@ -17,6 +17,7 @@ public:
 	static const Block diamondOre;
 	static const Block oakLog;
 	static const Block oakLeaves;
+	static const CraftingTable craftingTable;
 	static const Block ladder;
 
 	static const Block& getById(int id);

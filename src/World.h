@@ -32,11 +32,12 @@ struct GenerationSettings
 class World
 {
 public:
-	World(GenerationSettings settings);
+	World(OopMineGame& game, GenerationSettings settings);
 
 	int randomInt(int min, int maxInclusive);
 	float randomFloat(float min, float maxExclusive);
 
+	OopMineGame& getGame();
 	olc::vi2d getSize() const;
 	int getSeed() const;
 	const Block& getBlock(olc::vi2d p) const;
@@ -73,6 +74,7 @@ public:
 
 private:
 	const GenerationSettings settings;
+	OopMineGame* game;
 	FastNoiseLite noise;
 	std::vector<int> blocksRaw;
 	// std::dextents = dynamic extents

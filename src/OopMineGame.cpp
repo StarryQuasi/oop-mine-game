@@ -5,6 +5,7 @@
 
 #include "Blocks.h"
 #include "Entity.h"
+#include "Items.h"
 #include "OopMineGame.h"
 #include "Player.h"
 #include "Sheep.h"
@@ -113,8 +114,9 @@ fail:
 
 void OopMineGame::genNewWorld(const GenerationSettings& settings)
 {
-	world = std::make_unique<World>(settings);
+	world = std::make_unique<World>(*this, settings);
 	world->addEntity<Sheep>(world->getPlayer()->get().getPos());
+	world->getPlayer()->get().addInvItem({Items::craftingTable, 1});
 	if (!freecamEnabled)
 	{
 		transforms.clear();
@@ -272,7 +274,7 @@ bool OopMineGame::OnUserCreate()
 
 	genNewWorld({});
 
-	debugEntity = true;
+	// debugEntity = true;
 	return true;
 }
 
@@ -301,13 +303,24 @@ bool OopMineGame::OnUserUpdate(float elapsed)
 	}
 
 	if (GetKey(olc::Key::ESCAPE).bPressed)
-		return false;
+	{
+		if (guiOverlay != nullptr)
+		{
+			guiRoot->removeChild(guiOverlay->getId());
+			guiOverlay = nullptr;
+		}
+		else
+		{
+			return false;
+		}
+	}
 
 	for (; !scheduledFunctions.empty(); scheduledFunctions.pop_front())
 		scheduledFunctions.front()();
 
 	emitUiEvents();
-	handleInput(elapsed);
+	if (guiOverlay == nullptr)
+		handleInput(elapsed);
 
 	Player& player = world->getPlayer().value();
 	if (!freecamEnabled)
@@ -387,6 +400,15 @@ std::optional<olc::DecalPatch>& OopMineGame::getBlockAssetPatch(int id)
 void OopMineGame::schedule(std::function<void()> func)
 {
 	scheduledFunctions.emplace_back(std::move(func));
+}
+
+void OopMineGame::closeScreen()
+{
+	if (guiOverlay != nullptr)
+	{
+		guiRoot->removeChild(guiOverlay->getId());
+		guiOverlay = nullptr;
+	}
 }
 
 void OopMineGame::emitUiEvents()

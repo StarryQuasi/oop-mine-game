@@ -35,6 +35,10 @@ public:
 	// Schedules a function that modifies critical data, to be run on the next
 	// update
 	void schedule(std::function<void()> func);
+	template <typename T>
+		requires std::derived_from<T, gui::Container>
+	void openScreen(std::unique_ptr<T> p);
+	void closeScreen();
 
 private:
 	std::vector<uint8_t> assetsBuffer = {};
@@ -54,6 +58,7 @@ private:
 	gui::Hotbar* guiHotbar = nullptr;
 	gui::TextContainer* guiHotbarText = nullptr;
 	gui::TextContainer* guiDebugText = nullptr;
+	gui::Container* guiOverlay = nullptr;
 	bool inspectorEnabled = false;
 	int inspectorId = 0;
 	bool freecamEnabled = false;
@@ -70,3 +75,15 @@ private:
 	void setHotbarSelection(int i);
 	void handleInput(float elapsed);
 };
+
+template <typename T>
+	requires std::derived_from<T, gui::Container>
+void OopMineGame::openScreen(std::unique_ptr<T> p)
+{
+	if (guiOverlay != nullptr)
+	{
+		guiRoot->removeChild(guiOverlay->getId());
+		guiOverlay = nullptr;
+	}
+	guiOverlay = guiRoot->adoptChild(std::move(p));
+}

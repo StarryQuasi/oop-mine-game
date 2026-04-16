@@ -57,7 +57,7 @@ public:
 	void setInvItem(int i, const ItemStack& v);
 	ItemStack addInvItem(ItemStack v); // Returns the remaining
 
-	void updateInput(World& world, float elapsed);
+	virtual void updateInput(World& world, float elapsed);
 	virtual void update(World& world, float elapsed);
 	virtual void draw(OopMineGame& game) const;
 

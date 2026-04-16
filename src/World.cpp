@@ -14,7 +14,8 @@
 #include "Verify.h"
 #include "World.h"
 
-World::World(GenerationSettings settings) :
+World::World(OopMineGame& game, GenerationSettings settings) :
+	game(&game),
 	settings(settings),
 	noise(settings.seed),
 	blocksRaw(settings.size.area()),
@@ -35,6 +36,8 @@ float World::randomFloat(float min, float maxExclusive)
 {
 	return std::uniform_real_distribution<float>(min, maxExclusive)(random);
 }
+
+OopMineGame& World::getGame() { return *game; }
 
 olc::vi2d World::getSize() const { return settings.size; }
 
@@ -59,19 +62,7 @@ void World::breakBlock(olc::vi2d p)
 	setBlock(p, Blocks::air);
 	if (block != Blocks::air)
 	{
-		olc::vf2d pos = p;
-		const float posscale = 0.35f;
-		pos.x += 0.5f + randomFloat(-posscale, posscale);
-		pos.y += 0.5f + randomFloat(-posscale, posscale);
-		for (auto& stack : block.getLoot(*this, p))
-		{
-			DroppedItem& item = addEntity<DroppedItem>(pos, std::move(stack));
-			olc::vf2d vel = {};
-			const float velscale = 16;
-			vel.x = randomFloat(-velscale, velscale);
-			vel.y = randomFloat(-velscale * 2, velscale);
-			item.setVel(vel);
-		}
+		block.onBreak(*this, p);
 	}
 }
 

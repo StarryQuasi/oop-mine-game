@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cassert>
+#include <concepts>
+#include <ranges>
 #include <string>
 
 #include "libs/olcPixelGameEngine.h"
@@ -26,6 +29,8 @@ public:
 
 	virtual void update(World& world, olc::vi2d pos) const;
 	virtual void renderUpdate(World& world, olc::vi2d pos) const;
+	virtual void onBreak(World& world, olc::vi2d pos) const;
+	virtual bool onUse(World& world, olc::vi2d pos) const;
 	// Returns list of each loot table entry item of count [min, max] mapped
 	// from [probability, 1.0f) rolled from a random float
 	virtual std::vector<ItemStack> getLoot(World& world, olc::vi2d pos) const;
@@ -33,7 +38,7 @@ public:
 	operator int() const;
 	bool operator==(const Block& other) const;
 
-private:
+protected:
 	friend class BlockBuilder;
 	friend class LootTableBuilder;
 
@@ -49,6 +54,14 @@ private:
 		std::vector<Entry> entries{};
 	};
 
+	Block(
+		std::string name,
+		std::string textureName,
+		const Item* item,
+		bool transparent,
+		LootTable lootTable);
+
+private:
 	static int blockIdCounter;
 	const int id{};
 	const std::string name{};
@@ -56,13 +69,19 @@ private:
 	const Item* item{};
 	const bool transparent{};
 	const LootTable lootTable{};
+};
 
-	Block(
+class CraftingTable : public Block
+{
+public:
+	CraftingTable(
 		std::string name,
 		std::string textureName,
 		const Item* item,
 		bool transparent,
 		LootTable lootTable);
+
+	bool onUse(World& world, olc::vi2d pos) const override;
 };
 
 class BlockBuilder;
@@ -93,7 +112,9 @@ public:
 	BlockBuilder& item(const Item& v);
 	BlockBuilder& transparent(bool v);
 	LootTableBuilder loot();
-	Block build();
+	template <typename T = Block>
+		requires std::derived_from<T, Block>
+	T build();
 
 private:
 	friend class LootTableBuilder;
@@ -104,3 +125,25 @@ private:
 	bool _transparent = false;
 	Block::LootTable _lootTable = {};
 };
+
+template <typename T>
+	requires std::derived_from<T, Block>
+T BlockBuilder::build()
+{
+	assert(!_name.empty());
+	if (_textureName.empty())
+		_textureName = _name |
+					   std::views::transform([](unsigned char c)
+											 { return std::tolower(c); }) |
+					   std::views::split(std::string(" ")) |
+					   std::views::join_with(std::string("_")) |
+					   std::ranges::to<std::string>();
+	if (_item == nullptr)
+		_item = &Items::air;
+	return T{
+		std::move(_name),
+		std::move(_textureName),
+		_item,
+		_transparent,
+		std::move(_lootTable)};
+}

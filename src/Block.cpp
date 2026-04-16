@@ -1,9 +1,11 @@
 #include <cassert>
 #include <cctype>
-#include <ranges>
+#include <memory>
 #include <vector>
 
+#include "DroppedItem.h"
 #include "Verify.h"
+#include "gui/CraftingTable.h"
 #include "libs/olcPixelGameEngine.h"
 
 #include "Block.h"
@@ -52,6 +54,25 @@ void Block::update(World& world, olc::vi2d pos) const {}
 
 void Block::renderUpdate(World& world, olc::vi2d pos) const {}
 
+void Block::onBreak(World& world, olc::vi2d pos) const
+{
+	olc::vf2d dropPos = pos;
+	const float posscale = 0.35f;
+	dropPos.x += 0.5f + world.randomFloat(-posscale, posscale);
+	dropPos.y += 0.5f + world.randomFloat(-posscale, posscale);
+	for (auto& stack : getLoot(world, pos))
+	{
+		DroppedItem& item = world.addEntity<DroppedItem>(pos, std::move(stack));
+		olc::vf2d vel = {};
+		const float velscale = 16;
+		vel.x = world.randomFloat(-velscale, velscale);
+		vel.y = world.randomFloat(-velscale * 2, velscale);
+		item.setVel(vel);
+	}
+}
+
+bool Block::onUse(World& world, olc::vi2d pos) const { return false; }
+
 std::vector<ItemStack> Block::getLoot(World& world, olc::vi2d pos) const
 {
 	assert(item != nullptr);
@@ -88,6 +109,28 @@ Block::operator int() const { return id; }
 
 bool Block::operator==(const Block& other) const { return id == other.id; }
 
+CraftingTable::CraftingTable(
+	std::string name,
+	std::string textureName,
+	const Item* item,
+	bool transparent,
+	LootTable lootTable) :
+	Block(
+		std::move(name),
+		std::move(textureName),
+		item,
+		transparent,
+		std::move(lootTable))
+{
+}
+
+bool CraftingTable::onUse(World& world, olc::vi2d pos) const
+{
+	world.getGame().openScreen(
+		std::make_unique<gui::CraftingTable>(world.getPlayer()->get()));
+	return true;
+}
+
 BlockBuilder& BlockBuilder::name(std::string v)
 {
 	_name = std::move(v);
@@ -110,26 +153,6 @@ BlockBuilder& BlockBuilder::transparent(bool v)
 {
 	_transparent = v;
 	return *this;
-}
-
-Block BlockBuilder::build()
-{
-	assert(!_name.empty());
-	if (_textureName.empty())
-		_textureName = _name |
-					   std::views::transform([](unsigned char c)
-											 { return std::tolower(c); }) |
-					   std::views::split(std::string(" ")) |
-					   std::views::join_with(std::string("_")) |
-					   std::ranges::to<std::string>();
-	if (_item == nullptr)
-		_item = &Items::air;
-	return Block{
-		std::move(_name),
-		std::move(_textureName),
-		_item,
-		_transparent,
-		std::move(_lootTable)};
 }
 
 LootTableBuilder BlockBuilder::loot() { return {*this}; }

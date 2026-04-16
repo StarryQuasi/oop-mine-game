@@ -11,6 +11,25 @@ Player::Player(olc::vf2d pos) :
 	hairBuffer.Create(32, 32);
 }
 
+void Player::updateInput(World& world, float elapsed)
+{
+	Input input = getInput();
+	const float reach = 6;
+	if ((input.target - getEyePos()).mag2() <= reach * reach)
+	{
+		const olc::vi2d target = input.target.floor();
+		if (world.isValidPosition(target))
+		{
+			if (input.use && world.getBlock(target).onUse(world, target))
+			{
+				input.use = false;
+				setInput(input);
+			}
+		}
+	}
+	Entity::updateInput(world, elapsed);
+}
+
 void Player::update(World& world, float elapsed)
 {
 	const olc::vf2d lastPos = getPos();
@@ -59,8 +78,8 @@ void Player::update(World& world, float elapsed)
 	//	olc::vf2d& pold = hairPointsOld[i];
 
 	//	const olc::vf2d pcopy = p;
-	//	p = p * 2 - pold + elapsed * elapsed * (hairGravity + getVel()) * 10;
-	//	pold = pcopy;
+	//	p = p * 2 - pold + elapsed * elapsed * (hairGravity +
+	// getVel()) * 10; 	pold = pcopy;
 	//}
 	// const float maxDist = 3.0f;
 	// for (int _ = 0; _ < 3; _++)
@@ -114,8 +133,8 @@ void Player::draw(OopMineGame& game) const
 	// Utils::drawRectOutline(
 	//	game.getView(),
 	//	getPos() - olc::vf2d{ 1.0f, 2.0f },
-	//	getPos() - olc::vf2d{ 1.0f, 2.0f } + olc::vf2d{ 32.0f, 32.0f } * 2 / 32,
-	//	olc::WHITE);
+	//	getPos() - olc::vf2d{ 1.0f, 2.0f } + olc::vf2d{ 32.0f, 32.0f } *
+	// 2 / 32, 	olc::WHITE);
 
 	Entity::draw(game);
 }

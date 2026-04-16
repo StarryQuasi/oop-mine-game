@@ -35,6 +35,7 @@ target_sources(OopMineGame PRIVATE
 	src/gui/Anchor.cpp
 	src/gui/Button.cpp
 	src/gui/Container.cpp
+	src/gui/CraftingTable.cpp
 	src/gui/Debugger.cpp
 	src/gui/Direction.cpp
 	src/gui/FlowContainer.cpp

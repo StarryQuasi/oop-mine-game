@@ -17,6 +17,7 @@ public:
 	static const Item diamondOre;
 	static const Item oakLog;
 	static const Item oakLeaves;
+	static const Item craftingTable;
 	static const Item ladder;
 	static const Item coal;
 	static const Item copperIngot;
