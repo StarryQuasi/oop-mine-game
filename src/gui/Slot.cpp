@@ -42,7 +42,7 @@ void Slot::draw(OopMineGame& game) const
 			? game.getBlockAssetPatch(stack.getItem().getBlock().getId())
 			: game.getAsset("item/" + stack.getItem().getTextureName() + ".png")
 				  .transform([](const olc::Renderable& r)
-							 { return (olc::DecalPatch)r.Decal(); });
+							 { return (olc::DecalPatch)*r.Decal(); });
 	if (decalPatch.has_value())
 	{
 		const olc::vi2d fakePadding = {3, 3};

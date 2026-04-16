@@ -24,7 +24,7 @@ void DroppedItem::draw(OopMineGame& game) const
 			? game.getBlockAssetPatch(stack.getItem().getBlock().getId())
 			: game.getAsset("item/" + stack.getItem().getTextureName() + ".png")
 				  .transform([](const olc::Renderable& r)
-							 { return (olc::DecalPatch)r.Decal(); });
+							 { return (olc::DecalPatch)*r.Decal(); });
 	if (decalPatch.has_value())
 	{
 		const auto drawTime = std::chrono::steady_clock::now();
