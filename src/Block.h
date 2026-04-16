@@ -26,7 +26,8 @@ public:
 
 	virtual void update(World& world, olc::vi2d pos) const;
 	virtual void renderUpdate(World& world, olc::vi2d pos) const;
-	// Returns list of each loot table entry item of count [min, max] mapped from [0, probability)
+	// Returns list of each loot table entry item of count [min, max] mapped
+	// from [probability, 1.0f) rolled from a random float
 	virtual std::vector<ItemStack> getLoot(World& world, olc::vi2d pos) const;
 
 	operator int() const;
@@ -58,6 +59,7 @@ private:
 
 	Block(
 		std::string name,
+		std::string textureName,
 		const Item* item,
 		bool transparent,
 		LootTable lootTable);
@@ -87,6 +89,7 @@ class BlockBuilder
 {
 public:
 	BlockBuilder& name(std::string v);
+	BlockBuilder& textureName(std::string v);
 	BlockBuilder& item(const Item& v);
 	BlockBuilder& transparent(bool v);
 	LootTableBuilder loot();
@@ -96,6 +99,7 @@ private:
 	friend class LootTableBuilder;
 
 	std::string _name = {};
+	std::string _textureName = {};
 	const Item* _item = nullptr;
 	bool _transparent = false;
 	Block::LootTable _lootTable = {};

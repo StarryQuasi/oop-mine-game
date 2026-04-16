@@ -11,6 +11,7 @@ public:
 	static const Item grassBlock;
 	static const Item dirt;
 	static const Item stone;
+	static const Item cobblestone;
 	static const Item coalOre;
 	static const Item copperOre;
 	static const Item diamondOre;

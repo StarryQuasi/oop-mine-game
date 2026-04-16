@@ -3,26 +3,26 @@
 #include <ranges>
 #include <vector>
 
+#include "Verify.h"
 #include "libs/olcPixelGameEngine.h"
 
 #include "Block.h"
-#include "World.h"
 #include "Item.h"
 #include "ItemStack.h"
 #include "Items.h"
+#include "World.h"
 
 int Block::blockIdCounter = 0;
 
 Block::Block(
-	std::string name, const Item* item, bool transparent, LootTable lootTable) :
+	std::string name,
+	std::string textureName,
+	const Item* item,
+	bool transparent,
+	LootTable lootTable) :
 	id(blockIdCounter++),
 	name(name),
-	textureName(
-		name |
-		std::views::transform([](unsigned char c) { return std::tolower(c); }) |
-		std::views::split(std::string(" ")) |
-		std::views::join_with(std::string("_")) |
-		std::ranges::to<std::string>()),
+	textureName(textureName),
 	item(item),
 	transparent(transparent),
 	lootTable(std::move(lootTable))
@@ -60,8 +60,22 @@ std::vector<ItemStack> Block::getLoot(World& world, olc::vi2d pos) const
 	std::vector<ItemStack> list = {};
 	for (const auto& entry : lootTable.entries)
 	{
-		assert(entry.item != nullptr && entry.item != &Items::air);
-		const int count = (int)world.randomFloat(entry.min, entry.max + 1);
+		assert(entry.item != nullptr);
+		if (entry.item == &Items::air)
+			continue;
+		const float rand = world.randomFloat(0, 1);
+		const int range = entry.max - entry.min + 1;
+		int count;
+		const float randRange = (1.0f - entry.probability);
+		if (rand < 1.0f - entry.probability)
+			count = 0;
+		else
+			count = (int)((rand - (1.0f - entry.probability)) /
+							  entry.probability * range +
+						  entry.min);
+		assert(
+			rand < 1 ? (count == 0 || Verify::in(count, entry.min, entry.max))
+					 : Verify::in(count, entry.min, entry.max));
 		if (count)
 		{
 			list.emplace_back(*entry.item, count);
@@ -80,6 +94,12 @@ BlockBuilder& BlockBuilder::name(std::string v)
 	return *this;
 }
 
+BlockBuilder& BlockBuilder::textureName(std::string v)
+{
+	_textureName = std::move(v);
+	return *this;
+}
+
 BlockBuilder& BlockBuilder::item(const Item& v)
 {
 	_item = &v;
@@ -95,10 +115,21 @@ BlockBuilder& BlockBuilder::transparent(bool v)
 Block BlockBuilder::build()
 {
 	assert(!_name.empty());
+	if (_textureName.empty())
+		_textureName = _name |
+					   std::views::transform([](unsigned char c)
+											 { return std::tolower(c); }) |
+					   std::views::split(std::string(" ")) |
+					   std::views::join_with(std::string("_")) |
+					   std::ranges::to<std::string>();
 	if (_item == nullptr)
 		_item = &Items::air;
-	assert(_lootTable.entries.size() > 0 || _item == &Items::air);
-	return Block{std::move(_name), _item, _transparent, std::move(_lootTable)};
+	return Block{
+		std::move(_name),
+		std::move(_textureName),
+		_item,
+		_transparent,
+		std::move(_lootTable)};
 }
 
 LootTableBuilder BlockBuilder::loot() { return {*this}; }
@@ -128,7 +159,8 @@ LootTableBuilder& LootTableBuilder::max(int v)
 
 BlockBuilder& LootTableBuilder::item(const Item& v)
 {
-	assert(_probability > 0.0f);
+	_item = &v;
+	assert(_probability > 0.0f && _probability <= 1.0f);
 	assert(_min >= 0 && _min <= _max);
 	assert(_max >= 0);
 	assert(_item != nullptr);

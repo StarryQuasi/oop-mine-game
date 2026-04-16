@@ -13,6 +13,7 @@ const Item Items::air         = builder().name("Air").block(Blocks::air).build()
 const Item Items::grassBlock  = builder().name("Grass Block").block(Blocks::grassBlock).build();
 const Item Items::dirt        = builder().name("Dirt").block(Blocks::dirt).build();
 const Item Items::stone       = builder().name("Stone").block(Blocks::stone).build();
+const Item Items::cobblestone = builder().name("Cobblestone").block(Blocks::cobblestone).build();
 const Item Items::coalOre     = builder().name("Coal Ore").block(Blocks::coalOre).build();
 const Item Items::copperOre   = builder().name("Copper Ore").block(Blocks::copperOre).build();
 const Item Items::diamondOre  = builder().name("Diamond Ore").block(Blocks::diamondOre).build();
@@ -31,12 +32,18 @@ const std::vector<const Item*> Items::list = {
 	&Items::grassBlock,
 	&Items::dirt,
 	&Items::stone,
+	&Items::cobblestone,
 	&Items::coalOre,
 	&Items::copperOre,
 	&Items::diamondOre,
 	&Items::oakLog,
 	&Items::oakLeaves,
 	&Items::ladder,
+	&Items::coal,
+	&Items::copperIngot,
+	&Items::diamond,
+	&Items::copperPick,
+	&Items::diamondPick,
 };
 
 const Item& Items::getById(int id)

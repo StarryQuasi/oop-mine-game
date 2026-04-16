@@ -31,6 +31,7 @@ private:
 
 	Item(
 		std::string name,
+		std::string textureName,
 		const Block* block,
 		int maxStackSize,
 		int durability,
@@ -41,6 +42,7 @@ class ItemBuilder
 {
 public:
 	ItemBuilder& name(std::string v);
+	ItemBuilder& textureName(std::string v);
 	ItemBuilder& block(const Block& v);
 	ItemBuilder& maxStackSize(int v);
 	ItemBuilder& durability(int v);
@@ -49,6 +51,7 @@ public:
 
 private:
 	std::string _name = {};
+	std::string _textureName = {};
 	const Block* _block = nullptr;
 	int _maxStackSize = 64;
 	int _durability = 0;

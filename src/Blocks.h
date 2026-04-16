@@ -11,6 +11,7 @@ public:
 	static const Block grassBlock;
 	static const Block dirt;
 	static const Block stone;
+	static const Block cobblestone;
 	static const Block coalOre;
 	static const Block copperOre;
 	static const Block diamondOre;

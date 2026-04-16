@@ -10,17 +10,14 @@ int Item::itemIdCounter = 0;
 
 Item::Item(
 	std::string name,
+	std::string textureName,
 	const Block* block,
 	int maxStackSize,
 	int durability,
 	int tier) :
 	id(itemIdCounter++),
 	name(name),
-	textureName(
-		name | std::views::transform([](char c) { return std::tolower(c); }) |
-		std::views::split(std::string(" ")) |
-		std::views::join_with(std::string("_")) |
-		std::ranges::to<std::string>()),
+	textureName(textureName),
 	maxStackSize(maxStackSize),
 	durability(durability),
 	block(block),
@@ -51,6 +48,12 @@ ItemBuilder& ItemBuilder::name(std::string v)
 	return *this;
 }
 
+ItemBuilder& ItemBuilder::textureName(std::string v)
+{
+	_textureName = std::move(v);
+	return *this;
+}
+
 ItemBuilder& ItemBuilder::block(const Block& v)
 {
 	_block = &v;
@@ -78,10 +81,23 @@ ItemBuilder& ItemBuilder::tier(int v)
 Item ItemBuilder::build()
 {
 	assert(!_name.empty());
+	if (_textureName.empty())
+		_textureName =
+			_name |
+			std::views::transform([](char c) { return std::tolower(c); }) |
+			std::views::split(std::string(" ")) |
+			std::views::join_with(std::string("_")) |
+			std::ranges::to<std::string>();
 	if (_block == nullptr)
 		_block = &Blocks::air;
 	assert(_maxStackSize >= 0);
 	assert(_durability >= 0);
 	assert(_tier >= 0);
-	return Item{std::move(_name), _block, _maxStackSize, _durability, _tier};
+	return Item{
+		std::move(_name),
+		std::move(_textureName),
+		_block,
+		_maxStackSize,
+		_durability,
+		_tier};
 }
