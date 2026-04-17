@@ -56,13 +56,13 @@ void Block::renderUpdate(World& world, olc::vi2d pos) const {}
 
 void Block::onBreak(World& world, olc::vi2d pos) const
 {
-	olc::vf2d dropPos = pos;
-	const float posscale = 0.35f;
-	dropPos.x += 0.5f + world.randomFloat(-posscale, posscale);
-	dropPos.y += 0.5f + world.randomFloat(-posscale, posscale);
 	for (auto& stack : getLoot(world, pos))
 	{
-		DroppedItem& item = world.addEntity<DroppedItem>(pos, std::move(stack));
+		olc::vf2d dropPos = pos;
+		const float posscale = 0.25f;
+		dropPos.x += 0.5f + world.randomFloat(-posscale, posscale);
+		dropPos.y += 0.5f + world.randomFloat(-posscale, posscale);
+		DroppedItem& item = world.addEntity<DroppedItem>(dropPos, std::move(stack));
 		olc::vf2d vel = {};
 		const float velscale = 16;
 		vel.x = world.randomFloat(-velscale, velscale);
