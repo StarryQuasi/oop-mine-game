@@ -54,12 +54,15 @@ int main()
 		const olc::vi2d screenSize = windowSize / pixelSize;
 		const bool fullScreen = false;
 		// const bool fullScreen = true;
+		// const bool vsync = false;
+		const bool vsync = true;
 		if (game.Construct(
 				screenSize.x,
 				screenSize.y,
 				pixelSize.x * pixelScale,
 				pixelSize.y * pixelScale,
-				fullScreen))
+				fullScreen,
+				vsync))
 			game.Start();
 	}
 	catch (const std::exception& e)
