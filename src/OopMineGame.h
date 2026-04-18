@@ -53,7 +53,7 @@ private:
 	std::unique_ptr<World> world = nullptr;
 	uint32_t layerMain = 0;
 	std::vector<Transform> transforms;
-	int hotbarSelection = 0;
+	Bindable<int> hotbarSelection{};
 	std::unique_ptr<gui::Container> guiRoot = nullptr;
 	gui::Hotbar* guiHotbar = nullptr;
 	gui::TextContainer* guiHotbarText = nullptr;

@@ -36,8 +36,7 @@ const ItemStack& Slot::getStack() const { return stack.get(); }
 
 Slot* Slot::setBinding(Bindable<ItemStack>& binding)
 {
-	stack.unbindAll();
-	stack.bindTo(binding);
+	stack.rebind(binding);
 	return this;
 }
 

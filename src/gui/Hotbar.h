@@ -12,16 +12,14 @@ class Hotbar : public FlowContainer
 public:
 	Hotbar(Props props);
 
-	int getSelection() const;
 	Slot* getSlot(int i);
 	const ItemStack& getStack(int i);
 
-	Hotbar* setSelection(int i);
-	Hotbar* setBinding(Player& player);
+	Hotbar* setBinding(Player& player, Bindable<int>& selection);
 
 private:
-	std::array<Slot*, 9> slots = {};
-	std::array<Container*, 9> selectors = {};
-	int selectedSlot = 0;
+	std::array<Slot*, 9> slots{};
+	std::array<Container*, 9> selectors{};
+	Bindable<int> selection{};
 };
 } // namespace gui

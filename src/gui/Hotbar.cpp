@@ -25,10 +25,16 @@ Hotbar::Hotbar(Props props) :
 		});
 		slots[i] = slotContainer->addChild<Slot>();
 	}
-	selectors[selectedSlot]->setVisible(true);
-}
+	selectors[0]->setVisible(true);
 
-int Hotbar::getSelection() const { return selectedSlot; }
+	selection.onValueChanged(
+		[this](const int& old, const int& $new)
+		{
+			assert(Verify::index($new, slots.size()));
+			selectors[old]->setVisible(false);
+			selectors[$new]->setVisible(true);
+		});
+}
 
 Slot* Hotbar::getSlot(int i) { return slots[i]; }
 
@@ -38,23 +44,12 @@ const ItemStack& Hotbar::getStack(int i)
 	return slots[i]->getStack();
 }
 
-Hotbar* Hotbar::setSelection(int i)
-{
-	assert(Verify::index(i, slots.size()));
-	if (selectedSlot != i)
-	{
-		selectors[selectedSlot]->setVisible(false);
-		selectedSlot = i;
-		selectors[selectedSlot]->setVisible(true);
-	}
-	return this;
-}
-
 // TODO: Maybe osu!framework's Bindable?
-Hotbar* Hotbar::setBinding(Player& player)
+Hotbar* Hotbar::setBinding(Player& player, Bindable<int>& selection)
 {
 	for (int i = 0; i < 9; i++)
 		slots[i]->setBinding(player.getInvItem(i));
+	this->selection.rebind(selection);
 	return this;
 }
 } // namespace gui

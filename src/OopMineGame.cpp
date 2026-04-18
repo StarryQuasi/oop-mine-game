@@ -117,7 +117,7 @@ void OopMineGame::genNewWorld(const GenerationSettings& settings)
 	world = std::make_unique<World>(*this, settings);
 	world->addEntity<Sheep>(world->getPlayer()->get().getPos());
 	(void)world->getPlayer()->get().addInvItem({Items::craftingTable, 1});
-	guiHotbar->setBinding(world->getPlayer()->get());
+	guiHotbar->setBinding(world->getPlayer()->get(), hotbarSelection);
 	if (!freecamEnabled)
 	{
 		transforms.clear();
@@ -468,12 +468,11 @@ void OopMineGame::setHotbarSelection(int i)
 {
 	assert(Verify::in(i, -1, 10));
 	hotbarSelection = i;
-	hotbarSelection = (hotbarSelection + 9) % 9;
-	guiHotbar->setSelection(hotbarSelection);
+	hotbarSelection = (hotbarSelection.get() + 9) % 9;
 	auto& player = world->getPlayer()->get();
-	if (player.getInvItem(hotbarSelection)->getItem() != Items::air)
+	if (player.getInvItem(hotbarSelection.get())->getItem() != Items::air)
 		guiHotbarText->setText(
-			player.getInvItem(hotbarSelection)->getItem().getName());
+			player.getInvItem(hotbarSelection.get())->getItem().getName());
 	else
 		guiHotbarText->setText("");
 }
@@ -489,7 +488,7 @@ void OopMineGame::handleInput(float elapsed)
 			input.right = GetKey(olc::Key::D).bHeld;
 			input.jump = GetKey(olc::Key::SPACE).bHeld;
 			input.sprint = GetKey(olc::Key::SHIFT).bHeld;
-			input.invSelection = hotbarSelection;
+			input.invSelection = hotbarSelection.get();
 			player.setInput(input);
 			queuedInput = {};
 		}
@@ -542,7 +541,7 @@ void OopMineGame::handleInput(float elapsed)
 		if (GetMouseWheel())
 		{
 			setHotbarSelection(
-				hotbarSelection + (GetMouseWheel() < 0 ? 1 : -1));
+				hotbarSelection.get() + (GetMouseWheel() < 0 ? 1 : -1));
 		}
 	}
 }

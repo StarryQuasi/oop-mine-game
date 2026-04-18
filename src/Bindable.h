@@ -21,13 +21,18 @@ public:
 
 	// Gets the value
 	const T& get() const;
+	// Sets the value
 	const T& set(T v);
 
-	Bindable<T>& operator=(T v);
+	// Gets the value
 	const T* operator->() const;
+	// Sets the value
+	Bindable<T>& operator=(T v);
 
 	// Copies other to this, calls value changed handler if needed
 	void bindTo(Bindable<T>& other);
+	// Unbinds all and then bind to other
+	void rebind(Bindable<T>& other);
 	void unbindFrom(Bindable<T>& other);
 	void unbindAll();
 
@@ -124,6 +129,13 @@ void Bindable<T>::bindTo(Bindable<T>& other)
 		valueChanged(value, other.value);
 		value = other.value;
 	}
+}
+
+template<typename T>
+void Bindable<T>::rebind(Bindable<T>& other)
+{
+	unbindAll();
+	bindTo(other);
 }
 
 template <typename T>
