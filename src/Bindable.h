@@ -4,8 +4,10 @@
 #include <cassert>
 #include <functional>
 
-// A property object that can be bound (synced) to other instances
-// bidirectionally, stores a local copy, also provides value changed event
+// An observable property object that can be bound (synced) to other instances
+// bidirectionally, stores a local copy, also provides value changed event.
+// There is no central object so bindable chaining isn't allowed, each set will
+// only update the direct bindings
 template <typename T>
 class Bindable
 {
@@ -29,11 +31,11 @@ public:
 	// Sets the value
 	Bindable<T>& operator=(T v);
 
-	// Copies other to this, calls value changed handler if needed
-	void bindTo(Bindable<T>& other);
-	// Unbinds all and then bind to other
-	void rebind(Bindable<T>& other);
-	void unbindFrom(Bindable<T>& other);
+	// Binds/copies target value to this, calls value changed handler if needed
+	void bindTo(Bindable<T>& target);
+	// Unbinds all and then binds to target
+	void rebind(Bindable<T>& target);
+	void unbindFrom(Bindable<T>& target);
 	void unbindAll();
 
 	void valueChanged(const T& old, const T& $new) const;
@@ -48,6 +50,7 @@ private:
 	T value{};
 	std::function<void(const T& old, const T& $new)> valueChangedHandler{};
 
+	// Updates pointers in all bindings
 	void updateBindings(Bindable<T>* from, Bindable<T>* to);
 };
 
@@ -131,7 +134,7 @@ void Bindable<T>::bindTo(Bindable<T>& other)
 	}
 }
 
-template<typename T>
+template <typename T>
 void Bindable<T>::rebind(Bindable<T>& other)
 {
 	unbindAll();
