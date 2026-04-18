@@ -2,6 +2,7 @@
 #include "Anchor.h"
 #include "Blocks.h"
 #include "OopMineGame.h"
+#include "gui/Container.h"
 
 namespace gui
 {
@@ -14,42 +15,48 @@ Slot::Slot(Props props) :
 		.anchor = Anchor::btmRight,
 		.origin = Anchor::btmRight,
 	});
+
+	stack.onValueChanged(
+		[this](const ItemStack&, const ItemStack& $new)
+		{
+			if ($new.getCount() != 0)
+				textEle->setText(std::to_string($new.getCount()));
+			else
+				textEle->setText("");
+		});
 }
 
-const ItemStack& Slot::getStack() const { return stack; }
-
-Slot* Slot::setStack(const ItemStack& v)
+Slot::Slot(Props props, Bindable<ItemStack>& binding) :
+	Slot(props)
 {
-	if (stack != v)
-	{
-		invalidate();
-		stack = v;
-		if (stack.getCount() != 0)
-			textEle->setText(std::to_string(stack.getCount()));
-		else
-			textEle->setText("");
-	}
+	setBinding(binding);
+}
+
+const ItemStack& Slot::getStack() const { return stack.get(); }
+
+Slot* Slot::setBinding(Bindable<ItemStack>& binding)
+{
+	stack.unbindAll();
+	stack.bindTo(binding);
 	return this;
 }
 
 void Slot::draw(OopMineGame& game) const
 {
-	if (stack.getItem() == Items::air)
+	if (stack->getItem() == Items::air)
 		return;
-	const bool isBlock = stack.getItem().getBlock() != Blocks::air;
+	const bool isBlock = stack->getItem().getBlock() != Blocks::air;
 	const auto& decalPatch =
-		isBlock
-			? game.getBlockAssetPatch(stack.getItem().getBlock().getId())
-			: game.getAsset("item/" + stack.getItem().getTextureName() + ".png")
-				  .transform([](const olc::Renderable& r)
-							 { return (olc::DecalPatch)*r.Decal(); });
+		isBlock ? game.getBlockAssetPatch(stack->getItem().getBlock().getId())
+				: game.getAsset(
+						  "item/" + stack->getItem().getTextureName() + ".png")
+					  .transform([](const olc::Renderable& r)
+								 { return (olc::DecalPatch)*r.Decal(); });
 	if (decalPatch.has_value())
 	{
 		const olc::vi2d fakePadding = {3, 3};
 		const olc::vf2d realDrawSize =
 			(olc::vf2d)(getDrawSize() - fakePadding * 2);
-		// const olc::vi2d patchSize = isBlock ? olc::vi2d{ 32, 32 } :
-		// decalPatch.value().decal->sprite->Size();
 		// The scale argument here for the olc::DecalPatch overload is actually
 		// the size
 		game.DrawDecal(

@@ -3,19 +3,21 @@
 #include "FlowContainer.h"
 #include "Slot.h"
 
+class Player;
+
 namespace gui
 {
 class Hotbar : public FlowContainer
 {
 public:
-	Hotbar(Props props = {});
+	Hotbar(Props props);
 
 	int getSelection() const;
 	Slot* getSlot(int i);
 	const ItemStack& getStack(int i);
 
 	Hotbar* setSelection(int i);
-	Hotbar* setStack(int i, const ItemStack& stack);
+	Hotbar* setBinding(Player& player);
 
 private:
 	std::array<Slot*, 9> slots = {};

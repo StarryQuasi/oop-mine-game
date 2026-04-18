@@ -1,6 +1,6 @@
 #pragma once
-
 #include <memory>
+																																					
 #include <optional>
 #include <vector>
 
@@ -25,6 +25,7 @@ struct Props
 	std::optional<std::string> text = {};	 // TextContainer
 	std::optional<olc::vf2d> scale = {};	 // TextContainer
 	std::optional<Direction> direction = {}; // FlowContainer
+	std::optional<olc::Pixel> color = {};	 // TextContainer
 	std::optional<bool> autoSizing = {};	 // FlowContainer
 };
 

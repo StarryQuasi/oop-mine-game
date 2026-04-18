@@ -116,7 +116,8 @@ void OopMineGame::genNewWorld(const GenerationSettings& settings)
 {
 	world = std::make_unique<World>(*this, settings);
 	world->addEntity<Sheep>(world->getPlayer()->get().getPos());
-	world->getPlayer()->get().addInvItem({Items::craftingTable, 1});
+	(void)world->getPlayer()->get().addInvItem({Items::craftingTable, 1});
+	guiHotbar->setBinding(world->getPlayer()->get());
 	if (!freecamEnabled)
 	{
 		transforms.clear();
@@ -339,8 +340,6 @@ bool OopMineGame::OnUserUpdate(float elapsed)
 	guiDebugText->setText(debugMsg);
 	debugMsg = "";
 
-	for (int i = 0; i < 9; i++)
-		guiHotbar->setStack(i, player.getInvItem(i));
 	guiRoot->update(*this);
 	while (guiRoot->needsLayout())
 		guiRoot->updateLayout();
@@ -472,9 +471,9 @@ void OopMineGame::setHotbarSelection(int i)
 	hotbarSelection = (hotbarSelection + 9) % 9;
 	guiHotbar->setSelection(hotbarSelection);
 	auto& player = world->getPlayer()->get();
-	if (player.getInvItem(hotbarSelection).getItem() != Items::air)
+	if (player.getInvItem(hotbarSelection)->getItem() != Items::air)
 		guiHotbarText->setText(
-			player.getInvItem(hotbarSelection).getItem().getName());
+			player.getInvItem(hotbarSelection)->getItem().getName());
 	else
 		guiHotbarText->setText("");
 }

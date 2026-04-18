@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Bindable.h"
 #include "Container.h"
 #include "ItemStack.h"
 #include "TextContainer.h"
@@ -9,16 +10,17 @@ namespace gui
 class Slot : public Container
 {
 public:
-	Slot(Props props);
+	Slot(Props props = {});
+	Slot(Props props, Bindable<ItemStack>& binding);
 
 	const ItemStack& getStack() const;
 
-	Slot* setStack(const ItemStack& v);
+	Slot* setBinding(Bindable<ItemStack>& binding);
 
 	void draw(OopMineGame& game) const override;
 
 private:
-	ItemStack stack = {};
+	Bindable<ItemStack> stack;
 	TextContainer* textEle;
 };
 } // namespace gui

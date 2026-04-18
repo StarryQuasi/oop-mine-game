@@ -10,6 +10,8 @@ TextContainer::TextContainer(Props props) :
 		text = props.text.value();
 	if (props.scale.has_value())
 		scale = props.scale.value();
+	if (props.color.has_value())
+		color = props.color.value();
 }
 
 std::string TextContainer::getText() const { return text; }
@@ -32,6 +34,12 @@ TextContainer* TextContainer::setScale(olc::vf2d v)
 	return this;
 }
 
+TextContainer* TextContainer::setColor(olc::Pixel v)
+{
+	color = v;
+	return this;
+}
+
 void TextContainer::updateLayout()
 {
 	validate();
@@ -44,6 +52,6 @@ void TextContainer::updateLayout()
 void TextContainer::draw(OopMineGame& game) const
 {
 	Container::draw(game);
-	game.DrawStringDecal(getAbsolutePos(), text, olc::WHITE, scale);
+	game.DrawStringDecal(getAbsolutePos(), text, color, scale);
 }
 } // namespace gui

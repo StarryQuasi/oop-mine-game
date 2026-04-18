@@ -42,7 +42,7 @@ void Player::update(World& world, float elapsed)
 		world.getEntities<DroppedItem>({bb.first - expand, bb.second + expand});
 	for (const auto& droppedItem : entities)
 	{
-		addInvItem(droppedItem.get().getStack());
+		(void)addInvItem(droppedItem.get().getStack());
 		droppedItem.get().kill();
 	}
 

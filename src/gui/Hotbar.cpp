@@ -1,5 +1,6 @@
 #include "Hotbar.h"
 #include "Anchor.h"
+#include "Player.h"
 #include "Slot.h"
 #include "Verify.h"
 
@@ -50,10 +51,10 @@ Hotbar* Hotbar::setSelection(int i)
 }
 
 // TODO: Maybe osu!framework's Bindable?
-Hotbar* Hotbar::setStack(int i, const ItemStack& stack)
+Hotbar* Hotbar::setBinding(Player& player)
 {
-	assert(Verify::index(i, slots.size()));
-	slots[i]->setStack(stack);
+	for (int i = 0; i < 9; i++)
+		slots[i]->setBinding(player.getInvItem(i));
 	return this;
 }
 } // namespace gui

@@ -2,6 +2,7 @@
 
 #include <utility>
 
+#include "Bindable.h"
 #include "libs/olcPixelGameEngine.h"
 
 #include "ItemStack.h"
@@ -53,9 +54,10 @@ public:
 	void kill();
 	bool isOnGround() const;
 
-	ItemStack getInvItem(int i);
-	void setInvItem(int i, const ItemStack& v);
-	ItemStack addInvItem(ItemStack v); // Returns the remaining
+	Bindable<ItemStack>& getInvItem(int i);
+	// Returns the remaining
+	[[nodiscard]]
+	ItemStack addInvItem(ItemStack v);
 
 	virtual void updateInput(World& world, float elapsed);
 	virtual void update(World& world, float elapsed);
@@ -70,7 +72,7 @@ private:
 	bool direction = true;
 	bool dead = false;
 	bool onGround = true;
-	std::vector<ItemStack> inv = {};
+	std::vector<Bindable<ItemStack>> inv = {};
 	const int maxInvSize;
 	Input input = {};
 	std::chrono::steady_clock::time_point lastJumpTime = {};

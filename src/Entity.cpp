@@ -1,3 +1,5 @@
+#include "Bindable.h"
+#include "ItemStack.h"
 #include "libs/olcAabb.h"
 
 #include "Blocks.h"
@@ -12,7 +14,7 @@ Entity::Entity(olc::vf2d pos, olc::vf2d size, int maxInvSize) :
 	id(entityIdCounter++),
 	pos(pos),
 	size(size),
-	inv(maxInvSize, ItemStack{}),
+	inv(maxInvSize),
 	maxInvSize(maxInvSize)
 {
 }
@@ -97,16 +99,10 @@ void Entity::kill() { dead = true; }
 
 bool Entity::isOnGround() const { return onGround; }
 
-ItemStack Entity::getInvItem(int i)
+Bindable<ItemStack>& Entity::getInvItem(int i)
 {
 	assert(Verify::index(i, maxInvSize));
 	return inv[i];
-}
-
-void Entity::setInvItem(int i, const ItemStack& v)
-{
-	assert(Verify::index(i, maxInvSize));
-	inv[i] = v;
 }
 
 ItemStack Entity::addInvItem(ItemStack v)
@@ -117,7 +113,7 @@ ItemStack Entity::addInvItem(ItemStack v)
 	{
 		for (int i = 0; i < inv.size(); i++)
 		{
-			ItemStack& cur = inv[i];
+			const ItemStack& cur = inv[i].get();
 			if (cur.isEmpty() ||
 				(cur.getItem() == v.getItem() &&
 				 cur.getDamage() == v.getDamage() &&
@@ -126,8 +122,8 @@ ItemStack Entity::addInvItem(ItemStack v)
 				const int toAdd = std::min(
 					v.getItem().getMaxStackSize() - cur.getCount(),
 					v.getCount());
-				cur = ItemStack(
-					v.getItem(), cur.getCount() + toAdd, v.getDamage());
+				inv[i].set(ItemStack(
+					v.getItem(), cur.getCount() + toAdd, v.getDamage()));
 				v.setCount(v.getCount() - toAdd);
 				if (v.isEmpty())
 					break;
@@ -138,10 +134,9 @@ ItemStack Entity::addInvItem(ItemStack v)
 	{
 		for (int i = 0; i < inv.size(); i++)
 		{
-			ItemStack& cur = inv[i];
-			if (cur.isEmpty())
+			if (inv[i].get().isEmpty())
 			{
-				cur = v;
+				inv[i].set(v);
 				return {};
 			}
 		}
@@ -166,13 +161,13 @@ void Entity::updateInput(World& world, float elapsed)
 			if (input.use)
 			{
 				const Block& block =
-					getInvItem(input.invSelection).getItem().getBlock();
+					getInvItem(input.invSelection)->getItem().getBlock();
 				if (block != Blocks::air &&
 					world.getBlock(target).isReplaceable())
 				{
-					setInvItem(
-						input.invSelection,
-						getInvItem(input.invSelection).decrease());
+					getInvItem(
+						input.invSelection).set(
+						getInvItem(input.invSelection)->copy().decrease());
 					world.setBlock(target, block);
 				}
 			}
