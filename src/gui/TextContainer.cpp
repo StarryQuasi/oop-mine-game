@@ -3,6 +3,8 @@
 
 namespace gui
 {
+olc::vf2d TextContainer::defaultScale = {0.4f, 0.5f};
+
 TextContainer::TextContainer(Props props) :
 	Container(props)
 {
@@ -16,7 +18,7 @@ TextContainer::TextContainer(Props props) :
 
 std::string TextContainer::getText() const { return text; }
 
-olc::vf2d TextContainer::getScale() const { return scale; }
+float TextContainer::getScale() const { return scale; }
 
 TextContainer* TextContainer::setText(std::string v)
 {
@@ -26,7 +28,7 @@ TextContainer* TextContainer::setText(std::string v)
 	return this;
 }
 
-TextContainer* TextContainer::setScale(olc::vf2d v)
+TextContainer* TextContainer::setScale(float v)
 {
 	if (scale != v)
 		invalidate();
@@ -44,7 +46,7 @@ void TextContainer::updateLayout()
 {
 	validate();
 
-	setSize((OopMineGame::instance->GetTextSize(text) * scale).ceil());
+	setSize((OopMineGame::instance->GetTextSize(text) * defaultScale * scale).ceil());
 
 	Container::updateLayout();
 }
@@ -52,6 +54,6 @@ void TextContainer::updateLayout()
 void TextContainer::draw(OopMineGame& game) const
 {
 	Container::draw(game);
-	game.DrawStringDecal(getAbsolutePos(), text, color, scale);
+	game.DrawStringDecal(getAbsolutePos(), text, color, defaultScale * scale);
 }
 } // namespace gui

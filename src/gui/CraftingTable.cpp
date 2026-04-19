@@ -1,5 +1,5 @@
+#include "ItemStack.h"
 #include "OopMineGame.h"
-#include "gui/FlowContainer.h"
 #include "libs/olcPixelGameEngine.h"
 
 #include "Container.h"
@@ -23,28 +23,82 @@ CraftingTable::CraftingTable(Player& player) :
 		.assetName = "gui/crafting_table.png",
 	});
 	addChild<TextContainer>({
-		.pos = {{55, 10}},
+		.pos = {{56, 10}},
 		.origin = Anchor::midMiddle,
-		.text = "Crafting Table",
+		.text = "Crafting",
+		.scale = 1.5f,
 		.color = olc::Pixel(0xffefefef),
 	});
 	addChild<TextContainer>({
 		.pos = {{33, 76}},
 		.origin = Anchor::midMiddle,
 		.text = "Inventory",
+		.scale = 1.5f,
 		.color = olc::Pixel(0xffefefef),
 	});
-	// 8 86 8 144
+	const olc::vi2d size{18, 18};
+	olc::vi2d start{7, 141};
+	using namespace std::placeholders;
+	for (int i = 0; i < 9; i++)
 	{
-		auto* flow = addChild<FlowContainer>({.pos = {{8, 144}}});
-		for (int i = 0; i < 9; i++)
-		{
-			slots[i] = flow->addChild<Slot>({}, player.getInvItem(i));
-		}
+		slots[i] = addChild<Slot>(
+			{
+				.size = size,
+				.pos = {{start.x + size.x * i, start.y}},
+			},
+			player.getInvItem(i));
+		slots[i]->onMouseDown(std::bind(&CraftingTable::onSlotClick, this, _1, _2));
 	}
+	start = {7, 83};
+	for (int i = 0; i < 27; i++)
+	{
+		slots[9 + i] = addChild<Slot>(
+			{
+				.size = size,
+				.pos = {{start.x + i % 9 * size.x, start.y + i / 9 * size.y}},
+			},
+			player.getInvItem(9 + i));
+		slots[9+i]->onMouseDown(
+			std::bind(&CraftingTable::onSlotClick, this, _1, _2));
+	}
+	start = {29, 16};
+	for (int i = 0; i < 9; i++)
+	{
+		slotsInput[i] = addChild<Slot>(
+			{
+				.size = size,
+				.pos = {{start.x + i % 3 * size.x, start.y + i / 3 * size.y}},
+			},
+			stacksInput[i]);
+		slotsInput[i]->onMouseDown(
+			std::bind(&CraftingTable::onSlotClick, this, _1, _2));
+	}
+	slotsOutput =
+		addChild<Slot>({.size = {{26, 26}}, .pos = {{119, 31}}}, stacksOutput);
+	slotsOutput->onMouseDown(std::bind(&CraftingTable::onSlotClick, this, _1, _2));
+	slotsOnHand = addChild<Slot>({.size = size}, stacksOnHand);
 	// Consume all input
 	onMouseDown([](Container&, const MouseEvent&) { return true; });
 }
 
-void CraftingTable::update(OopMineGame& game) {}
+void CraftingTable::update(OopMineGame& game)
+{
+	Container::update(game);
+	slotsOnHand->setPos(screenToLocal(game.GetMousePos()));
+}
+
+void CraftingTable::draw(OopMineGame& game) const { Container::draw(game); }
+
+bool CraftingTable::onSlotClick(Container& me, const MouseEvent& event)
+{
+	Slot* slot = static_cast<Slot*>(&me);
+	if (event.btn == olc::Mouse::LEFT)
+	{
+		ItemStack t = slot->getStack();
+		slot->setStack(stacksOnHand.get());
+		stacksOnHand.set(std::move(t));
+		return true;
+	}
+	return false;
+}
 } // namespace gui

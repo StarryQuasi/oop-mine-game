@@ -23,7 +23,7 @@ struct Props
 	std::optional<bool> visible = {};
 	std::optional<std::string> assetName = {};
 	std::optional<std::string> text = {};	 // TextContainer
-	std::optional<olc::vf2d> scale = {};	 // TextContainer
+	std::optional<float> scale = {};	     // TextContainer
 	std::optional<Direction> direction = {}; // FlowContainer
 	std::optional<olc::Pixel> color = {};	 // TextContainer
 	std::optional<bool> autoSizing = {};	 // FlowContainer

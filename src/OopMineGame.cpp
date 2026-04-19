@@ -114,6 +114,11 @@ fail:
 
 void OopMineGame::genNewWorld(const GenerationSettings& settings)
 {
+	if (guiOverlay)
+	{
+		guiRoot->removeChild(guiOverlay->getId());
+		guiOverlay = nullptr;
+	}
 	world = std::make_unique<World>(*this, settings);
 	world->addEntity<Sheep>(world->getPlayer()->get().getPos());
 	(void)world->getPlayer()->get().addInvItem({Items::craftingTable, 1});
@@ -467,8 +472,7 @@ void OopMineGame::emitUiEvents()
 void OopMineGame::setHotbarSelection(int i)
 {
 	assert(Verify::in(i, -1, 10));
-	hotbarSelection = i;
-	hotbarSelection = (hotbarSelection.get() + 9) % 9;
+	hotbarSelection = (i + 9) % 9;
 	auto& player = world->getPlayer()->get();
 	if (player.getInvItem(hotbarSelection.get())->getItem() != Items::air)
 		guiHotbarText->setText(

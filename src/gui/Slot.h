@@ -14,8 +14,9 @@ public:
 	Slot(Props props, Bindable<ItemStack>& binding);
 
 	const ItemStack& getStack() const;
-
+	
 	Slot* setBinding(Bindable<ItemStack>& binding);
+	Slot* setStack(ItemStack v);
 
 	void draw(OopMineGame& game) const override;
 

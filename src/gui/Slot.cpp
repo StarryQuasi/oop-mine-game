@@ -1,6 +1,7 @@
 #include "Slot.h"
 #include "Anchor.h"
 #include "Blocks.h"
+#include "ItemStack.h"
 #include "OopMineGame.h"
 #include "gui/Container.h"
 
@@ -40,26 +41,36 @@ Slot* Slot::setBinding(Bindable<ItemStack>& binding)
 	return this;
 }
 
+Slot* Slot::setStack(ItemStack v)
+{
+	stack.set(std::move(v));
+	return this;
+}
+
 void Slot::draw(OopMineGame& game) const
 {
-	if (stack->getItem() == Items::air)
-		return;
-	const bool isBlock = stack->getItem().getBlock() != Blocks::air;
-	const auto& decalPatch =
-		isBlock ? game.getBlockAssetPatch(stack->getItem().getBlock().getId())
+	if (stack->getItem() != Items::air)
+	{
+		const bool isBlock = stack->getItem().getBlock() != Blocks::air;
+		const auto& decalPatch =
+			isBlock
+				? game.getBlockAssetPatch(stack->getItem().getBlock().getId())
 				: game.getAsset(
 						  "item/" + stack->getItem().getTextureName() + ".png")
 					  .transform([](const olc::Renderable& r)
 								 { return (olc::DecalPatch)*r.Decal(); });
-	if (decalPatch.has_value())
-	{
-		const olc::vi2d fakePadding = {3, 3};
-		const olc::vf2d realDrawSize =
-			(olc::vf2d)(getDrawSize() - fakePadding * 2);
-		// The scale argument here for the olc::DecalPatch overload is actually
-		// the size
-		game.DrawDecal(
-			getAbsolutePos() + fakePadding, decalPatch.value(), realDrawSize);
+		if (decalPatch.has_value())
+		{
+			const olc::vi2d fakePadding = {2, 2};
+			const olc::vf2d realDrawSize =
+				(olc::vf2d)(getDrawSize() - fakePadding * 2);
+			// The scale argument here for the olc::DecalPatch overload is
+			// actually the size
+			game.DrawDecal(
+				getAbsolutePos() + fakePadding,
+				decalPatch.value(),
+				realDrawSize);
+		}
 	}
 
 	Container::draw(game);
