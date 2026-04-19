@@ -30,13 +30,13 @@
 ### 物件導向
 
 * **繼承**
-    * 實體系統：以 `Entity` 為基礎，繼承出 `Mob` (AI 生物) 與 `Player` (物理頭髮渲染)，`Mob` 下進一步實作 `Sheep` 等生物實現目標選擇
-    * 方塊系統：`Block` 定義基本物理與貼圖，`CraftingTable` 透過繼承以擴充介面功能
+    * 實體系統：以 [`Entity`](/src/Entity.h) 為基礎，繼承出 [`Mob`](/src/Mob.h) (AI 生物) 與 [`Player`](/src/Player.h) (物理頭髮渲染)，[`Mob`](/src/Mob.h) 下進一步實作 [`Sheep`](/src/Sheep.h) 等生物實現目標選擇
+    * 方塊系統：[`Block`](/src/Block.h) 定義基本物理與貼圖，[`CraftingTable`](/src/gui/CraftingTable.h) 透過繼承以擴充介面功能
 * **封裝**
     * 所有核心成員變數（如位置、速度、血量）均設為 `protected` 或 `private`，並透過 getter/setter 進行控管與更新偵測
-    * `World` 類別封裝了地圖資料與實體列表，外部僅能透過定義好的介面與世界互動，確保資料完整性
+    * [`World`](/src/World.h) 類別封裝了地圖資料與實體列表，外部僅能透過定義好的介面與世界互動，確保資料完整性
 * **多型**:
-    * 動態綁定：`World` 內部存儲 `std::vector<std::unique_ptr<Entity>>`，在每幀更新時透過虛擬函式 `update()` 與 `render()` 觸發不同實體的行為
+    * 動態綁定：[`World`](/src/World.h) 內部存儲 `std::vector<std::unique_ptr<Entity>>`，在每幀更新時透過虛擬函式 `update()` 與 `render()` 觸發不同實體的行為
     * 虛擬解構子：確保所有繼承後的資源能被正確釋放，防止記憶體洩漏
 
 <!-- ### 設計模式
@@ -53,7 +53,7 @@
 * **程序化內容生成**：
     * 利用柏林噪音生成可重現的 2D 隨機世界
 * **模板元程式設計**：
-    * 運用 C++ 模板實作 `Bindable<T>` 屬性系統，支援任意資料類型的自動綁定與事件監聽
+    * 運用 C++ 模板實作 [`Bindable<T>`](/src/Bindable.h) 屬性系統，支援任意資料類型的自動綁定與事件監聽
 
 ### 使用函式庫
 
