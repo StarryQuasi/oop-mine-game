@@ -39,6 +39,7 @@ CraftingTable::CraftingTable(Player& player) :
 	const olc::vi2d size{18, 18};
 	olc::vi2d start{7, 141};
 	using namespace std::placeholders;
+	const auto onClick = std::bind(&CraftingTable::onSlotClick, this, _1, _2);
 	for (int i = 0; i < 9; i++)
 	{
 		slots[i] = addChild<Slot>(
@@ -47,7 +48,7 @@ CraftingTable::CraftingTable(Player& player) :
 				.pos = {{start.x + size.x * i, start.y}},
 			},
 			player.getInvItem(i));
-		slots[i]->onMouseDown(std::bind(&CraftingTable::onSlotClick, this, _1, _2));
+		slots[i]->onMouseDown(onClick);
 	}
 	start = {7, 83};
 	for (int i = 0; i < 27; i++)
@@ -58,8 +59,7 @@ CraftingTable::CraftingTable(Player& player) :
 				.pos = {{start.x + i % 9 * size.x, start.y + i / 9 * size.y}},
 			},
 			player.getInvItem(9 + i));
-		slots[9+i]->onMouseDown(
-			std::bind(&CraftingTable::onSlotClick, this, _1, _2));
+		slots[9 + i]->onMouseDown(onClick);
 	}
 	start = {29, 16};
 	for (int i = 0; i < 9; i++)
@@ -70,12 +70,11 @@ CraftingTable::CraftingTable(Player& player) :
 				.pos = {{start.x + i % 3 * size.x, start.y + i / 3 * size.y}},
 			},
 			stacksInput[i]);
-		slotsInput[i]->onMouseDown(
-			std::bind(&CraftingTable::onSlotClick, this, _1, _2));
+		slotsInput[i]->onMouseDown(onClick);
 	}
 	slotsOutput =
 		addChild<Slot>({.size = {{26, 26}}, .pos = {{119, 31}}}, stacksOutput);
-	slotsOutput->onMouseDown(std::bind(&CraftingTable::onSlotClick, this, _1, _2));
+	slotsOutput->onMouseDown(onClick);
 	slotsOnHand = addChild<Slot>({.size = size}, stacksOnHand);
 	// Consume all input
 	onMouseDown([](Container&, const MouseEvent&) { return true; });
