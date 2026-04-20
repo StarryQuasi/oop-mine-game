@@ -63,37 +63,58 @@
 * **模板元程式設計**：
     * 運用 C++ 模板實作 [`Bindable<T>`](/src/Bindable.h) 屬性系統，支援任意資料類型的自動綁定與事件監聽
 
-### 使用函式庫
+### 使用資源
 
-- olcPixelGameEngine (OLC-3)
-- FastNoiseLite (MIT)
-- stb_image (MIT)
-- miniz (MIT)
+- [olcPixelGameEngine](https://github.com/onelonecoder/olcpixelgameengine) (OLC-3) - 渲染
+- [FastNoiseLite](https://github.com/Auburn/FastNoiseLite) (MIT) - 噪音
+- [stb_image](https://github.com/nothings/stb) (MIT) - 圖片解碼
+- [miniz](https://github.com/richgel999/miniz) (MIT) - 壓縮檔解碼
+- [PixelLab](https://www.pixellab.ai/) - AI 生成實體貼圖
+- [SummerFields 阿神材質包](https://github.com/SummerFields/SummerFields) (CC BY-NC-SA) - 方塊/介面貼圖
 
 ## 遊戲執行
 
-- 到 [releases](https://github.com/StarryQuasi/oop-mine-game/releases) 下載執行檔及 assets.zip
+<!-- > [!INFO]
+> 目前只會自動發布 Windows x64 及 Apple Silicon -->
+
+> [!INFO]
+> 目前只測試過 Windows 11 x64 (msvc) 及 macOS 15 on Apple Silicon (clang)
+
+- 下載執行檔及 assets.zip
 - 開啟執行檔
 
+| [assets.zip](https://github.com/StarryQuasi/oop-mine-game/releases/latest/download/assets.zip) | [Windows 11 x64](https://github.com/StarryQuasi/oop-mine-game/releases/latest/download/OopMineGame-windows-x64.exe) | [macOS 15 Apple Silicon](https://github.com/StarryQuasi/oop-mine-game/releases/latest/download/OopMineGame-macos-apple) |
+| ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+
 ## 遊戲編譯
+
 - 安裝 git 或 GitHub Desktop
 - `git clone https://github.com/StarryQuasi/oop-mine-game`
-- 執行 `create_assets_zip` 產生素材檔
+- ***產生素材檔！***
+  - `create_assets_zip` (Windows)
+  - `chmod +x ./create_assets_zip.sh` `create_create_assets_zip` (Unix)
 - 選擇開發環境
 
 ### Visual Studio with msvc
-- 安裝 [Visual Studio](https://visualstudio.microsoft.com/downloads/) 並選擇`C++桌面開發`
+- 安裝 [Visual Studio](https://visualstudio.microsoft.com/downloads/) 並選擇 `C++桌面開發`
 - 開啟 `oop-mine-game` 資料夾
 - 綠色空心箭頭 `ctrl+f5` 執行
 - 綠色實心箭頭 `f5` 除錯
 
-### VSCode with clang
+### VSCode with clang (建議使用)
+- 安裝編譯器 (Windows)
+    - 安裝 [Visual Studio](https://visualstudio.microsoft.com/downloads/) 並選擇 `C++桌面開發`
+    - 安裝 [Chocolatey](https://chocolatey.org/install)
+    - 以系統管理員身分執行 `choco install cmake llvm -y`
+- 安裝編譯器 (macOS)
+    - `brew install llvm`
 - 安裝 [VSCode](https://code.visualstudio.com/download)
 - 安裝 `clangd` `CMake Tools` `CodeLLDB` 插件
-- 安裝 [Chocolatey](https://chocolatey.org/install)
-- 以系統管理員身分執行 `choco install cmake llvm -y`
 - 開啟 `oop-mine-game` 資料夾
-- `ctrl+shift+p` -> `CMake：Select a Kit` -> `Clang 22.1.0`
+- 選擇編譯器路徑 (確保使用剛剛安裝的最新編譯器)
+  - `ctrl+shift+p` -> `CMake：Select a Kit`
+  - `Clang 22.1.0 x86_64-pc-windows-msvc` (Windows)
+  - `Clang 22 (Homebrew)` (macOS)
 - `shift+f5` 執行
 - `f5` 除錯 (記得至側邊攔 `執行與偵錯` 選擇 `Debug lldb`)
 
