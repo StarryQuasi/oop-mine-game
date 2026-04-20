@@ -75,6 +75,38 @@ void Block::onBreak(World& world, olc::vi2d pos) const
 		vel.y = world.randomFloat(-velScale * 2, velScale);
 		item.setVel(vel);
 	}
+
+	const auto now = std::chrono::steady_clock::now();
+	const olc::vf2d velRange = {0.5f, 3.0f};
+	const auto& assetOpt = world.getGame().getBlockAssetPatch(getId());
+	if (assetOpt.has_value())
+	{
+		const auto& asset = assetOpt.value();
+		for (int _ = 0; _ < 32; _++)
+		{
+			olc::Pixel color = asset.decal->sprite->GetPixel(
+				(int)(world.randomFloat(asset.coords[1].x, asset.coords[2].x) *
+					  asset.decal->width),
+				(int)(world.randomFloat(asset.coords[1].y, asset.coords[0].y) *
+					  asset.decal->height));
+			world.addParticle({
+				.lifeStart = now,
+				.lifeEnd =
+					now + std::chrono::milliseconds(world.randomInt(100, 700)),
+				.pos = olc::vf2d(pos) +
+					   olc::vf2d{
+						   world.randomFloat(0.0f, 1.0f),
+						   world.randomFloat(0.0f, 1.0f)},
+				.vel =
+					{world.randomFloat(-velRange.x / 2.0f, velRange.x / 2.0f),
+					 world.randomFloat(0.0f, velRange.y)},
+				.color = color,
+				.scale = world.randomFloat(2.0f, 5.0f),
+				.alive = true,
+				.type = ParticleType::generic,
+			});
+		}
+	}
 }
 
 bool Block::onUse(World& world, olc::vi2d pos) const { return false; }

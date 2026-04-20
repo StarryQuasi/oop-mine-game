@@ -16,6 +16,7 @@ struct Particle
     olc::vf2d pos{};
     olc::vf2d vel{};
     olc::Pixel color{};
+    // Scale of 32 = 1 block
     float scale{};
     bool alive{};
     ParticleType type{};
