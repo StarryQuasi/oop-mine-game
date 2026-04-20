@@ -5,7 +5,7 @@
 #define NOMINMAX
 #include <Windows.h>
 #elif defined(__APPLE__)
-#include <unistd.h>
+#include <mach-o/dyld.h>
 #endif
 
 #define OLC_IMAGE_STB
@@ -26,14 +26,15 @@ void setCwd()
 	GetModuleFileNameW(nullptr, path, MAX_PATH);
 	std::filesystem::path exePath(path);
 	std::filesystem::current_path(exePath.parent_path());
-#elif defined(__APPLE__)
+	std::println("Set cwd to \"{}\"", std::filesystem::current_path().string());
+	#elif defined(__APPLE__)
 	char path[PATH_MAX];
-	// This no work?
-	ssize_t count = readlink("/proc/self/exe", path, PATH_MAX);
-	if (count > 0)
+	uint32_t size = sizeof(path);
+	if (_NSGetExecutablePath(path, &size) == 0)
 	{
-		std::filesystem::path exePath(std::string(path, count));
+		std::filesystem::path exePath(std::string(path, size - 1));
 		std::filesystem::current_path(exePath.parent_path());
+		std::println("Set cwd to \"{}\"", std::filesystem::current_path().string());
 	}
 #else
 	throw std::runtime_error("setCwd() not implemented");
