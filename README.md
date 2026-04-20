@@ -65,8 +65,8 @@
 
 ## 使用資源
 
-> [!NOTE] Attributions
->
+> [!NOTE]
+> 
 > 世界 OOP 架構部分借鑑 [Minecraft](https://www.minecraft.net/)
 > 
 > 介面 OOP 架構部分借鑑 [osu!framework](https://github.com/ppy/osu-framework)
