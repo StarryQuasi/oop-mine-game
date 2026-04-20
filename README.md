@@ -90,11 +90,17 @@ See the [LICENSE](/LICENSE) file for more details
 > 
 > 目前只測試過 Windows 11 x64 (msvc) 及 macOS 15 on Apple Silicon (clang)
 
-- 下載執行檔及 assets.zip
-- 開啟執行檔
-
 | [assets.zip](https://github.com/StarryQuasi/oop-mine-game/releases/latest/download/assets.zip) | [Windows 11 x64](https://github.com/StarryQuasi/oop-mine-game/releases/latest/download/OopMineGame-windows-x64.exe) | [macOS 15 Apple Silicon](https://github.com/StarryQuasi/oop-mine-game/releases/latest/download/OopMineGame-macos-apple) |
 | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+
+- 下載執行檔及 assets.zip
+- Windows
+  - 開啟執行檔並允許執行
+- macOS
+  - `cd ~/Downloads && chmod +x ./OopMineGame-macos-apple`
+  - 開啟執行檔
+  - 到問號按鈕裡面找到允許執行的設定連結
+  - 再次開啟執行檔
 
 ## 遊戲編譯
 
