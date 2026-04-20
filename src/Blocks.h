@@ -17,6 +17,8 @@ public:
 	static const Block diamondOre;
 	static const Block oakLog;
 	static const Block oakLeaves;
+	static const Block cherryLog;
+	static const Block cherryLeaves;
 	static const CraftingTable craftingTable;
 	static const Block ladder;
 

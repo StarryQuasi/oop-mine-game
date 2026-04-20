@@ -94,6 +94,8 @@ private:
 	float sampleAt(olc::vi2d pos);
 	// Converts random unsigned to float [0, 1)
 	float randToFloat(unsigned v);
+
+	static std::vector<std::vector<std::vector<const Block*>>> makeTreePatterns();
 };
 
 template <typename T, typename... Args>

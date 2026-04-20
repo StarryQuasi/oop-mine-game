@@ -19,6 +19,8 @@ const Item Items::copperOre      = builder().name("Copper Ore").block(Blocks::co
 const Item Items::diamondOre     = builder().name("Diamond Ore").block(Blocks::diamondOre).build();
 const Item Items::oakLog         = builder().name("Oak Log").block(Blocks::oakLog).build();
 const Item Items::oakLeaves      = builder().name("Oak Leaves").block(Blocks::oakLeaves).build();
+const Item Items::cherryLog      = builder().name("Cherry Log").block(Blocks::cherryLog).build();
+const Item Items::cherryLeaves   = builder().name("Cherry Leaves").block(Blocks::cherryLeaves).build();
 const Item Items::craftingTable  = builder().name("Crafting Table").block(Blocks::craftingTable).build();
 const Item Items::ladder         = builder().name("Ladder").block(Blocks::ladder).build();
 const Item Items::coal           = builder().name("Coal").build();
@@ -39,6 +41,8 @@ const std::vector<const Item*> Items::list = {
 	&Items::diamondOre,
 	&Items::oakLog,
 	&Items::oakLeaves,
+	&Items::cherryLog,
+	&Items::cherryLeaves,
 	&Items::ladder,
 	&Items::coal,
 	&Items::copperIngot,
