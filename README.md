@@ -8,7 +8,7 @@
 - 系級：資工1A
 - 組長：高憲成
 - 組員：張育溥、程昱銘
-- 報告：https://pres.quazyr.xyz/oop.html
+- 報告：https://pres.quazyr.xyz/
 - 程式：https://github.com/StarryQuasi/oop-mine-game/tree/main/src
 
 ## 分工明細
