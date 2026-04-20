@@ -74,10 +74,8 @@
 
 ## 遊戲執行
 
-<!-- > [!INFO]
-> 目前只會自動發布 Windows x64 及 Apple Silicon -->
-
-> [!INFO]
+> [!NOTE]
+> 
 > 目前只測試過 Windows 11 x64 (msvc) 及 macOS 15 on Apple Silicon (clang)
 
 - 下載執行檔及 assets.zip
