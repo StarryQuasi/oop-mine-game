@@ -165,9 +165,8 @@ void Entity::updateInput(World& world, float elapsed)
 				if (block != Blocks::air &&
 					world.getBlock(target).isReplaceable())
 				{
-					getInvItem(
-						input.invSelection).set(
-						getInvItem(input.invSelection)->copy().decrease());
+					getInvItem(input.invSelection)
+						.set(getInvItem(input.invSelection)->copy().decrease());
 					world.setBlock(target, block);
 				}
 			}
@@ -203,6 +202,49 @@ void Entity::update(World& world, float elapsed)
 	vel *= 1.0f - std::min(40.0f * elapsed, 1.0f);
 	direction = vel.x > 0.01f ? true : vel.x < -0.01f ? false : direction;
 	checkOnGround(world);
+	// Walk particles
+	if (isOnGround() && std::abs(vel.x) >= 0.5f)
+	{
+		const olc::vi2d standingOn = {
+			(int)getPos().x, (int)(getPos().y + 0.00001f)};
+		if (world.isValidPosition(standingOn))
+		{
+			const auto& assetOpt = world.getGame().getBlockAssetPatch(
+				world.getBlock(standingOn).getId());
+			if (assetOpt.has_value())
+			{
+				const auto now = std::chrono::steady_clock::now();
+				const olc::vf2d velRange = {0.3f, 0.4f};
+				const int dir = getDirection() ? 1 : -1;
+				const auto& asset = assetOpt.value();
+				for (int _ = 0; _ < 4; _++)
+				{
+					olc::Pixel color = asset.decal->sprite->GetPixel(
+						(int)(world.randomFloat(
+								  asset.coords[1].x, asset.coords[2].x) *
+							  asset.decal->width),
+						(int)(world.randomFloat(
+								  asset.coords[1].y, asset.coords[0].y) *
+							  asset.decal->height));
+					world.addParticle({
+						.lifeStart = now,
+						.lifeEnd = now + std::chrono::milliseconds(
+											 world.randomInt(100, 500)),
+						.pos =
+							{world.randomFloat(getBb().first.x, getBb().second.x),
+							 getPos().y},
+						.vel =
+							{-dir * world.randomFloat(0.0f, velRange.x),
+							 world.randomFloat(-velRange.y, velRange.y)},
+						.color = color,
+						.scale = world.randomFloat(2.0f, 4.0f),
+						.alive = true,
+						.type = ParticleType::generic,
+					});
+				}
+			}
+		}
+	}
 }
 
 void Entity::draw(OopMineGame& game) const
