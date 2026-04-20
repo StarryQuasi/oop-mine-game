@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <chrono>
 #include <concepts>
 #include <functional>
 #include <mdspan>
@@ -9,6 +10,7 @@
 #include <ranges>
 #include <vector>
 
+#include "Particle.h"
 #include "libs/FastNoiseLite.h"
 #include "libs/olcPixelGameEngine.h"
 
@@ -27,6 +29,7 @@ struct GenerationSettings
 	float copperThresholdMin = 0.31f;
 	float copperThresholdMax = 0.41f;
 	float coalThreshold = 0.7f;
+	int randomUpdateCount = 3;
 };
 
 class World
@@ -69,21 +72,29 @@ public:
 	std::vector<std::reference_wrapper<T>>
 	getEntities(std::pair<olc::vf2d, olc::vf2d> bb) const;
 
-	void update(float elapsedTime);
-	void draw(OopMineGame&);
+	void addParticle(Particle p);
+
+	void update(float elapsed);
+	void draw(OopMineGame& game);
 
 private:
-	const GenerationSettings settings;
-	OopMineGame* game;
-	FastNoiseLite noise;
-	std::vector<int> blocksRaw;
+	const GenerationSettings settings{};
+	OopMineGame* game{};
+	FastNoiseLite noise{};
+	std::vector<int> blocksRaw{};
 	// std::dextents = dynamic extents
 	// std::layout_left = column major (access by x, y)
-	std::mdspan<int, std::dextents<size_t, 2>, std::layout_left> blocks;
-	std::unordered_map<int, std::unique_ptr<Entity>> entities = {};
-	std::mt19937 random = {};
-	std::vector<olc::vf2d> drawBufPos = {};
-	std::vector<olc::vf2d> drawBufUv = {};
+	std::mdspan<int, std::dextents<size_t, 2>, std::layout_left> blocks{};
+	std::unordered_map<int, std::unique_ptr<Entity>> entities{};
+	std::mt19937 random{};
+	std::vector<olc::vf2d> drawBufPos{};
+	std::vector<olc::vf2d> drawBufUv{};
+	std::vector<olc::Pixel> drawBufColor{};
+	std::chrono::steady_clock::time_point lastRandomUpdate{};
+	std::vector<Particle> particles{};
+
+	static std::vector<std::vector<std::vector<const Block*>>>
+	makeTreePatterns();
 
 	void generateWorld();
 	// Returns [0, 1]
@@ -95,7 +106,10 @@ private:
 	// Converts random unsigned to float [0, 1)
 	float randToFloat(unsigned v);
 
-	static std::vector<std::vector<std::vector<const Block*>>> makeTreePatterns();
+	void randomUpdate(float elapsed);
+	void drawUpdate(float elapsed);
+	void updateParticles(float elapsed);
+	void drawParticles(OopMineGame& game);
 };
 
 template <typename T, typename... Args>

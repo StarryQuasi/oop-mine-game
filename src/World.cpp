@@ -6,6 +6,7 @@
 #include <random>
 #include <ranges>
 
+#include "Block.h"
 #include "Blocks.h"
 #include "Entity.h"
 #include "OopMineGame.h"
@@ -104,59 +105,143 @@ std::optional<std::reference_wrapper<Player>> World::getPlayer() const
 {
 	for (auto& [id, entity] : entities)
 	{
-		if (Player* player = dynamic_cast<Player*>(entity.get()))
-		{
-			if (player != nullptr)
-				return std::ref(*player);
-			return {};
-		}
+		if (Player* player = dynamic_cast<Player*>(entity.get());
+			player != nullptr)
+			return std::ref(*player);
 	}
 	return {};
 }
 
-void World::update(float elapsedTime)
+void World::addParticle(Particle p) { particles.push_back(std::move(p)); }
+
+void World::update(float elapsed)
 {
+	if (std::chrono::steady_clock::now() - lastRandomUpdate >=
+		std::chrono::milliseconds(1000 / 20))
+	{
+		lastRandomUpdate = std::chrono::steady_clock::now();
+		randomUpdate(elapsed);
+	}
 	for (auto& [id, entity] : entities)
 	{
-		entity->update(*this, elapsedTime);
+		entity->update(*this, elapsed);
 	}
+	drawUpdate(elapsed);
+	updateParticles(elapsed);
 	std::erase_if(
 		entities, [](const auto& pair) { return pair.second->isDead(); });
+}
+
+void World::randomUpdate(float elapsed) {}
+
+void World::drawUpdate(float elapsed)
+{
+	const int radius = 32;
+	const auto& player = getPlayer()->get();
+	for (int _ = 0; _ < 200; _++)
+	{
+		const olc::vi2d pos = {
+			(int)player.getX() + randomInt(-radius, radius),
+			(int)player.getY() + randomInt(-radius, radius)};
+		if (isValidPosition(pos) && getBlock(pos).requiresDrawUpdate())
+			getBlock(pos).drawUpdate(*this, pos);
+	}
+}
+
+void World::updateParticles(float elapsed)
+{
+	const auto now = std::chrono::steady_clock::now();
+	std::erase_if(
+		particles, [now](const Particle& p) { return now >= p.lifeEnd; });
+	for (Particle& p : particles)
+	{
+		p.pos += p.vel * elapsed;
+	}
+}
+
+void World::drawParticles(OopMineGame& game)
+{
+	auto& view = game.getView();
+	const auto now =
+		std::chrono::steady_clock::now().time_since_epoch().count();
+
+	for (const Particle& p : particles)
+	{
+		const float scale = Utils::map(
+			(float)now,
+			(float)p.lifeStart.time_since_epoch().count(),
+			(float)p.lifeEnd.time_since_epoch().count(),
+			1.0f,
+			0.25f);
+		const olc::vf2d size = olc::vf2d{1, 1} / 32.0f * p.scale * scale;
+		const olc::vf2d tl = view.WorldToScreen(p.pos - size / 2.0f);
+		const olc::vf2d br = view.WorldToScreen(p.pos + size / 2.0f);
+		const olc::vf2d ss = br - tl; // Size in screen space
+		olc::Pixel color = p.color;
+		color.a = color.a * scale;
+		drawBufPos.emplace_back(tl.x, tl.y + ss.y);
+		drawBufPos.emplace_back(tl.x, tl.y);
+		drawBufPos.emplace_back(tl.x + ss.x, tl.y);
+		drawBufUv.emplace_back(0, 0);
+		drawBufUv.emplace_back(0, 0);
+		drawBufUv.emplace_back(0, 0);
+		drawBufColor.emplace_back(color);
+		drawBufColor.emplace_back(color);
+		drawBufColor.emplace_back(color);
+		drawBufPos.emplace_back(tl.x, tl.y + ss.y);
+		drawBufPos.emplace_back(tl.x + ss.x, tl.y);
+		drawBufPos.emplace_back(tl.x + ss.x, tl.y + ss.y);
+		drawBufUv.emplace_back(0, 0);
+		drawBufUv.emplace_back(0, 0);
+		drawBufUv.emplace_back(0, 0);
+		drawBufColor.emplace_back(color);
+		drawBufColor.emplace_back(color);
+		drawBufColor.emplace_back(color);
+	}
+	game.SetDecalStructure(olc::DecalStructure::LIST);
+	game.DrawPolygonDecal(nullptr, drawBufPos, drawBufUv, drawBufColor);
+	game.SetDecalStructure(olc::DecalStructure::FAN);
+	drawBufPos.clear();
+	drawBufUv.clear();
+	drawBufColor.clear();
 }
 
 void World::draw(OopMineGame& game)
 {
 	auto& view = game.getView();
 
-	// TODO: This sometimes loops indefinitely when regenerating world while
-	// zoomed out
 	const olc::vi2d tl = view.GetTopLeftTile().max({0, 0});
 	const olc::vi2d br = view.GetBottomRightTile().min(getSize());
-	for (const auto& pos : Iterate::over(tl, br))
+	const size_t capBefore = drawBufPos.capacity();
+	for (const auto& p : Iterate::over(tl, br))
 	{
-		const Block& block = getBlock(pos);
+		const Block& block = getBlock(p);
 		if (auto& asset = game.getBlockAssetPatch(block.getId());
 			asset.has_value())
 		{
-			drawBufPos.emplace_back(
-				view.WorldToScreen(olc::vi2d{pos.x, pos.y + 1}));
-			drawBufPos.emplace_back(view.WorldToScreen(pos));
-			drawBufPos.emplace_back(
-				view.WorldToScreen(olc::vi2d{pos.x + 1, pos.y}));
+			const olc::vf2d size = olc::vf2d{1, 1};
+			const olc::vf2d tl = view.WorldToScreen(p);
+			const olc::vf2d br = view.WorldToScreen(p + size);
+			const olc::vf2d ss = br - tl; // Size in screen space
+			drawBufPos.emplace_back(tl.x, tl.y + ss.y);
+			drawBufPos.emplace_back(tl.x, tl.y);
+			drawBufPos.emplace_back(tl.x + ss.x, tl.y);
 			drawBufUv.emplace_back(asset->coords[0]);
 			drawBufUv.emplace_back(asset->coords[1]);
 			drawBufUv.emplace_back(asset->coords[2]);
-			drawBufPos.emplace_back(
-				view.WorldToScreen(olc::vi2d{pos.x, pos.y + 1}));
-			drawBufPos.emplace_back(
-				view.WorldToScreen(olc::vi2d{pos.x + 1, pos.y}));
-			drawBufPos.emplace_back(
-				view.WorldToScreen(olc::vi2d{pos.x + 1, pos.y + 1}));
+			drawBufPos.emplace_back(tl.x, tl.y + ss.y);
+			drawBufPos.emplace_back(tl.x + ss.x, tl.y);
+			drawBufPos.emplace_back(tl.x + ss.x, tl.y + ss.y);
 			drawBufUv.emplace_back(asset->coords[0]);
 			drawBufUv.emplace_back(asset->coords[2]);
 			drawBufUv.emplace_back(asset->coords[3]);
 		}
 	}
+	if (drawBufPos.capacity() > capBefore)
+		std::println(
+			"Vertex buffer size increased from {} to {}",
+			capBefore,
+			drawBufPos.capacity());
 	game.SetDecalStructure(olc::DecalStructure::LIST);
 	game.DrawPolygonDecal(
 		game.getAsset("atlas").value().Decal(),
@@ -171,6 +256,8 @@ void World::draw(OopMineGame& game)
 	{
 		entity->draw(game);
 	}
+
+	drawParticles(game);
 }
 
 void World::generateWorld()
@@ -224,6 +311,8 @@ void World::generateWorld()
 	{
 		const float treeNoiseY = 16384.0f;
 		const int chunkSeed = (getSeed() * 73856093) ^ (x / 16 * 19349663);
+		// Avoid using std::uniform_int_distribution here because I think it
+		// might call rng multiple times and become unpredictable
 		std::mt19937 rng(chunkSeed);
 		const int tries = rng() % 8;
 		for (int _ = 0; _ < tries; _++)
@@ -269,7 +358,7 @@ void World::generateWorld()
 	auto end = std::chrono::steady_clock::now();
 	auto dur =
 		std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
-	std::println("world gen finished in {}", dur);
+	std::println("World gen finished in {}", dur);
 }
 
 float World::sampleAt(int x, int y)

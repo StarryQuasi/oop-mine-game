@@ -79,6 +79,12 @@ public:
 		const olc::vi2d diff = b - a;
 		return std::abs(diff.x) + std::abs(diff.y);
 	}
+
+	template <typename T>
+	static T map(T v, T min1, T max1, T min2, T max2)
+	{
+		return (T)((float)v - min1) / ((float)max1 - min1) * ((float)max2 - min2) + min2;
+	}
 };
 
 class Iterate

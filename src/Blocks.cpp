@@ -18,9 +18,9 @@ const Block Blocks::coalOre               = builder().name("Coal Ore").item(Item
 const Block Blocks::copperOre             = builder().name("Copper Ore").item(Items::copperOre).loot().min(0).item(Items::cobblestone).loot().max(3).item(Items::copperIngot).build();
 const Block Blocks::diamondOre            = builder().name("Diamond Ore").item(Items::diamondOre).loot().min(0).item(Items::cobblestone).loot().item(Items::diamond).build();
 const Block Blocks::oakLog                = builder().name("Oak Log").item(Items::oakLog).build();
-const Block Blocks::oakLeaves             = builder().name("Oak Leaves").item(Items::oakLeaves).transparent(true).build();
+const Leaves Blocks::oakLeaves            = builder().name("Oak Leaves").item(Items::oakLeaves).transparent(true).build<Leaves>();
 const Block Blocks::cherryLog             = builder().name("Cherry Log").item(Items::cherryLog).build();
-const Block Blocks::cherryLeaves          = builder().name("Cherry Leaves").item(Items::cherryLeaves).transparent(true).build();
+const Leaves Blocks::cherryLeaves         = builder().name("Cherry Leaves").item(Items::cherryLeaves).transparent(true).build<Leaves>();
 const CraftingTable Blocks::craftingTable = builder().name("Crafting Table").item(Items::craftingTable).build<CraftingTable>();
 const Block Blocks::ladder                = builder().name("Ladder").item(Items::ladder).build();
 // clang-format on

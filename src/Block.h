@@ -22,17 +22,20 @@ public:
 	virtual const Item& getItem() const;
 
 	virtual bool requiresUpdate() const;
-	virtual bool requiresRenderUpdate() const;
+	virtual bool requiresRandomUpdate() const;
+	virtual bool requiresDrawUpdate() const;
 	virtual bool isSolid() const;
 	// Whether it can be replaced by vegetation like trees
 	virtual bool isReplaceable() const;
 
 	virtual void update(World& world, olc::vi2d pos) const;
-	virtual void renderUpdate(World& world, olc::vi2d pos) const;
+	virtual void randomUpdate(World& world, olc::vi2d pos) const;
+	virtual void drawUpdate(World& world, olc::vi2d pos) const;
 	virtual void onBreak(World& world, olc::vi2d pos) const;
 	virtual bool onUse(World& world, olc::vi2d pos) const;
-	// Returns list of each loot table entry item of count [min, max] mapped
-	// from [probability, 1.0f) rolled from a random float
+	// Returns list of each loot table entry item of count {0, min..max} mapped
+	// from {0, probability..1.0f} rolled from a random float.
+	// If probability is 1.0f, the item is guaranteed to drop within [min, max]
 	virtual std::vector<ItemStack> getLoot(World& world, olc::vi2d pos) const;
 
 	operator int() const;
@@ -74,14 +77,18 @@ private:
 class CraftingTable : public Block
 {
 public:
-	CraftingTable(
-		std::string name,
-		std::string textureName,
-		const Item* item,
-		bool transparent,
-		LootTable lootTable);
+	using Block::Block; // Inherit constructors (accessibility preserved)
 
 	bool onUse(World& world, olc::vi2d pos) const override;
+};
+
+class Leaves : public Block
+{
+public:
+	using Block::Block;
+
+	bool requiresDrawUpdate() const override;
+	void drawUpdate(World& world, olc::vi2d pos) const override;
 };
 
 class BlockBuilder;

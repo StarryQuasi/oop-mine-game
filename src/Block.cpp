@@ -1,18 +1,19 @@
 #include <cassert>
-#include <cctype>
 #include <memory>
 #include <vector>
 
-#include "DroppedItem.h"
-#include "Verify.h"
-#include "gui/CraftingTable.h"
 #include "libs/olcPixelGameEngine.h"
 
 #include "Block.h"
+#include "Blocks.h"
+#include "DroppedItem.h"
 #include "Item.h"
 #include "ItemStack.h"
 #include "Items.h"
+#include "Utils.h"
+#include "Verify.h"
 #include "World.h"
+#include "gui/CraftingTable.h"
 
 int Block::blockIdCounter = 0;
 
@@ -42,7 +43,9 @@ const std::string& Block::getTextureName() const { return textureName; }
 
 bool Block::requiresUpdate() const { return false; }
 
-bool Block::requiresRenderUpdate() const { return false; }
+bool Block::requiresRandomUpdate() const { return false; }
+
+bool Block::requiresDrawUpdate() const { return false; }
 
 bool Block::isSolid() const { return !transparent; }
 
@@ -52,7 +55,9 @@ const Item& Block::getItem() const { return *item; }
 
 void Block::update(World& world, olc::vi2d pos) const {}
 
-void Block::renderUpdate(World& world, olc::vi2d pos) const {}
+void Block::randomUpdate(World& world, olc::vi2d pos) const {}
+
+void Block::drawUpdate(World& world, olc::vi2d pos) const {}
 
 void Block::onBreak(World& world, olc::vi2d pos) const
 {
@@ -62,11 +67,12 @@ void Block::onBreak(World& world, olc::vi2d pos) const
 		const float posscale = 0.25f;
 		dropPos.x += 0.5f + world.randomFloat(-posscale, posscale);
 		dropPos.y += 0.5f + world.randomFloat(-posscale, posscale);
-		DroppedItem& item = world.addEntity<DroppedItem>(dropPos, std::move(stack));
+		DroppedItem& item =
+			world.addEntity<DroppedItem>(dropPos, std::move(stack));
 		olc::vf2d vel = {};
-		const float velscale = 16;
-		vel.x = world.randomFloat(-velscale, velscale);
-		vel.y = world.randomFloat(-velscale * 2, velscale);
+		const float velScale = 16;
+		vel.x = world.randomFloat(-velScale, velScale);
+		vel.y = world.randomFloat(-velScale * 2, velScale);
 		item.setVel(vel);
 	}
 }
@@ -84,51 +90,82 @@ std::vector<ItemStack> Block::getLoot(World& world, olc::vi2d pos) const
 		assert(entry.item != nullptr);
 		if (entry.item == &Items::air)
 			continue;
+		if (entry.probability == 1.0f && entry.min == entry.max)
+		{
+			list.emplace_back(*entry.item, entry.min);
+			continue;
+		}
 		const float rand = world.randomFloat(0, 1);
-		const int range = entry.max - entry.min + 1;
+		const float successRange = 1.0f - entry.probability;
+		// {0, probability..1.0f}
+		// v
+		// {0, min..max}
 		int count;
-		const float randRange = (1.0f - entry.probability);
-		if (rand < 1.0f - entry.probability)
+		if (rand < successRange)
 			count = 0;
 		else
-			count = (int)((rand - (1.0f - entry.probability)) /
-							  entry.probability * range +
-						  entry.min);
+			count = (int)Utils::map(
+				rand - successRange,
+				0.0f,
+				entry.probability,
+				(float)entry.min,
+				(float)(entry.max + 1));
 		assert(
-			rand < 1 ? (count == 0 || Verify::in(count, entry.min, entry.max))
-					 : Verify::in(count, entry.min, entry.max));
+			entry.probability == 1
+				? Verify::in(count, entry.min, entry.max)
+				: (count == 0 || Verify::in(count, entry.min, entry.max)));
 		if (count)
 		{
 			list.emplace_back(*entry.item, count);
 		}
 	}
-	return list;
+	return std::move(list);
 }
 
 Block::operator int() const { return id; }
 
 bool Block::operator==(const Block& other) const { return id == other.id; }
 
-CraftingTable::CraftingTable(
-	std::string name,
-	std::string textureName,
-	const Item* item,
-	bool transparent,
-	LootTable lootTable) :
-	Block(
-		std::move(name),
-		std::move(textureName),
-		item,
-		transparent,
-		std::move(lootTable))
-{
-}
-
 bool CraftingTable::onUse(World& world, olc::vi2d pos) const
 {
 	world.getGame().openScreen(
 		std::make_unique<gui::CraftingTable>(world.getPlayer()->get()));
 	return true;
+}
+
+bool Leaves::requiresDrawUpdate() const { return true; }
+
+void Leaves::drawUpdate(World& world, olc::vi2d pos) const
+{
+	if (world.randomInt(1, 25) == 1)
+	{
+		const auto now = std::chrono::steady_clock::now();
+		const olc::vf2d velRange = {1.0f, 1.5f};
+		olc::Pixel color;
+		if (*this == Blocks::oakLeaves)
+			color = {0x00FF00};
+		else if (*this == Blocks::cherryLeaves)
+			color = {0xFFC0CB};
+		else
+			assert(false);
+		color.a = world.randomInt(64, 192);
+		world.addParticle({
+			.lifeStart = now,
+			.lifeEnd =
+				now + std::chrono::milliseconds(world.randomInt(1000, 2500)),
+			.pos = olc::vf2d(pos) +
+				   olc::vf2d{
+					   world.randomFloat(0.0f, 1.0f),
+					   world.randomFloat(0.0f, 1.0f)},
+			.vel =
+				{world.randomFloat(-velRange.x / 2.0f, velRange.x / 2.0f),
+				 world.randomFloat(0.0f, velRange.y)},
+			.color = color,
+			.scale = world.randomFloat(3.0f, 7.0f),
+			.alive = true,
+			.type = ParticleType::generic,
+		});
+	}
 }
 
 BlockBuilder& BlockBuilder::name(std::string v)
