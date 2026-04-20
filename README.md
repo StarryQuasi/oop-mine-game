@@ -15,7 +15,7 @@
 
 - 高憲成：GUI 框架開發、程式設計、邏輯整合
 - 張育溥：UML/報告撰寫、核心架構 (World/Entity) 構建
-- 程昱銘：吃、睡
+- 程昱銘：吃、睡、吃睡
 
 ## 遊戲介紹
 
@@ -63,14 +63,26 @@
 * **模板元程式設計**：
     * 運用 C++ 模板實作 [`Bindable<T>`](/src/Bindable.h) 屬性系統，支援任意資料類型的自動綁定與事件監聽
 
-### 使用資源
+## 使用資源
 
-- [olcPixelGameEngine](https://github.com/onelonecoder/olcpixelgameengine) (OLC-3) - 渲染
+> [!NOTE] Attributions
+>
+> 世界 OOP 架構部分借鑑 [Minecraft](https://www.minecraft.net/)
+> 
+> 介面 OOP 架構部分借鑑 [osu!framework](https://github.com/ppy/osu-framework)
+
+- [olcPixelGameEngine](https://github.com/onelonecoder/olcpixelgameengine) (OLC-3) - 渲染、碰撞偵測
 - [FastNoiseLite](https://github.com/Auburn/FastNoiseLite) (MIT) - 噪音
 - [stb_image](https://github.com/nothings/stb) (MIT) - 圖片解碼
 - [miniz](https://github.com/richgel999/miniz) (MIT) - 壓縮檔解碼
 - [PixelLab](https://www.pixellab.ai/) - AI 生成實體貼圖
 - [SummerFields 阿神材質包](https://github.com/SummerFields/SummerFields) (CC BY-NC-SA) - 方塊/介面貼圖
+
+## 授權 License
+
+This project is licensed under the MIT License
+
+See the [LICENSE](/LICENSE) file for more details
 
 ## 遊戲執行
 
