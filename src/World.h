@@ -52,6 +52,7 @@ public:
 	int findTopmostSolid(int x) const;
 	// Returns -1 if not found
 	int findTopmostBlock(int x, const Block& block) const;
+	olc::vi2d findNiceSpawnPoint(int x, int radius = 10) const;
 
 	bool isValidPosition(olc::vi2d p) const;
 	bool isSolidBlock(olc::vi2d p) const;

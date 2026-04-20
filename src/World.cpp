@@ -1,5 +1,6 @@
 #include <bit>
 #include <chrono>
+#include <cstdarg>
 #include <initializer_list>
 #include <mdspan>
 #include <print>
@@ -11,6 +12,7 @@
 #include "Entity.h"
 #include "OopMineGame.h"
 #include "Player.h"
+#include "Sheep.h"
 #include "Utils.h"
 #include "Verify.h"
 #include "World.h"
@@ -81,6 +83,26 @@ int World::findTopmostBlock(int x, const Block& block) const
 		if (getBlock({x, y}) == block)
 			return y;
 	return -1;
+}
+
+olc::vi2d World::findNiceSpawnPoint(int x, int radius) const
+{
+	for (const int x2 :
+		 std::views::iota(0, radius + 1) |
+			 std::views::transform([x](int i)
+								   { return std::array{-i + x, i + x}; }) |
+			 std::views::join | std::views::drop(1))
+	{
+		if (!isValidPosition({x2, 0}))
+			continue;
+		const int grassY = findTopmostBlock(x2, Blocks::grassBlock);
+		if (!(isValidPosition({x2, grassY - 1}) &&
+			  !getBlock({x2, grassY - 1}).isSolid() &&
+			  !getBlock({x2, grassY - 2}).isSolid()))
+			continue;
+		return {x2, grassY};
+	}
+	return {getSize().x / 2, 0};
 }
 
 bool World::isValidPosition(olc::vi2d p) const
@@ -164,7 +186,7 @@ void World::drawParticles(OopMineGame& game)
 	auto& view = game.getView();
 	const auto now =
 		std::chrono::steady_clock::now().time_since_epoch().count();
-
+	const size_t capBefore = drawBufPos.capacity();
 	for (const Particle& p : particles)
 	{
 		const float scale = Utils::map(
@@ -198,6 +220,11 @@ void World::drawParticles(OopMineGame& game)
 		drawBufColor.emplace_back(color);
 		drawBufColor.emplace_back(color);
 	}
+	if (drawBufPos.capacity() > capBefore)
+		std::println(
+			"Vertex buffer size increased from {} to {}",
+			capBefore,
+			drawBufPos.capacity());
 	game.SetDecalStructure(olc::DecalStructure::LIST);
 	game.DrawPolygonDecal(nullptr, drawBufPos, drawBufUv, drawBufColor);
 	game.SetDecalStructure(olc::DecalStructure::FAN);
@@ -352,8 +379,11 @@ void World::generateWorld()
 	}
 
 	// Place player
-	const int y = findTopmostSolid(getSize().x / 2);
-	addEntity<Player>(olc::vf2d{getSize().x / 2.0f + 0.5f, (float)y});
+	const olc::vi2d nicePoint = findNiceSpawnPoint(getSize().x / 2);
+	addEntity<Player>(olc::vf2d{nicePoint.x + 0.5f, (float)nicePoint.y});
+
+	// Place animals
+	addEntity<Sheep>(getPlayer()->get().getPos());
 
 	auto end = std::chrono::steady_clock::now();
 	auto dur =

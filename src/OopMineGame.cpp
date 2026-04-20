@@ -120,7 +120,6 @@ void OopMineGame::genNewWorld(const GenerationSettings& settings)
 		guiOverlay = nullptr;
 	}
 	world = std::make_unique<World>(*this, settings);
-	world->addEntity<Sheep>(world->getPlayer()->get().getPos());
 	(void)world->getPlayer()->get().addInvItem({Items::craftingTable, 1});
 	guiHotbar->setBinding(world->getPlayer()->get(), hotbarSelection);
 	if (!freecamEnabled)
