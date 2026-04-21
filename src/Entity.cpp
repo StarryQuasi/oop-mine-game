@@ -231,7 +231,8 @@ void Entity::update(World& world, float elapsed)
 						.lifeEnd = now + std::chrono::milliseconds(
 											 world.randomInt(100, 500)),
 						.pos =
-							{world.randomFloat(getBb().first.x, getBb().second.x),
+							{world.randomFloat(
+								 getBb().first.x, getBb().second.x),
 							 getPos().y},
 						.vel =
 							{-dir * world.randomFloat(0.0f, velRange.x),

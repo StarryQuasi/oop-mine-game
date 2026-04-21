@@ -8,7 +8,6 @@
 #include "Items.h"
 #include "OopMineGame.h"
 #include "Player.h"
-#include "Sheep.h"
 #include "Utils.h"
 #include "Verify.h"
 #include "gui/Anchor.h"

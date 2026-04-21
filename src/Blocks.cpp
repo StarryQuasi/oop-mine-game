@@ -38,8 +38,6 @@ const std::vector<const Block*> Blocks::list = {
 	&Blocks::oakLeaves,
 	&Blocks::cherryLog,
 	&Blocks::cherryLeaves,
-	&Blocks::oakLog,
-	&Blocks::oakLeaves,
 	&Blocks::craftingTable,
 	&Blocks::ladder,
 };
