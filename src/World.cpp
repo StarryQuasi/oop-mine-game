@@ -62,10 +62,10 @@ void World::breakBlock(olc::vi2d p)
 {
 	assert(isValidPosition(p));
 	const Block& block = getBlock(p);
-	setBlock(p, Blocks::air);
 	if (block != Blocks::air)
 	{
 		block.onBreak(*this, p);
+		setBlock(p, Blocks::air);
 	}
 }
 
@@ -154,7 +154,22 @@ void World::update(float elapsed)
 		entities, [](const auto& pair) { return pair.second->isDead(); });
 }
 
-void World::randomUpdate(float elapsed) {}
+void World::randomUpdate(float elapsed)
+{
+	for (int x = 0; x < getSize().x; x += 16)
+		for (int y = 0; y < getSize().y; y += 16)
+		{
+			for (int _ = 0; _ < settings.randomUpdateCount; _++)
+			{
+				const olc::vi2d pos = {
+					x + randomInt(0, 15),
+					y + randomInt(0, 15)};
+				if (isValidPosition(pos) &&
+					getBlock(pos).requiresRandomUpdate())
+					getBlock(pos).randomUpdate(*this, pos);
+			}
+		}
+}
 
 void World::drawUpdate(float elapsed)
 {
@@ -320,10 +335,11 @@ void World::generateWorld()
 		{
 			if (sampleAt(x + 1337, y + 1337) >= settings.diamondThreshold)
 				setBlock({x, y}, Blocks::diamondOre);
-			else if (Verify::inExclusive(
-						 sampleAt(x + 420, y + 420),
-						 settings.copperThresholdMin,
-						 settings.copperThresholdMax))
+			else if (
+				Verify::inExclusive(
+					sampleAt(x + 420, y + 420),
+					settings.copperThresholdMin,
+					settings.copperThresholdMax))
 				setBlock({x, y}, Blocks::copperOre);
 			else if (sampleAt(x, y) >= settings.coalThreshold)
 				setBlock({x, y}, Blocks::coalOre);

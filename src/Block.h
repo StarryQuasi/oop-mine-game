@@ -88,7 +88,9 @@ public:
 	using Block::Block;
 
 	bool requiresDrawUpdate() const override;
+	bool requiresRandomUpdate() const override;
 	void drawUpdate(World& world, olc::vi2d pos) const override;
+	void randomUpdate(World& world, olc::vi2d pos) const override;
 };
 
 class BlockBuilder;

@@ -1,5 +1,7 @@
 #include <cassert>
 #include <memory>
+#include <queue>
+#include <unordered_set>
 #include <vector>
 
 #include "libs/olcPixelGameEngine.h"
@@ -167,6 +169,8 @@ bool CraftingTable::onUse(World& world, olc::vi2d pos) const
 
 bool Leaves::requiresDrawUpdate() const { return true; }
 
+bool Leaves::requiresRandomUpdate() const { return true; }
+
 void Leaves::drawUpdate(World& world, olc::vi2d pos) const
 {
 	if (world.randomInt(1, 25) == 1)
@@ -197,6 +201,57 @@ void Leaves::drawUpdate(World& world, olc::vi2d pos) const
 			.alive = true,
 			.type = ParticleType::generic,
 		});
+	}
+}
+
+void Leaves::randomUpdate(World& world, olc::vi2d pos) const
+{
+	struct Node
+	{
+		olc::vi2d pos;
+		int distance;
+	};
+	const Block* log;
+	if (*this == Blocks::oakLeaves)
+		log = &Blocks::oakLog;
+	else if (*this == Blocks::cherryLeaves)
+		log = &Blocks::cherryLog;
+	else
+		assert(false);
+	std::unordered_set<olc::vi2d, vi2dHash> visited;
+	std::queue<Node> frontier;
+	bool hasLogNearby = false;
+	const int maxDist = 6;
+	visited.insert(pos);
+	frontier.push({pos, 0});
+	while (!frontier.empty())
+	{
+		const Node cur = frontier.front();
+		frontier.pop();
+		if (cur.distance <= maxDist && world.getBlock(cur.pos) == *log)
+		{
+			hasLogNearby = true;
+			break;
+		}
+		for (const olc::vi2d& dir : {olc::vi2d{-1, 0}, {0, -1}, {1, 0}, {0, 1}})
+		{
+			const olc::vi2d next = cur.pos + dir;
+			if (!world.isValidPosition(next))
+				continue;
+			if (!(world.getBlock(next) == *log ||
+				  world.getBlock(next) == *this))
+				continue;
+			if (visited.contains(next))
+				continue;
+			if (cur.distance + 1 > maxDist)
+				continue;
+			frontier.push({next, cur.distance + 1});
+			visited.insert(next);
+		}
+	}
+	if (!hasLogNearby)
+	{
+		world.breakBlock(pos);
 	}
 }
 

@@ -29,7 +29,7 @@ struct GenerationSettings
 	float copperThresholdMin = 0.31f;
 	float copperThresholdMax = 0.41f;
 	float coalThreshold = 0.7f;
-	int randomUpdateCount = 3;
+	int randomUpdateCount = 2;
 };
 
 class World
