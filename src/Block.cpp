@@ -173,7 +173,7 @@ bool Leaves::requiresRandomUpdate() const { return true; }
 
 void Leaves::drawUpdate(World& world, olc::vi2d pos) const
 {
-	if (world.randomInt(1, 25) == 1)
+	if (world.randomInt(1, 5) == 1)
 	{
 		const auto now = std::chrono::steady_clock::now();
 		const olc::vf2d velRange = {1.0f, 1.5f};
