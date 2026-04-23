@@ -15,6 +15,9 @@
 #define OLC_PGEX_TRANSFORMEDVIEW
 #include "libs/olcPGEX_TransformedView.h"
 
+#define MSF_GIF_IMPL
+#include "libs/msf_gif.h"
+
 #include "OopMineGame.h"
 
 // Sets the current working directory to the exe's directory,

@@ -75,6 +75,7 @@
 - [FastNoiseLite](https://github.com/Auburn/FastNoiseLite) (MIT) - 噪音
 - [stb_image](https://github.com/nothings/stb) (MIT) - 圖片解碼
 - [miniz](https://github.com/richgel999/miniz) (MIT) - 壓縮檔解碼
+- [msf_gif](https://github.com/notnullnotvoid/msf_gif) (MIT) - g i f
 - [PixelLab](https://www.pixellab.ai/) - AI 生成實體貼圖
 - [SummerFields 阿神材質包](https://github.com/SummerFields/SummerFields) (CC BY-NC-SA) - 方塊/介面貼圖
 

@@ -376,6 +376,27 @@ bool OopMineGame::OnUserUpdate(float elapsed)
 
 	debugCallbacks.clear();
 
+	if (gifState.has_value())
+	{
+		// TODO: Somehow all the pixels are 0xff000000
+		GetLayers()[layerMain].pDrawTarget.Decal()->UpdateSprite();
+		int res = msf_gif_frame(
+			&gifState.value(),
+			(uint8_t*)(GetLayers()[layerMain].pDrawTarget.Sprite()->GetData()),
+			(int)(elapsed * 1000),
+			8,
+			GetScreenSize().x * 4);
+		if (!res)
+		{
+			std::println("Failed to capture gif frame");
+			MsfGifResult res = msf_gif_end(&gifState.value());
+			if (res.data)
+				msf_gif_free(res);
+			gifState.reset();
+			std::println("Stopped gif");
+		}
+	}
+
 	return true;
 }
 
@@ -482,68 +503,108 @@ void OopMineGame::setHotbarSelection(int i)
 void OopMineGame::handleInput(float elapsed)
 {
 	Player& player = world->getPlayer().value();
+
+	if (GetKey(olc::Key::PERIOD).bPressed)
 	{
-		if (!freecamEnabled)
+		if (!gifState.has_value())
 		{
-			Entity::Input& input = queuedInput;
-			input.left = GetKey(olc::Key::A).bHeld;
-			input.right = GetKey(olc::Key::D).bHeld;
-			input.jump = GetKey(olc::Key::SPACE).bHeld;
-			input.sprint = GetKey(olc::Key::SHIFT).bHeld;
-			input.invSelection = hotbarSelection.get();
-			player.setInput(input);
-			queuedInput = {};
+			gifState.emplace();
+			if (!msf_gif_begin(
+					&gifState.value(), GetScreenSize().x, GetScreenSize().y))
+			{
+				std::println("Failed to start gif");
+				gifState.reset();
+			}
+			else
+			{
+				std::println("Started gif");
+			}
 		}
 		else
 		{
-			const float speed = 32;
-			if (GetKey(olc::Key::W).bHeld)
-				cameraPos.y -= speed * elapsed;
-			if (GetKey(olc::Key::S).bHeld)
-				cameraPos.y += speed * elapsed;
-			if (GetKey(olc::Key::A).bHeld)
-				cameraPos.x -= speed * elapsed;
-			if (GetKey(olc::Key::D).bHeld)
-				cameraPos.x += speed * elapsed;
+			MsfGifResult res = msf_gif_end(&gifState.value());
+			if (res.data)
+			{
+				std::filesystem::path path = "capture.gif";
+				int i = 1;
+				while (std::filesystem::exists(path))
+					path = std::filesystem::path(
+						"capture_" + std::to_string(i++) + ".gif");
+				std::ofstream fs(path, std::ios_base::binary);
+				fs.write((char*)res.data, res.dataSize);
+				fs.close();
+				std::println("Captured gif to \"{}\"", path.string());
+			}
+			else
+			{
+				std::println("No result?");
+			}
+			msf_gif_free(res);
+			gifState.reset();
+			std::println("Stopped gif");
 		}
+	}
+
+	if (!freecamEnabled)
+	{
+		Entity::Input& input = queuedInput;
+		input.left = GetKey(olc::Key::A).bHeld;
+		input.right = GetKey(olc::Key::D).bHeld;
+		input.jump = GetKey(olc::Key::SPACE).bHeld;
+		input.sprint = GetKey(olc::Key::SHIFT).bHeld;
+		input.invSelection = hotbarSelection.get();
+		player.setInput(input);
+		queuedInput = {};
+	}
+	else
+	{
+		const float speed = 32;
+		if (GetKey(olc::Key::W).bHeld)
+			cameraPos.y -= speed * elapsed;
+		if (GetKey(olc::Key::S).bHeld)
+			cameraPos.y += speed * elapsed;
+		if (GetKey(olc::Key::A).bHeld)
+			cameraPos.x -= speed * elapsed;
+		if (GetKey(olc::Key::D).bHeld)
+			cameraPos.x += speed * elapsed;
+	}
 
 #if defined(__APPLE__)
-		const auto zoomOut = olc::Key::O;
-		const auto zoomIn = olc::Key::P;
+	const auto zoomOut = olc::Key::O;
+	const auto zoomIn = olc::Key::P;
 #else
-		const auto zoomOut = olc::Key::MINUS;
-		const auto zoomIn = olc::Key::EQUALS;
+	const auto zoomOut = olc::Key::MINUS;
+	const auto zoomIn = olc::Key::EQUALS;
 #endif
-		if (GetKey(zoomIn).bPressed)
-			view.ZoomAtScreenPos(1 / 0.75f, GetScreenSize() / 2);
-		if (GetKey(zoomOut).bPressed)
-			view.ZoomAtScreenPos(0.75, GetScreenSize() / 2);
+	if (GetKey(zoomIn).bPressed)
+		view.ZoomAtScreenPos(1 / 0.75f, GetScreenSize() / 2);
+	if (GetKey(zoomOut).bPressed)
+		view.ZoomAtScreenPos(0.75, GetScreenSize() / 2);
 
-		const auto numKeys = {
-			olc::Key::K1,
-			olc::Key::K2,
-			olc::Key::K3,
-			olc::Key::K4,
-			olc::Key::K5,
-			olc::Key::K6,
-			olc::Key::K7,
-			olc::Key::K8,
-			olc::Key::K9,
-		};
-		int i = 0;
-		for (const auto key : numKeys)
+	const auto numKeys = {
+		olc::Key::K1,
+		olc::Key::K2,
+		olc::Key::K3,
+		olc::Key::K4,
+		olc::Key::K5,
+		olc::Key::K6,
+		olc::Key::K7,
+		olc::Key::K8,
+		olc::Key::K9,
+	};
+	int i = 0;
+	for (const auto key : numKeys)
+	{
+		if (GetKey(key).bPressed)
 		{
-			if (GetKey(key).bPressed)
-			{
-				setHotbarSelection(i);
-			}
-			i++;
+			setHotbarSelection(i);
 		}
+		i++;
+	}
 
-		if (GetMouseWheel())
-		{
-			setHotbarSelection(
-				hotbarSelection.get() + (GetMouseWheel() < 0 ? 1 : -1));
-		}
+	if (GetMouseWheel())
+	{
+		setHotbarSelection(
+			hotbarSelection.get() + (GetMouseWheel() < 0 ? 1 : -1));
 	}
 }

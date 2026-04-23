@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "libs/miniz-3.1.1/miniz.h"
+#include "libs/msf_gif.h"
 #include "libs/olcPGEX_TransformedView.h"
 #include "libs/olcPixelGameEngine.h"
 
@@ -63,6 +64,7 @@ private:
 	int inspectorId = 0;
 	bool freecamEnabled = false;
 	Entity::Input queuedInput = {};
+	std::optional<MsfGifState> gifState{};
 
 	static std::vector<uint8_t> readFileData(const std::filesystem::path& path);
 	static void printZipInfo(mz_zip_archive& zip);
