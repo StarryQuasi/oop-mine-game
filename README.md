@@ -137,7 +137,10 @@ See the [LICENSE](/LICENSE) file for more details
 
 ## 遊戲畫面
 
+![](cherry_tree.gif)
+
 ![](screenshot1.png)
+
 ![](screenshot2.png)
 
 ## UML Diagram
