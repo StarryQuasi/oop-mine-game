@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-																																					
+
 #include <optional>
 #include <vector>
 
@@ -23,7 +23,7 @@ struct Props
 	std::optional<bool> visible = {};
 	std::optional<std::string> assetName = {};
 	std::optional<std::string> text = {};	 // TextContainer
-	std::optional<float> scale = {};	     // TextContainer
+	std::optional<float> scale = {};		 // TextContainer
 	std::optional<Direction> direction = {}; // FlowContainer
 	std::optional<olc::Pixel> color = {};	 // TextContainer
 	std::optional<bool> autoSizing = {};	 // FlowContainer
@@ -125,25 +125,24 @@ private:
 	static int idCounter;
 	static int focusedElementId;
 #ifdef _DEBUG
-	std::string name = {};
+	std::string name{};
 #endif
 	int id;
-	std::vector<std::unique_ptr<Container>> children = {};
+	std::vector<std::unique_ptr<Container>> children{};
 	Anchor anchor = Anchor::topLeft; // Point on parent my origin is attached to
 	Anchor origin = Anchor::topLeft; // Point of my origin
-	olc::vi2d size = {10, 10};		 // Size of content
-	olc::vi2d pos = {};				 // Local offset
-	olc::vi2d margin = {};			 // Exterior spacing
-	olc::vi2d padding = {};			 // Interior spacing
-	olc::vi2d absPos = {};
-	Container* parent = nullptr;
-	std::string assetName = "";
+	olc::vi2d size{10, 10};			 // Size of content
+	olc::vi2d pos{};				 // Local offset
+	olc::vi2d margin{};				 // Exterior spacing
+	olc::vi2d padding{};			 // Interior spacing
+	olc::vi2d absPos{};
+	Container* parent{};
+	std::string assetName{};
 	bool visible = true;
 	bool dirty = true;
-	std::function<bool(Container&, const MouseEvent&)> mouseDownHandler = {};
-	std::function<bool(Container&, const MouseDragEvent&)> mouseDragHandler =
-		{};
-	std::function<bool(Container&, const MouseEvent&)> mouseUpHandler = {};
+	std::function<bool(Container&, const MouseEvent&)> mouseDownHandler{};
+	std::function<bool(Container&, const MouseDragEvent&)> mouseDragHandler{};
+	std::function<bool(Container&, const MouseEvent&)> mouseUpHandler{};
 };
 
 template <typename T, typename... Args>

@@ -15,8 +15,8 @@ public:
 	onValueChanged(std::function<void(const GenerationSettings&)> handler);
 
 private:
-	GenerationSettings value = {};
-	std::function<void(const GenerationSettings&)> valueChangedHandler;
+	GenerationSettings value{};
+	std::function<void(const GenerationSettings&)> valueChangedHandler{};
 
 	void addFloat(
 		std::string name,

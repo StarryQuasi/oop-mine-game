@@ -21,7 +21,7 @@ public:
 	void draw(OopMineGame& game) const override;
 
 private:
-	Bindable<ItemStack> stack;
-	TextContainer* textEle;
+	Bindable<ItemStack> stack{};
+	TextContainer* textEle{};
 };
 } // namespace gui

@@ -15,8 +15,8 @@ public:
 	void update(OopMineGame& game) override;
 
 private:
-	Container* root;
-	TextContainer* text;
+	Container* root{};
+	TextContainer* text{};
 
 	std::string format(olc::vi2d);
 };

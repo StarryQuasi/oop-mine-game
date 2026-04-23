@@ -26,6 +26,6 @@ public:
 	bool operator==(const Anchor&) const = default;
 
 private:
-	olc::vf2d value;
+	olc::vf2d value{};
 };
 } // namespace gui

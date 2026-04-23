@@ -24,7 +24,7 @@ public:
 
 private:
 	static olc::vf2d defaultScale;
-	std::string text = "";
+	std::string text{};
 	float scale = 1.0f;
 	olc::Pixel color = olc::WHITE;
 };

@@ -18,7 +18,7 @@ public:
 	Button* onClick(std::function<void(Container&)> handler);
 
 private:
-	TextContainer* textEle;
-	std::function<void(Container&)> clickHandler = {};
+	TextContainer* textEle{};
+	std::function<void(Container&)> clickHandler{};
 };
 } // namespace gui

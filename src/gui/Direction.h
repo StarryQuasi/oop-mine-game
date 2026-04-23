@@ -17,7 +17,7 @@ public:
 	bool operator==(const Direction&) const = default;
 
 private:
-	olc::vi2d vector;
-	olc::vi2d vector2;
+	olc::vi2d vector{};
+	olc::vi2d vector2{};
 };
 } // namespace gui

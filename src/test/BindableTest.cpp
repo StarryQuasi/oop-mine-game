@@ -8,11 +8,11 @@
 
 int main()
 {
-	Bindable<int> p1;
+	Bindable<int> p1{};
 	p1.onValueChanged([](const auto& from, const auto& to)
 					  { std::println("p1 {} -> {}", from, to); });
 	{
-		Bindable<int> p2;
+		Bindable<int> p2{};
 		p2.onValueChanged([](const auto& from, const auto& to)
 						  { std::println("p2 {} -> {}", from, to); });
 		RUN(p2.bindTo(p1));
