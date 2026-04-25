@@ -1,0 +1,24 @@
+graph TD
+    Start((Start Game)) --> Init[Initialize olc::PixelGameEngine]
+    Init --> OnUserCreate[OopMineGame::OnUserCreate<br>Load Assets & Create World]
+    OnUserCreate --> OnUserUpdate[OopMineGame::OnUserUpdate]
+    
+    subgraph GameLoop [Game Loop]
+        OnUserUpdate --> GetInput[OopMineGame::handleInput]
+        GetInput --> Exit{Exit Game?}
+        Exit -->|Yes| End((End))
+        Exit -->|No| UpdateGUIEvents[gui::Container::onMouseDown]
+        UpdateGUIEvents --> UpdateGUI[gui::Container::update]
+        UpdateGUI --> UpdateGUILayout[gui::Container::updateLayout]
+        UpdateGUILayout --> UpdateWorldRandom[Block::randomUpdate]
+        subgraph UpdateWorld [World Update]
+            UpdateWorldRandom --> UpdateWorldEntity[Entity::update]
+            UpdateWorldEntity --> UpdateWorldBlocks[Block::drawUpdate]
+            UpdateWorldBlocks --> UpdateWorldParticles[Update Particles]
+        end
+        UpdateWorldParticles --> DrawWorld[Draw World Blocks & Particles]
+        DrawWorld --> DrawEntities[Entity::draw]
+        DrawEntities --> DrawGUI[gui::Container::draw<br>Draw UI Tree]
+    end
+    
+    DrawGUI --> OnUserUpdate

@@ -1,0 +1,130 @@
+classDiagram
+namespace gui {
+	class Container {
+		-id: const int
+		-children: vector~unique_ptr~Container~~
+		+onMouseDown(function~bool(Container&, const MouseEvent&)~)
+		+updateLayout()*
+		+update(OopMineGame)*
+		+draw(OopMineGame)*
+	}
+
+	class FlowContainer {
+		-direction: Direction
+		-autoSizing: bool
+		+updateLayout()*
+	}
+
+	class Slider {
+		-min: float
+		-max: float
+		-value: float
+		+updateLayout()*
+	}
+
+	class TextContainer {
+		-text: string
+		-scale: float
+		+updateLayout()*
+	}
+
+	class Button {
+		-textEle: TextContainer
+		+updateLayout()*
+	}
+
+	class Slot {
+		-textEle: TextContainer
+		-stack: Bindable~ItemStack~
+		+updateLayout()*
+		+draw(OopMineGame)*
+		+setBinding(Bindable~ItemStack~&)
+	}
+
+	class Hotbar {
+		-slots: array~Slot*~
+		+setBinding(Player&)
+	}
+
+	class CraftingTableGUI {
+		-slots: array~Slot*~
+		+setBinding(Player&)
+	}
+
+}
+class Block {
+	-id: const int
+	-name: const string
+	+onUse(World, vi2d) bool*
+	+update(World, vi2d)*
+	+requiresRandomUpdate() bool*
+	+randomUpdate(World, vi2d)*
+	+drawUpdate(World, vi2d)*
+}
+
+class CraftingTable {
+	+onUse(World, vi2d) bool*
+}
+
+class Leaves {
+	+requiresRandomUpdate() bool*
+	+randomUpdate(World, vi2d)*
+}
+
+class Entity {
+	-id: const int
+	-pos: const vf2d
+	-vel: const vf2d
+	-inv: vector~Bindable~ItemStack~~
+	+update(OopMineGame, float)*
+	+draw(OopMineGame)*
+}
+
+class Player {
+	-hairPoints: vector~vf2d~
+	+update(OopMineGame, float)*
+	+draw(OopMineGame)*
+	+drawHair(OopMineGame)
+}
+
+class Mob {
+	-targetPos: vi2d
+	+update(OopMineGame, float)*
+	+updateAi(OopMineGame, float)
+}
+
+class Sheep {
+	+update(OopMineGame, float)*
+	+draw(OopMineGame)*
+}
+
+class Bindable {
+	-value: T
+	-bindings: vector~Bindable~T~*~
+	+set(T)
+	+get() T
+	+bindTo(Bindable~T~&)
+}
+
+<<Base>> Container
+<<Base>> Block
+<<Base>> Entity
+
+Block <|-- CraftingTable : Inheritance
+Block <|-- Leaves : Inheritance
+Entity <|-- Player : Inheritance
+Entity <|-- Mob : Inheritance
+Mob <|-- Sheep : Inheritance
+Container <|-- FlowContainer : Inheritance
+Container <|-- Slider : Inheritance
+Container <|-- TextContainer : Inheritance
+Container <|-- Slot : Inheritance
+Container <|-- CraftingTableGUI : Inheritance
+FlowContainer <|-- Button : Inheritance
+FlowContainer <|-- Hotbar : Inheritance
+Slot ..> Bindable : uses for item data
+Hotbar ..> Bindable : uses for selection
+CraftingTableGUI ..> Bindable : uses for inventory/crafting
+Button *-- TextContainer : contains
+Slot *-- TextContainer : contains
+Hotbar *-- Slot : contains
