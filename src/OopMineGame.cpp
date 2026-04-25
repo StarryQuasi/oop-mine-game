@@ -1,5 +1,8 @@
 #include <print>
 
+#include "gui/Direction.h"
+#include "gui/FlowContainer.h"
+#include "gui/TextContainer.h"
 #include "libs/miniz-3.1.1/miniz.h"
 #include "libs/stb_image.h"
 
@@ -251,6 +254,26 @@ bool OopMineGame::OnUserCreate()
 		flow->addChild<gui::WorldSetting>()->onValueChanged(
 			[this](const GenerationSettings& v)
 			{ this->schedule([this, v]() { this->genNewWorld(v); }); });
+	}
+	if (false)
+	{
+		auto flow = guiRoot->addChild<gui::FlowContainer>({
+			.anchor = gui::Anchor::midMiddle,
+			.origin = gui::Anchor::midMiddle,
+			.padding = {{3, 3}},
+			.direction = gui::Direction::vertical,
+		});
+		flow->addChild<gui::Container>({
+			.size = {{100, 100}},
+			.assetName = "erm.jpg",
+		});
+		flow->addChild<gui::TextContainer>({
+			.anchor = gui::Anchor::topMiddle,
+			.origin = gui::Anchor::topMiddle,
+			.margin = {{0, 3}},
+			.text = "erm...",
+			.scale = 3.0f,
+		});
 	}
 	guiDebugText = guiRoot->addChild<gui::TextContainer>({
 		.anchor = gui::Anchor::btmRight,
