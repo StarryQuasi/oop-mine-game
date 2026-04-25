@@ -139,13 +139,14 @@ template <typename T>
 	requires std::derived_from<T, Block>
 T BlockBuilder::build()
 {
+	using namespace std::string_view_literals;
 	assert(!_name.empty());
 	if (_textureName.empty())
 		_textureName = _name |
 					   std::views::transform([](unsigned char c)
-											 { return std::tolower(c); }) |
-					   std::views::split(std::string(" ")) |
-					   std::views::join_with(std::string("_")) |
+											 { return (unsigned char)std::tolower(c); }) |
+					   std::views::split(" "sv) |
+					   std::views::join_with("_"sv) |
 					   std::ranges::to<std::string>();
 	if (_item == nullptr)
 		_item = &Items::air;
