@@ -21,20 +21,6 @@
 
 這是一個使用 C++23 製作的無規則 Minecraft like 2D 沙盒遊戲
 
-<!-- ### 架構
-
-- 柏林噪音程序化生成世界
-- `World` 使用多型控管所有實體，封裝保護世界資料
-- `CraftingTable` 繼承 `Block` 並加上點擊反應開啟介面
-- 所有實體都繼承 `Entity` 基礎類別並做好封裝以保護成員變數
-- `Player` 繼承 `Entity` 並加上物理頭髮渲染
-- `Mob` 繼承 `Entity` 並加上路徑搜尋
-- `Sheep` 繼承 `Mob` 並加上目標尋找
-- HTML like 樹狀 GUI 系統
-- `Container` 控管子元素並提供相對定位
-- `FlowContainer` 繼承 `Container` 並提供直/橫向排列系統
-- `Button` `Slider` `TextContainer` 繼承 `Container` 並實作渲染及點擊反應 -->
-
 ### 物件導向
 
 * **繼承**
@@ -46,15 +32,6 @@
 * **多型**:
     * 動態綁定：[`World`](/src/World.h) 內部存儲 `std::vector<std::unique_ptr<Entity>>`，在每幀更新時透過虛擬函式 `update()` 與 `render()` 觸發不同實體的行為
     * 虛擬解構子：確保所有繼承後的資源能被正確釋放，防止記憶體洩漏
-
-<!-- ### 設計模式
-
-* **組合模式 (Composite Pattern)**:
-    * 應用於 GUI 系統。`Container` 可以包含多個子元素 (`Button`, `Slider`, `TextContainer`)，形成樹狀結構。對根節點的渲染與事件處理會遞迴傳遞至所有子節點，與現代網頁 HTML/DOM 架構一致
-* **觀察者模式 (Observer Pattern)**:
-    * 實作於 `Bindable<T>` 屬性系統。當數值發生改變時，會自動通知所有綁定的對象 (例如 UI 數值顯示自動更新)，實現了資料與表現層的解耦
-* **策略模式 (Strategy Pattern)**:
-    * 用於實體行為運算。不同類型的 `Mob` 可以覆寫不同的路徑搜尋邏輯或目標尋找策略 (如 `Sheep` 的目標邏輯)，而不需要修改 `Mob` 的核心更新邏輯 -->
 
 ### 技術亮點
 
@@ -137,12 +114,14 @@ See the [LICENSE](/LICENSE) file for more details
 
 ## 遊戲畫面
 
-![](cherry_tree.gif)
+![](docs/cherry_tree.gif)
 
-![](screenshot1.png)
+![](docs/screenshot1.png)
 
-![](screenshot2.png)
+![](docs/screenshot2.png)
 
 ## UML Diagram
 
-![](uml.png)
+*已簡化*
+
+![](/docs/uml.svg)
