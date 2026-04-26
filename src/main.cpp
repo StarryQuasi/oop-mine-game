@@ -30,7 +30,7 @@ void setCwd()
 	std::filesystem::path exePath(path);
 	std::filesystem::current_path(exePath.parent_path());
 	std::println("Set cwd to \"{}\"", std::filesystem::current_path().string());
-	#elif defined(__APPLE__)
+#elif defined(__APPLE__)
 	char path[PATH_MAX];
 	uint32_t size = sizeof(path);
 	if (_NSGetExecutablePath(path, &size) == 0)
@@ -39,6 +39,7 @@ void setCwd()
 		std::filesystem::current_path(exePath.parent_path());
 		std::println("Set cwd to \"{}\"", std::filesystem::current_path().string());
 	}
+#elif defined(__EMSCRIPTEN__)
 #else
 	throw std::runtime_error("setCwd() not implemented");
 #endif

@@ -10,7 +10,7 @@ namespace gui
 Slot::Slot(Props props) :
 	Container(props)
 {
-	setSize(props.size.value_or({20, 20}));
+	setSize(props.size.value_or(olc::vi2d{20, 20}));
 
 	textEle = addChild<TextContainer>({
 		.anchor = Anchor::btmRight,

@@ -8,7 +8,7 @@ Button::Button(Props props) :
 	FlowContainer(props)
 {
 	setAssetName(props.assetName.value_or("gui/button.png"));
-	setPadding(props.padding.value_or({4, 2}));
+	setPadding(props.padding.value_or(olc::vi2d{4, 2}));
 	onMouseDown(
 		[this](Container& me, const MouseEvent& e)
 		{

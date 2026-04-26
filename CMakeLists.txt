@@ -48,7 +48,7 @@ target_sources(OopMineGame PRIVATE
 
 # Enable hardening so it caches std::views::iota(max, min)
 # https://libcxx.llvm.org/Hardening.html
-if (CMAKE_CXX_COMPILER_ID STREQUAL Clang OR CMAKE_CXX_COMPILER_ID STREQUAL AppleClang)
+if(CMAKE_CXX_COMPILER_ID STREQUAL Clang OR CMAKE_CXX_COMPILER_ID STREQUAL AppleClang)
 	target_compile_definitions(OopMineGame PRIVATE
 		$<$<CONFIG:Debug>:_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE>
 	)
@@ -66,6 +66,26 @@ if(APPLE)
 	)
 endif()
 
+if(EMSCRIPTEN)
+	set(EMSCRIPTEN_OPTIONS
+	)
+	target_compile_options(OopMineGame PRIVATE
+		${EMSCRIPTEN_OPTIONS}
+	)
+    target_link_options(OopMineGame PRIVATE
+		${EMSCRIPTEN_OPTIONS}
+		"-sALLOW_MEMORY_GROWTH=1"
+		"-sMIN_WEBGL_VERSION=2"
+		"-sMAX_WEBGL_VERSION=2"
+		# "-sFULL_ES2=1"
+		"-sUSE_LIBPNG=1"
+        "--embed-file" "${CMAKE_CURRENT_SOURCE_DIR}/assets.zip@assets.zip"
+		$<$<CONFIG:Debug>:-sASSERTIONS=2>
+    )
+	set_target_properties(OopMineGame PROPERTIES
+		SUFFIX ".html")
+endif()
+
 add_custom_target(CopyAsset
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_CURRENT_SOURCE_DIR}/assets.zip"
@@ -74,3 +94,11 @@ add_custom_target(CopyAsset
 )
 
 add_dependencies(OopMineGame CopyAsset)
+
+set_target_properties(OopMineGame PROPERTIES 
+    RESOURCE "${CMAKE_CURRENT_SOURCE_DIR}/assets.zip"
+)
+
+install(TARGETS OopMineGame
+        RUNTIME DESTINATION .
+		RESOURCE DESTINATION .)

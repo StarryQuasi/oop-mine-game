@@ -9,7 +9,7 @@ namespace gui
 Hotbar::Hotbar(Props props) :
 	FlowContainer(props)
 {
-	setPadding(props.padding.value_or({1, 1}));
+	setPadding(props.padding.value_or(olc::vi2d{1, 1}));
 	setAssetName(props.assetName.value_or("gui/hotbar.png"));
 
 	for (int i = 0; i < slots.size(); i++)
