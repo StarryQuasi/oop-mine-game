@@ -64,7 +64,7 @@ const std::vector<const Item*> Items::list = {
 	&Items::woodenSpear,
 	&Items::stoneSpear,
 	&Items::copperSpear,
-	&Items::diamondSpear
+	&Items::diamondSpear,
 };
 // clang-format on
 

@@ -48,7 +48,7 @@ const std::vector<const Block*> Blocks::list = {
 	&Blocks::cherryPlanks,
 	&Blocks::cherryLeaves,
 	&Blocks::craftingTable,
-	&Blocks::ladder
+	&Blocks::ladder,
 };
 // clang-format on
 
