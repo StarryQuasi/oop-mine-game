@@ -27,7 +27,14 @@ private:
 	std::array<Bindable<ItemStack>, 9> stacksInput{};
 	Bindable<ItemStack> stacksOutput{};
 	Bindable<ItemStack> stacksOnHand{};
+	bool requiresUpdate{};
 
-	bool onSlotClick(Container& me, const MouseEvent& event);
+	std::vector<std::vector<ItemStack>> getInputStacks() const;
+	bool onSlotClick(
+		Container& me,
+		const MouseEvent& event,
+		const int type,
+		const int index);
+	bool tryCraftAndTakeResult();
 };
 } // namespace gui

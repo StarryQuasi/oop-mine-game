@@ -15,9 +15,14 @@ public:
 	static const Block coalOre;
 	static const Block copperOre;
 	static const Block diamondOre;
+	static const Block coalBlock;
+	static const Block copperBlock;
+	static const Block diamondBlock;
 	static const Block oakLog;
+	static const Block oakPlanks;
 	static const Leaves oakLeaves;
 	static const Block cherryLog;
+	static const Block cherryPlanks;
 	static const Leaves cherryLeaves;
 	static const CraftingTable craftingTable;
 	static const Block ladder;

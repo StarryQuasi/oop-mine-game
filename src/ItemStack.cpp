@@ -37,6 +37,24 @@ ItemStack& ItemStack::setDamage(int v)
 	return *this;
 }
 
+bool ItemStack::isSameType(const ItemStack& other) const
+{
+	return (other.isEmpty() && isEmpty()) ||
+		   (other.getItem() == getItem() && other.getDamage() == getDamage());
+}
+
+bool ItemStack::canAdd(const ItemStack& other) const
+{
+	return isEmpty() || isSameType(other) &&
+		   getCount() + 1 <= getItem().getMaxStackSize();
+}
+
+bool ItemStack::canAddAll(const ItemStack& other) const
+{
+	return isEmpty() || isSameType(other) &&
+		   getCount() + other.getCount() <= getItem().getMaxStackSize();
+}
+
 ItemStack& ItemStack::decrease(int v)
 {
 	assert(v >= 0);
@@ -57,6 +75,12 @@ ItemStack ItemStack::copy() const { return *this; }
 
 ItemStack& ItemStack::validate()
 {
+	if (*item == Items::air)
+	{
+		*this = {};
+		return *this;
+	}
+
 	if (item->getDurability() > 0)
 	{
 		if (damage < 0 || damage >= item->getDurability())

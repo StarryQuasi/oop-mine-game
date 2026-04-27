@@ -7,6 +7,8 @@
 #include "libs/stb_image.h"
 
 #include "Blocks.h"
+#include "Recipes.h"
+#include "Blocks.h"
 #include "Entity.h"
 #include "Items.h"
 #include "OopMineGame.h"
@@ -298,6 +300,8 @@ bool OopMineGame::OnUserCreate()
 	guiRoot->onMouseDrag(
 		[this](gui::Container& me, const gui::MouseDragEvent& e)
 		{ return true; });
+
+	Recipes::loadRecipes();
 
 	genNewWorld({});
 

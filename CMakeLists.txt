@@ -29,6 +29,7 @@ target_sources(OopMineGame PRIVATE
 	src/Mob.cpp
 	src/OopMineGame.cpp
 	src/Player.cpp
+	src/Recipes.cpp
 	src/Sheep.cpp
 	src/Transform.cpp
 	src/World.cpp
