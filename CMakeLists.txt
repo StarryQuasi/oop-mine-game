@@ -80,7 +80,7 @@ if(EMSCRIPTEN)
 		# "-sFULL_ES2=1"
 		"-sUSE_LIBPNG=1"
         "--embed-file" "${CMAKE_CURRENT_SOURCE_DIR}/assets.zip@assets.zip"
-		$<$<CONFIG:Debug>:-sASSERTIONS=2>
+		$<$<CONFIG:Debug>:-gsource-map>
     )
 	set_target_properties(OopMineGame PROPERTIES
 		SUFFIX ".html")

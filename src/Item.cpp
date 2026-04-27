@@ -82,12 +82,15 @@ Item ItemBuilder::build()
 {
 	assert(!_name.empty());
 	if (_textureName.empty())
-		_textureName =
-			_name |
-			std::views::transform([](char c) { return std::tolower(c); }) |
-			std::views::split(std::string(" ")) |
-			std::views::join_with(std::string("_")) |
-			std::ranges::to<std::string>();
+	{
+		_textureName = _name;
+		for (char& c : _textureName)
+		{
+			c = std::tolower(c);
+			if (c == ' ')
+				c = '_';
+		}
+	}
 	if (_block == nullptr)
 		_block = &Blocks::air;
 	assert(_maxStackSize >= 0);

@@ -6173,6 +6173,7 @@ namespace olc
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			locUseProgram(m_nQuadShader);
 			locBindVertexArray(m_vaQuad);
+			locBindBuffer(GL_ARRAY_BUFFER, m_vbQuad);
 			float f[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 			locUniform4fv(m_uniTint, 1, f);
 

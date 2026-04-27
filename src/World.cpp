@@ -198,6 +198,9 @@ void World::updateParticles(float elapsed)
 
 void World::drawParticles(OopMineGame& game)
 {
+#if (__EMSCRIPTEN__)
+	return;
+#endif
 	auto& view = game.getView();
 	const auto now =
 		std::chrono::steady_clock::now().time_since_epoch().count();
