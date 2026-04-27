@@ -6,8 +6,8 @@
 
 // An observable property object that can be bound (synced) to other instances
 // bidirectionally, stores a local copy, also provides value changed event.
-// There is no central object so bindable chaining isn't allowed, each set will
-// only update the direct bindings
+// There is no central object, but the setter will call other setters, thus
+// traversing the whole graph
 template <typename T>
 class Bindable
 {
@@ -49,6 +49,8 @@ private:
 	std::vector<Bindable<T>*> bindings{};
 	T value{};
 	std::function<void(const T& old, const T& $new)> valueChangedHandler{};
+
+	void set(T v, Bindable<T>& source);
 
 	// Updates pointers in all bindings
 	void updateBindings(Bindable<T>* from, Bindable<T>* to);
@@ -101,16 +103,24 @@ template <typename T>
 const T& Bindable<T>::set(T v)
 {
 	if (value != v)
+		set(std::move(v), *this);
+	return value;
+}
+
+template <typename T>
+void Bindable<T>::set(T v, Bindable<T>& source)
+{
+	if (value != v)
 	{
 		valueChanged(value, v);
 		for (const auto& binding : bindings)
 		{
-			binding->value = v;
-			binding->valueChanged(value, v);
+			if (binding == &source)
+				continue;
+			binding->set(v, *this);
 		}
 		value = std::move(v);
 	}
-	return value;
 }
 
 template <typename T>
