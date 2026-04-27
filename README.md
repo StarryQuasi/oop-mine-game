@@ -117,7 +117,7 @@ See the [LICENSE](/LICENSE) file for more details
 
 ## 遊戲畫面
 
-![](/docs/video.mp4)
+![](/docs/video.gif)
 
 ## UML Diagram
 
