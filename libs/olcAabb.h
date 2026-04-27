@@ -66,15 +66,19 @@ namespace olc
 			contact_point = ray_origin + t_hit_near * ray_dir;
 
 			if (t_near.x > t_near.y)
+			{
 				if (invdir.x < 0)
 					contact_normal = { 1, 0 };
 				else
 					contact_normal = { -1, 0 };
+			}
 			else if (t_near.x < t_near.y)
+			{
 				if (invdir.y < 0)
 					contact_normal = { 0, 1 };
 				else
 					contact_normal = { 0, -1 };
+			}
 
 			// Note if t_near == t_far, collision is principly in a diagonal
 			// so pointless to resolve. By returning a CN={0,0} even though its
@@ -108,10 +112,10 @@ namespace olc
 			float contact_time = 0.0f;
 			if (DynamicRectVsRect(r_dynamic, fTimeStep, *r_static, contact_point, contact_normal, contact_time))
 			{
-				if (contact_normal.y > 0) r_dynamic->contact[0] = r_static; else nullptr;
-				if (contact_normal.x < 0) r_dynamic->contact[1] = r_static; else nullptr;
-				if (contact_normal.y < 0) r_dynamic->contact[2] = r_static; else nullptr;
-				if (contact_normal.x > 0) r_dynamic->contact[3] = r_static; else nullptr;
+				if (contact_normal.y > 0) r_dynamic->contact[0] = r_static;
+				if (contact_normal.x < 0) r_dynamic->contact[1] = r_static;
+				if (contact_normal.y < 0) r_dynamic->contact[2] = r_static;
+				if (contact_normal.x > 0) r_dynamic->contact[3] = r_static;
 
 				r_dynamic->vel += contact_normal * olc::vf2d(std::abs(r_dynamic->vel.x), std::abs(r_dynamic->vel.y)) * (1 - contact_time);
 				return true;

@@ -5453,7 +5453,7 @@ namespace olc
 			glDisable(GL_CULL_FACE);
 		}
 
-		void SetDecalMode(const olc::DecalMode& mode)
+		void SetDecalMode(const olc::DecalMode& mode) override
 		{
 			if (mode != nDecalMode)
 			{
@@ -5562,7 +5562,7 @@ namespace olc
 
 		}
 
-		void Set3DProjection(const std::array<float, 16>& mat)
+		void Set3DProjection(const std::array<float, 16>& mat) override
 		{
 			matProjection = mat;
 		}
@@ -6836,7 +6836,7 @@ namespace olc
 			return olc::OK;
 		}
 
-		olc::rcode ShowWindowFrame(const bool bShowFrame)
+		olc::rcode ShowWindowFrame(const bool bShowFrame) override
 		{
 			// Oooooooof... yeah....
 			DWORD dwExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;
@@ -6877,7 +6877,7 @@ namespace olc
 			return olc::OK;
 		}
 
-		olc::rcode SetWindowSize(const olc::vi2d& vWindowPos, const olc::vi2d& vWindowSize)
+		olc::rcode SetWindowSize(const olc::vi2d& vWindowPos, const olc::vi2d& vWindowSize) override
 		{
 			vWinPos = vWindowPos;
 			vWinSize = vWindowSize;
