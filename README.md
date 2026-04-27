@@ -2,6 +2,8 @@
 
 # 主題：OopMineGame
 
+![](/docs/written-by-a-human.svg)
+
 ## 小組資料
 
 - 組別：6
@@ -9,6 +11,7 @@
 - 組長：高憲成
 - 組員：張育溥、程昱銘
 - 報告：https://pres.quazyr.xyz/
+- 報告 pptx：[OopMineGame_mid.pptx](/docs/OopMineGame_mid.pptx)
 - 程式：https://github.com/StarryQuasi/oop-mine-game/tree/main/src
 
 ## 分工明細
@@ -114,14 +117,14 @@ See the [LICENSE](/LICENSE) file for more details
 
 ## 遊戲畫面
 
-![](docs/cherry_tree.gif)
-
-![](docs/screenshot1.png)
-
-![](docs/screenshot2.png)
+![](/docs/video.mp4)
 
 ## UML Diagram
 
 *已簡化*
 
 ![](/docs/uml.svg)
+
+## Flowchart
+
+<img src="/docs/flowchart.png" style="height: 200px;">
