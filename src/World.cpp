@@ -390,8 +390,11 @@ void World::generateWorld()
 				if (y == -1)
 					continue;
 				y--;
+				const olc::vi2d pos{x + xsub, y};
+				if (!isValidPosition(pos) || getBlock(pos) != Blocks::air)
+					continue;
 				pastePattern(
-					{x + xsub, y}, Data::getTreeTypes()[treeType].patterns[patIndex]);
+					pos, Data::getTreeTypes()[treeType].patterns[patIndex]);
 			}
 		}
 	}
