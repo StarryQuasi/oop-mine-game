@@ -254,7 +254,7 @@ bool Sapling::requiresRandomUpdate() const { return true; }
 
 void Sapling::randomUpdate(World& world, olc::vi2d pos) const
 {
-	if (world.randomInt(1, 1) == 1)
+	if (world.randomInt(1, 5) == 1)
 	{
 		const auto& pats =
 			std::ranges::find_if(

@@ -368,16 +368,6 @@ void World::generateWorld()
 		}
 	}
 	// Place trees
-	const auto treePatterns =
-		Data::getTreeTypes() |
-		std::views::transform(
-			[](const auto& type)
-			{
-				return type.patterns |
-					   std::views::transform([](const auto& p)
-											 { return std::ref(p); });
-			}) |
-		std::views::join | std::ranges::to<std::vector>();
 	for (int x = 0; x < getSize().x; x += 16)
 	{
 		const float treeNoiseY = 16384.0f;
@@ -389,16 +379,19 @@ void World::generateWorld()
 		for (int _ = 0; _ < tries; _++)
 		{
 			const int xsub = rng() % 16;
-			const int treeType = rng() % treePatterns.size();
+			const int treeType = rng() % Data::getTreeTypes().size();
 			const float rand = randToFloat(rng());
 			const float sample = sampleAt((float)x + xsub, treeNoiseY);
+			const int patIndex =
+				rng() % Data::getTreeTypes()[treeType].patterns.size();
 			if (x + xsub < getSize().x && rand > sample)
 			{
 				int y = findTopmostBlock(x + xsub, Blocks::grassBlock);
 				if (y == -1)
 					continue;
 				y--;
-				pastePattern({x + xsub, y}, treePatterns[treeType].get());
+				pastePattern(
+					{x + xsub, y}, Data::getTreeTypes()[treeType].patterns[patIndex]);
 			}
 		}
 	}

@@ -1,8 +1,5 @@
 #include <print>
 
-#include "gui/Direction.h"
-#include "gui/FlowContainer.h"
-#include "gui/TextContainer.h"
 #include "libs/miniz-3.1.1/miniz.h"
 #include "libs/stb_image.h"
 
@@ -18,6 +15,9 @@
 #include "gui/Anchor.h"
 #include "gui/Button.h"
 #include "gui/Debugger.h"
+#include "gui/Direction.h"
+#include "gui/FlowContainer.h"
+#include "gui/TextContainer.h"
 #include "gui/WorldSetting.h"
 
 bool OopMineGame::debugGui = false;

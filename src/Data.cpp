@@ -25,20 +25,31 @@ void Data::init()
 			res.push_back(std::move(resultRow));
 			assert(res.back().size() == res.front().size());
 		}
-		return res;
+		return std::move(res);
 	};
 	// spell-checker:disable
 	{
 		std::vector<std::vector<std::vector<const Block*>>> patterns{};
 		patterns.push_back(makePattern(
 			{{'S', Blocks::oakLeaves}, {'H', Blocks::oakLog}},
-			{"   S   ",
-			 "  SSS  ",
-			 " SSHSS ",
-			 "SSSHSSS",
-			 "SSSHSSS",
-			 "   H   ",
-			 "   H   "}));
+			{
+				"   S   ",
+				"  SSS  ",
+				" SSHSS ",
+				"SSSHSSS",
+				"SSSHSSS",
+				"   H   ",
+				"   H   ",
+			}));
+		patterns.push_back(makePattern(
+			{{'S', Blocks::oakLeaves}, {'H', Blocks::oakLog}},
+			{
+				"   S   ",
+				"  SHS  ",
+				" SSHSS ",
+				"SSHSSSS",
+				"   H   ",
+			}));
 		treeTypes.push_back(
 			Data::TreeType{
 				.log = &Blocks::oakLog,
@@ -53,14 +64,27 @@ void Data::init()
 		std::vector<std::vector<std::vector<const Block*>>> patterns{};
 		patterns.push_back(makePattern(
 			{{'S', Blocks::cherryLeaves}, {'H', Blocks::cherryLog}},
-			{"    SSSSS    ",
-			 "  SSSSSSSSS  ",
-			 " SSSSSSSSSHS ",
-			 "SSSHSSSHHHSSS",
-			 " SSSHHHHSSSS ",
-			 "  SS  H  SS  ",
-			 "      H      ",
-			 "      H      "}));
+			{
+				"    SSSSS    ",
+				"  SSSSSSSSS  ",
+				" SSSSSSSSSHS ",
+				"SSSHSSSHHHSSS",
+				" SSSHHHHSSSS ",
+				"  SS  H  SS  ",
+				"      H      ",
+				"      H      ",
+			}));
+		patterns.push_back(makePattern(
+			{{'S', Blocks::cherryLeaves}, {'H', Blocks::cherryLog}},
+			{
+				"   SSSSSSS   ",
+				" SSSSSSSSSSS ",
+				"SSSSSSHSSSSSS",
+				"SSHHHSSSHHHSS",
+				" SS  HHH  SS ",
+				"       H     ",
+				"      H      ",
+			}));
 		treeTypes.push_back(
 			Data::TreeType{
 				.log = &Blocks::cherryLog,
@@ -74,7 +98,4 @@ void Data::init()
 	// spell-checker:enable
 }
 
-const std::vector<Data::TreeType>& Data::getTreeTypes()
-{
-    return treeTypes;
-}
+const std::vector<Data::TreeType>& Data::getTreeTypes() { return treeTypes; }
