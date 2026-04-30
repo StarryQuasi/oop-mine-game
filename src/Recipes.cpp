@@ -127,8 +127,6 @@ bool Recipes::matchesRecipe(
 		{
 			const ItemStack pat =
 				recipe.pattern[y - bounds.first.y][x - bounds.first.x];
-			if (pat.isEmpty())
-				continue;
 			if (input[y][x].getItem() != pat.getItem())
 				return false;
 			if (input[y][x].getCount() < pat.getCount())
