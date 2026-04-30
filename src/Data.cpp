@@ -28,73 +28,71 @@ void Data::init()
 		return std::move(res);
 	};
 	// spell-checker:disable
-	{
-		std::vector<std::vector<std::vector<const Block*>>> patterns{};
-		patterns.push_back(makePattern(
-			{{'S', Blocks::oakLeaves}, {'H', Blocks::oakLog}},
-			{
-				"   S   ",
-				"  SSS  ",
-				" SSHSS ",
-				"SSSHSSS",
-				"SSSHSSS",
-				"   H   ",
-				"   H   ",
-			}));
-		patterns.push_back(makePattern(
-			{{'S', Blocks::oakLeaves}, {'H', Blocks::oakLog}},
-			{
-				"   S   ",
-				"  SHS  ",
-				" SSHSS ",
-				"SSHSSSS",
-				"   H   ",
-			}));
-		treeTypes.push_back(
-			Data::TreeType{
-				.log = &Blocks::oakLog,
-				.planks = &Blocks::oakPlanks,
-				.leaves = &Blocks::oakLeaves,
-				.sapling = &Blocks::oakSapling,
-				.color = 0xFF00FF00,
-				.patterns = std::move(patterns),
-			});
-	}
-	{
-		std::vector<std::vector<std::vector<const Block*>>> patterns{};
-		patterns.push_back(makePattern(
-			{{'S', Blocks::cherryLeaves}, {'H', Blocks::cherryLog}},
-			{
-				"    SSSSS    ",
-				"  SSSSSSSSS  ",
-				" SSSSSSSSSHS ",
-				"SSSHSSSHHHSSS",
-				" SSSHHHHSSSS ",
-				"  SS  H  SS  ",
-				"      H      ",
-				"      H      ",
-			}));
-		patterns.push_back(makePattern(
-			{{'S', Blocks::cherryLeaves}, {'H', Blocks::cherryLog}},
-			{
-				"   SSSSSSS   ",
-				" SSSSSSSSSSS ",
-				"SSSSSSHSSSSSS",
-				"SSHHHSSSHHHSS",
-				" SS  HHH  SS ",
-				"       H     ",
-				"      H      ",
-			}));
-		treeTypes.push_back(
-			Data::TreeType{
-				.log = &Blocks::cherryLog,
-				.planks = &Blocks::cherryPlanks,
-				.leaves = &Blocks::cherryLeaves,
-				.sapling = &Blocks::cherrySapling,
-				.color = 0xFFFFC0CB,
-				.patterns = std::move(patterns),
-			});
-	}
+	treeTypes.push_back(
+		Data::TreeType{
+			.log = &Blocks::oakLog,
+			.planks = &Blocks::oakPlanks,
+			.leaves = &Blocks::oakLeaves,
+			.sapling = &Blocks::oakSapling,
+			.color = 0xFF00FF00,
+			.patterns =
+				{
+					makePattern(
+						{{'S', Blocks::oakLeaves}, {'H', Blocks::oakLog}},
+						{
+							"   S   ",
+							"  SSS  ",
+							" SSHSS ",
+							"SSSHSSS",
+							"SSSHSSS",
+							"   H   ",
+							"   H   ",
+						}),
+					makePattern(
+						{{'S', Blocks::oakLeaves}, {'H', Blocks::oakLog}},
+						{
+							"   S   ",
+							"  SHS  ",
+							" SSHSS ",
+							"SSSHSSS",
+							"   H   ",
+						}),
+				},
+		});
+	treeTypes.push_back(
+		Data::TreeType{
+			.log = &Blocks::cherryLog,
+			.planks = &Blocks::cherryPlanks,
+			.leaves = &Blocks::cherryLeaves,
+			.sapling = &Blocks::cherrySapling,
+			.color = 0xFFFFC0CB,
+			.patterns =
+				{
+					makePattern(
+						{{'S', Blocks::cherryLeaves}, {'H', Blocks::cherryLog}},
+						{
+							"    SSSSS    ",
+							"  SSSSSSSSS  ",
+							" SSSSSSSSSHS ",
+							"SSSHSSSHHHSSS",
+							" SSSHHHHSSSS ",
+							"  SS  H  SS  ",
+							"      H      ",
+							"      H      ",
+						}),
+					makePattern(
+						{{'S', Blocks::cherryLeaves}, {'H', Blocks::cherryLog}},
+						{
+							"   SSSSSSS   ",
+							" SSSSSSSSSSS ",
+							"SSSSSSHSSSSSS",
+							"SSHHHSSSHHHSS",
+							" SS  HHH  SS ",
+							"       H     ",
+							"      H      ",
+						}),
+				},
+		});
 	// spell-checker:enable
 }
 

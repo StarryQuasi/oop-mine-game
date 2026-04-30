@@ -329,7 +329,7 @@ void World::generateWorld()
 	assert(settings.terrainHeightMin <= settings.terrainHeightMax);
 	assert(settings.copperThresholdMin <= settings.copperThresholdMax);
 
-	auto begin = std::chrono::steady_clock::now();
+	const auto begin = std::chrono::steady_clock::now();
 
 	FastNoiseLite noise2;
 	noise2.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
@@ -354,11 +354,10 @@ void World::generateWorld()
 		{
 			if (sampleAt(x + 1337, y + 1337) >= settings.diamondThreshold)
 				setBlock({x, y}, Blocks::diamondOre);
-			else if (
-				Verify::inExclusive(
-					sampleAt(x + 420, y + 420),
-					settings.copperThresholdMin,
-					settings.copperThresholdMax))
+			else if (Verify::inExclusive(
+						 sampleAt(x + 420, y + 420),
+						 settings.copperThresholdMin,
+						 settings.copperThresholdMax))
 				setBlock({x, y}, Blocks::copperOre);
 			else if (sampleAt(x, y) >= settings.coalThreshold)
 				setBlock({x, y}, Blocks::coalOre);
@@ -406,8 +405,8 @@ void World::generateWorld()
 	// Place animals
 	addEntity<Sheep>(getPlayer()->get().getPos());
 
-	auto end = std::chrono::steady_clock::now();
-	auto dur =
+	const auto end = std::chrono::steady_clock::now();
+	const auto dur =
 		std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
 	std::println("World gen finished in {}", dur);
 }
