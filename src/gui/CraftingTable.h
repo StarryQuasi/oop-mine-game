@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <optional>
 
 #include "Bindable.h"
 #include "Container.h"
@@ -35,6 +36,6 @@ private:
 		const MouseEvent& event,
 		const int type,
 		const int index);
-	bool tryCraftAndTakeResult();
+	std::optional<ItemStack> tryCraft();
 };
 } // namespace gui

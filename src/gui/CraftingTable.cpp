@@ -1,3 +1,5 @@
+#include <optional>
+
 #include "libs/olcPixelGameEngine.h"
 
 #include "Container.h"
@@ -123,7 +125,11 @@ bool CraftingTable::onSlotClick(
 	case 1:
 		if (event.btn == olc::Mouse::LEFT)
 		{
-			if (slot->getStack().isSameType(stacksOnHand.get()))
+			if (type == 1 && event.shiftDown)
+			{
+				slot->setStack(player->addInvItem(slot->getStack()));
+			}
+			else if (slot->getStack().isSameType(stacksOnHand.get()))
 			{
 				const int toAdd = std::min(
 					slot->getStack().getItem().getMaxStackSize() -
@@ -179,22 +185,46 @@ bool CraftingTable::onSlotClick(
 	case 2:
 		if (event.btn == olc::Mouse::LEFT || event.btn == olc::Mouse::RIGHT)
 		{
-			if (tryCraftAndTakeResult())
+			auto res = tryCraft();
+			if (res.has_value())
+			{
 				requiresUpdate = true;
+				if (event.shiftDown)
+					res = player->addInvItem(res.value());
+
+				if (stacksOnHand->isEmpty())
+				{
+					stacksOnHand.set(res.value());
+					res.value() = {};
+				}
+				else if (stacksOnHand.get().canAdd(res.value()))
+				{
+					const int toAdd = std::min(
+						res.value().getCount(),
+						res.value().getItem().getMaxStackSize() -
+							stacksOnHand->getCount());
+					stacksOnHand.set(stacksOnHand->copy().increase(toAdd));
+					res.value().decrease(toAdd);
+				}
+				if (!res.value().isEmpty())
+				{
+					// TODO: Get world here and drop overflow
+				}
+			}
 		}
 		break;
 	}
 	return true;
 }
 
-bool CraftingTable::tryCraftAndTakeResult()
+std::optional<ItemStack> CraftingTable::tryCraft()
 {
 	const auto input = getInputStacks();
 	const auto res = Recipes::findRecipe(input);
 	if (!res.has_value())
-		return false;
+		return {};
 	if (!stacksOnHand.get().canAddAll(res.value()->result))
-		return false;
+		return {};
 	const auto bounds = Recipes::findBounds(input).value();
 	for (int y = bounds.first.y; y <= bounds.second.y; y++)
 	{
@@ -209,11 +239,6 @@ bool CraftingTable::tryCraftAndTakeResult()
 				stacksInput[i].get().copy().decrease(pat.getCount()));
 		}
 	}
-	if (stacksOnHand.get().isEmpty())
-		stacksOnHand.set(res.value()->result);
-	else
-		stacksOnHand.set(
-			stacksOnHand.get().copy().increase(res.value()->result.getCount()));
-	return true;
+	return res.value()->result;
 }
 } // namespace gui

@@ -3,6 +3,7 @@
 #include "libs/miniz-3.1.1/miniz.h"
 #include "libs/stb_image.h"
 
+#include "Block.h"
 #include "Blocks.h"
 #include "Data.h"
 #include "Entity.h"
@@ -473,6 +474,12 @@ void OopMineGame::emitUiEvents()
 		e.globalPos = GetMousePos();
 		e.pos = GetMousePos();
 		e.btn = btn;
+		e.shiftDown = GetKey(olc::Key::SHIFT).bPressed ||
+					  GetKey(olc::Key::SHIFT).bHeld ||
+					  GetKey(olc::Key::SHIFT).bReleased;
+		e.ctrlDown = GetKey(olc::Key::CTRL).bPressed ||
+					 GetKey(olc::Key::CTRL).bHeld ||
+					 GetKey(olc::Key::CTRL).bReleased;
 		if (GetMouse(btn).bPressed)
 		{
 			if (guiRoot->mouseDown(e) && btn == olc::Mouse::LEFT)
@@ -505,6 +512,12 @@ void OopMineGame::emitUiEvents()
 		e.globalPos = GetMousePos();
 		e.pos = GetMousePos();
 		e.btn = olc::Mouse::LEFT;
+		e.shiftDown = GetKey(olc::Key::SHIFT).bPressed ||
+					  GetKey(olc::Key::SHIFT).bHeld ||
+					  GetKey(olc::Key::SHIFT).bReleased;
+		e.ctrlDown = GetKey(olc::Key::CTRL).bPressed ||
+					 GetKey(olc::Key::CTRL).bHeld ||
+					 GetKey(olc::Key::CTRL).bReleased;
 		e.globalPosStart = mouseDragStart;
 		e.elePosStart = mouseDragStartElePos;
 		gui::Container* p =

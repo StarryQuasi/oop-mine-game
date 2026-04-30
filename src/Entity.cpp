@@ -1,9 +1,9 @@
-#include "Bindable.h"
-#include "ItemStack.h"
 #include "libs/olcAabb.h"
 
+#include "Bindable.h"
 #include "Blocks.h"
 #include "Entity.h"
+#include "ItemStack.h"
 #include "OopMineGame.h"
 #include "Utils.h"
 #include "Verify.h"
@@ -109,37 +109,25 @@ ItemStack Entity::addInvItem(ItemStack v)
 {
 	if (v.isEmpty())
 		return {};
-	if (v.getItem().getMaxStackSize() > 1)
+	bool fillingExisting = true;
+	for (int _ = 0; _ < 2; _++)
 	{
 		for (int i = 0; i < inv.size(); i++)
 		{
 			const ItemStack& cur = inv[i].get();
-			if (cur.isEmpty() ||
-				(cur.getItem() == v.getItem() &&
-				 cur.getDamage() == v.getDamage() &&
-				 cur.getCount() < v.getItem().getMaxStackSize()))
+			if (fillingExisting ? (cur.isSameType(v) && cur.canAdd(v))
+								: cur.canAdd(v))
 			{
 				const int toAdd = std::min(
 					v.getItem().getMaxStackSize() - cur.getCount(),
 					v.getCount());
-				inv[i].set(ItemStack(
-					v.getItem(), cur.getCount() + toAdd, v.getDamage()));
-				v.setCount(v.getCount() - toAdd);
+				inv[i].set(v.copy().setCount(inv[i]->getCount() + toAdd));
+				v.decrease(toAdd);
 				if (v.isEmpty())
-					break;
+					return {};
 			}
 		}
-	}
-	else
-	{
-		for (int i = 0; i < inv.size(); i++)
-		{
-			if (inv[i].get().isEmpty())
-			{
-				inv[i].set(v);
-				return {};
-			}
-		}
+		fillingExisting = false;
 	}
 	return v;
 }
