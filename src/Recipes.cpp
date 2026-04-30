@@ -5,6 +5,7 @@
 #include "libs/olcPixelGameEngine.h"
 
 #include "Recipes.h"
+#include "Utils.h"
 
 std::vector<Recipes::Recipe> Recipes::recipes{};
 
@@ -78,20 +79,18 @@ Recipes::findBounds(const std::vector<std::vector<ItemStack>>& input)
 {
 	std::pair<olc::vi2d, olc::vi2d> bounds{{-1, -1}, {-1, -1}};
 	bool init = false;
-	for (int y = 0; y < input.size(); y++)
+	for (const olc::vi2d p :
+		 Iterate::over(olc::vi2d{}, {(int)input[0].size(), (int)input.size()}))
 	{
-		for (int x = 0; x < input[0].size(); x++)
-		{
-			if (input[y][x].isEmpty())
-				continue;
-			if (!init)
-				bounds = {{x, y}, {x, y}};
-			init = true;
-			bounds.first.x = std::min(bounds.first.x, x);
-			bounds.first.y = std::min(bounds.first.y, y);
-			bounds.second.x = std::max(bounds.second.x, x);
-			bounds.second.y = std::max(bounds.second.y, y);
-		}
+		if (input[p.y][p.x].isEmpty())
+			continue;
+		if (!init)
+			bounds = {p, p};
+		init = true;
+		bounds.first.x = std::min(bounds.first.x, p.x);
+		bounds.first.y = std::min(bounds.first.y, p.y);
+		bounds.second.x = std::max(bounds.second.x, p.x);
+		bounds.second.y = std::max(bounds.second.y, p.y);
 	}
 	if (!init)
 		return {};
@@ -121,17 +120,14 @@ bool Recipes::matchesRecipe(
 	if (bounds.second.x - bounds.first.x + 1 != recipe.size.x ||
 		bounds.second.y - bounds.first.y + 1 != recipe.size.y)
 		return false;
-	for (int y = bounds.first.y; y <= bounds.second.y; y++)
+	for (const olc::vi2d p : Iterate::over(bounds.first, bounds.second + 1))
 	{
-		for (int x = bounds.first.x; x <= bounds.second.x; x++)
-		{
-			const ItemStack pat =
-				recipe.pattern[y - bounds.first.y][x - bounds.first.x];
-			if (input[y][x].getItem() != pat.getItem())
-				return false;
-			if (input[y][x].getCount() < pat.getCount())
-				return false;
-		}
+		const ItemStack pat =
+			recipe.pattern[p.y - bounds.first.y][p.x - bounds.first.x];
+		if (input[p.y][p.x].getItem() != pat.getItem())
+			return false;
+		if (input[p.y][p.x].getCount() < pat.getCount())
+			return false;
 	}
 	return true;
 }
