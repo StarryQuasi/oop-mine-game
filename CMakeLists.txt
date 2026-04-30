@@ -20,6 +20,7 @@ target_sources(OopMineGame PRIVATE
 	libs/miniz-3.1.1/miniz.c
 	src/Block.cpp
 	src/Blocks.cpp
+	src/Data.cpp
 	src/DroppedItem.cpp
 	src/Entity.cpp
 	src/Item.cpp

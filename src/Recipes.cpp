@@ -8,7 +8,7 @@
 
 std::vector<Recipes::Recipe> Recipes::recipes{};
 
-void Recipes::loadRecipes()
+void Recipes::init()
 {
 	const auto addRecipe =
 		[](const std::initializer_list<std::pair<char, const ItemStack>>

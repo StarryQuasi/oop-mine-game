@@ -22,10 +22,12 @@ const Block Blocks::copperBlock           = builder().name("Copper Block").item(
 const Block Blocks::diamondBlock          = builder().name("Diamond Block").item(Items::diamondBlock).build();
 const Block Blocks::oakLog                = builder().name("Oak Log").item(Items::oakLog).build();
 const Block Blocks::oakPlanks             = builder().name("Oak Planks").item(Items::oakPlanks).build();
-const Leaves Blocks::oakLeaves            = builder().name("Oak Leaves").item(Items::oakLeaves).transparent(true).build<Leaves>();
+const Leaves Blocks::oakLeaves            = builder().name("Oak Leaves").item(Items::oakLeaves).transparent(true).loot().probability(0.25f).item(Items::oakSapling).build<Leaves>();
+const Sapling Blocks::oakSapling          = builder().name("Oak Sapling").item(Items::oakSapling).transparent(true).build<Sapling>();
 const Block Blocks::cherryLog             = builder().name("Cherry Log").item(Items::cherryLog).build();
 const Block Blocks::cherryPlanks          = builder().name("Cherry Planks").item(Items::cherryPlanks).build();
-const Leaves Blocks::cherryLeaves         = builder().name("Cherry Leaves").item(Items::cherryLeaves).transparent(true).build<Leaves>();
+const Leaves Blocks::cherryLeaves         = builder().name("Cherry Leaves").item(Items::cherryLeaves).transparent(true).loot().probability(0.25f).item(Items::cherrySapling).build<Leaves>();
+const Sapling Blocks::cherrySapling       = builder().name("Cherry Sapling").item(Items::cherrySapling).transparent(true).build<Sapling>();
 const CraftingTable Blocks::craftingTable = builder().name("Crafting Table").item(Items::craftingTable).build<CraftingTable>();
 const Block Blocks::ladder                = builder().name("Ladder").item(Items::ladder).build();
 
@@ -44,9 +46,11 @@ const std::vector<const Block*> Blocks::list = {
 	&Blocks::oakLog,
 	&Blocks::oakPlanks,
 	&Blocks::oakLeaves,
+	&Blocks::oakSapling,
 	&Blocks::cherryLog,
 	&Blocks::cherryPlanks,
 	&Blocks::cherryLeaves,
+	&Blocks::cherrySapling,
 	&Blocks::craftingTable,
 	&Blocks::ladder,
 };

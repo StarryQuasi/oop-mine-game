@@ -4,10 +4,10 @@
 #include <unordered_set>
 #include <vector>
 
+#include "Data.h"
 #include "libs/olcPixelGameEngine.h"
 
 #include "Block.h"
-#include "Blocks.h"
 #include "DroppedItem.h"
 #include "Item.h"
 #include "ItemStack.h"
@@ -177,13 +177,11 @@ void Leaves::drawUpdate(World& world, olc::vi2d pos) const
 	{
 		const auto now = std::chrono::steady_clock::now();
 		const olc::vf2d velRange = {1.0f, 1.5f};
-		olc::Pixel color;
-		if (*this == Blocks::oakLeaves)
-			color = {0x00FF00};
-		else if (*this == Blocks::cherryLeaves)
-			color = {0xFFC0CB};
-		else
-			assert(false);
+		olc::Pixel color =
+			std::ranges::find_if(
+				Data::getTreeTypes(),
+				[this](const auto& t) { return this == t.leaves; })
+				->color;
 		color.a = world.randomInt(64, 192);
 		world.addParticle({
 			.lifeStart = now,
@@ -211,13 +209,10 @@ void Leaves::randomUpdate(World& world, olc::vi2d pos) const
 		olc::vi2d pos;
 		int distance;
 	};
-	const Block* log;
-	if (*this == Blocks::oakLeaves)
-		log = &Blocks::oakLog;
-	else if (*this == Blocks::cherryLeaves)
-		log = &Blocks::cherryLog;
-	else
-		assert(false);
+	const Block* log = std::ranges::find_if(
+						   Data::getTreeTypes(),
+						   [this](const auto& t) { return this == t.leaves; })
+						   ->log;
 	std::unordered_set<olc::vi2d, vi2dHash> visited;
 	std::queue<Node> frontier;
 	bool hasLogNearby = false;
@@ -252,6 +247,21 @@ void Leaves::randomUpdate(World& world, olc::vi2d pos) const
 	if (!hasLogNearby)
 	{
 		world.breakBlock(pos);
+	}
+}
+
+bool Sapling::requiresRandomUpdate() const { return true; }
+
+void Sapling::randomUpdate(World& world, olc::vi2d pos) const
+{
+	if (world.randomInt(1, 1) == 1)
+	{
+		const auto& pats =
+			std::ranges::find_if(
+				Data::getTreeTypes(),
+				[this](const auto& t) { return this == t.sapling; })
+				->patterns;
+		world.pastePattern(pos, pats[world.randomInt(0, pats.size() - 1)]);
 	}
 }
 

@@ -93,6 +93,15 @@ public:
 	void randomUpdate(World& world, olc::vi2d pos) const override;
 };
 
+class Sapling : public Block
+{
+public:
+	using Block::Block;
+
+	bool requiresRandomUpdate() const override;
+	void randomUpdate(World& world, olc::vi2d pos) const override;
+};
+
 class BlockBuilder;
 
 class LootTableBuilder
@@ -142,12 +151,12 @@ T BlockBuilder::build()
 	using namespace std::string_view_literals;
 	assert(!_name.empty());
 	if (_textureName.empty())
-		_textureName = _name |
-					   std::views::transform([](unsigned char c)
-											 { return (unsigned char)std::tolower(c); }) |
-					   std::views::split(" "sv) |
-					   std::views::join_with("_"sv) |
-					   std::ranges::to<std::string>();
+		_textureName =
+			_name |
+			std::views::transform([](unsigned char c)
+								  { return (unsigned char)std::tolower(c); }) |
+			std::views::split(" "sv) | std::views::join_with("_"sv) |
+			std::ranges::to<std::string>();
 	if (_item == nullptr)
 		_item = &Items::air;
 	return T{

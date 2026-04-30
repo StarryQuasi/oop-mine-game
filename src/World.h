@@ -46,7 +46,12 @@ public:
 	const Block& getBlock(olc::vi2d p) const;
 
 	void setBlock(olc::vi2d p, const Block& block);
+	// Breaks a block at p, calling Block::onBreak()
 	void breakBlock(olc::vi2d p);
+	// Pastes a rectangular pattern with the bottom center block at p (left of
+	// center if even), replacing Block::isReplaceable() blocks
+	void pastePattern(
+		olc::vi2d p, const std::vector<std::vector<const Block*>>& pat);
 
 	// Returns -1 if not found
 	int findTopmostSolid(int x) const;
@@ -93,9 +98,6 @@ private:
 	std::vector<olc::Pixel> drawBufColor{};
 	std::chrono::steady_clock::time_point lastRandomUpdate{};
 	std::vector<Particle> particles{};
-
-	static std::vector<std::vector<std::vector<const Block*>>>
-	makeTreePatterns();
 
 	void generateWorld();
 	// Returns [0, 1]

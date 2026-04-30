@@ -23,9 +23,11 @@ const Item Items::diamondBlock   = builder().name("Diamond Block").block(Blocks:
 const Item Items::oakLog         = builder().name("Oak Log").block(Blocks::oakLog).build();
 const Item Items::oakPlanks      = builder().name("Oak Planks").block(Blocks::oakPlanks).build();
 const Item Items::oakLeaves      = builder().name("Oak Leaves").block(Blocks::oakLeaves).build();
+const Item Items::oakSapling     = builder().name("Oak Sapling").block(Blocks::oakSapling).build();
 const Item Items::cherryLog      = builder().name("Cherry Log").block(Blocks::cherryLog).build();
 const Item Items::cherryPlanks   = builder().name("Cherry Planks").block(Blocks::cherryPlanks).build();
 const Item Items::cherryLeaves   = builder().name("Cherry Leaves").block(Blocks::cherryLeaves).build();
+const Item Items::cherrySapling  = builder().name("Cherry Sapling").block(Blocks::cherrySapling).build();
 const Item Items::craftingTable  = builder().name("Crafting Table").block(Blocks::craftingTable).build();
 const Item Items::ladder         = builder().name("Ladder").block(Blocks::ladder).build();
 const Item Items::coal           = builder().name("Coal").build();
@@ -52,9 +54,11 @@ const std::vector<const Item*> Items::list = {
 	&Items::oakLog,
 	&Items::oakPlanks,
 	&Items::oakLeaves,
+	&Items::oakSapling,
 	&Items::cherryLog,
 	&Items::cherryPlanks,
 	&Items::cherryLeaves,
+	&Items::cherrySapling,
 	&Items::craftingTable,
 	&Items::ladder,
 	&Items::coal,

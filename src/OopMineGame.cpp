@@ -7,12 +7,12 @@
 #include "libs/stb_image.h"
 
 #include "Blocks.h"
-#include "Recipes.h"
-#include "Blocks.h"
+#include "Data.h"
 #include "Entity.h"
 #include "Items.h"
 #include "OopMineGame.h"
 #include "Player.h"
+#include "Recipes.h"
 #include "Utils.h"
 #include "Verify.h"
 #include "gui/Anchor.h"
@@ -301,7 +301,8 @@ bool OopMineGame::OnUserCreate()
 		[this](gui::Container& me, const gui::MouseDragEvent& e)
 		{ return true; });
 
-	Recipes::loadRecipes();
+	Recipes::init();
+	Data::init();
 
 	genNewWorld({});
 

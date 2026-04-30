@@ -1,7 +1,6 @@
 #include <bit>
 #include <chrono>
 #include <cstdarg>
-#include <initializer_list>
 #include <mdspan>
 #include <print>
 #include <random>
@@ -9,6 +8,7 @@
 
 #include "Block.h"
 #include "Blocks.h"
+#include "Data.h"
 #include "Entity.h"
 #include "OopMineGame.h"
 #include "Player.h"
@@ -66,6 +66,26 @@ void World::breakBlock(olc::vi2d p)
 	{
 		block.onBreak(*this, p);
 		setBlock(p, Blocks::air);
+	}
+}
+
+void World::pastePattern(
+	olc::vi2d p, const std::vector<std::vector<const Block*>>& pat)
+{
+	const olc::vi2d patSize = {(int)pat[0].size(), (int)pat.size()};
+	const olc::vi2d patOffsetFromMid = {-patSize.x / 2, -(patSize.y - 1)};
+	for (const olc::vi2d ppat : Iterate::over({0, 0}, patSize))
+	{
+		const Block& block = *pat[ppat.y][ppat.x];
+		if (block == Blocks::air)
+			continue;
+		olc::vi2d preal = p;
+		preal += ppat;
+		preal += patOffsetFromMid;
+		if (isValidPosition(preal) && getBlock(preal).isReplaceable())
+		{
+			setBlock(preal, block);
+		}
 	}
 }
 
@@ -162,8 +182,7 @@ void World::randomUpdate(float elapsed)
 			for (int _ = 0; _ < settings.randomUpdateCount; _++)
 			{
 				const olc::vi2d pos = {
-					x + randomInt(0, 15),
-					y + randomInt(0, 15)};
+					x + randomInt(0, 15), y + randomInt(0, 15)};
 				if (isValidPosition(pos) &&
 					getBlock(pos).requiresRandomUpdate())
 					getBlock(pos).randomUpdate(*this, pos);
@@ -349,7 +368,16 @@ void World::generateWorld()
 		}
 	}
 	// Place trees
-	const auto treePatterns = makeTreePatterns();
+	const auto treePatterns =
+		Data::getTreeTypes() |
+		std::views::transform(
+			[](const auto& type)
+			{
+				return type.patterns |
+					   std::views::transform([](const auto& p)
+											 { return std::ref(p); });
+			}) |
+		std::views::join | std::ranges::to<std::vector>();
 	for (int x = 0; x < getSize().x; x += 16)
 	{
 		const float treeNoiseY = 16384.0f;
@@ -370,26 +398,7 @@ void World::generateWorld()
 				if (y == -1)
 					continue;
 				y--;
-				const olc::vi2d patSize = {
-					(int)treePatterns[treeType][0].size(),
-					(int)treePatterns[treeType].size()};
-				const olc::vi2d patOffsetFromMid = {
-					-patSize.x / 2, -(patSize.y - 1)};
-				for (const olc::vi2d ppat : Iterate::over({0, 0}, patSize))
-				{
-					const Block& block =
-						*treePatterns[treeType][ppat.y][ppat.x];
-					if (block == Blocks::air)
-						continue;
-					olc::vi2d preal = {x + xsub, y};
-					preal += ppat;
-					preal += patOffsetFromMid;
-					if (isValidPosition(preal) &&
-						getBlock(preal).isReplaceable())
-					{
-						setBlock(preal, block);
-					}
-				}
+				pastePattern({x + xsub, y}, treePatterns[treeType].get());
 			}
 		}
 	}
@@ -426,50 +435,4 @@ float World::randToFloat(unsigned v)
 {
 	// https://blog.bithole.dev/blogposts/random-float/
 	return std::bit_cast<float>(v >> 9 | 0x3f800000) - 1.0f;
-}
-
-std::vector<std::vector<std::vector<const Block*>>> World::makeTreePatterns()
-{
-	const auto makePattern =
-		[](const std::initializer_list<std::pair<char, const Block&>> mappings,
-		   const std::initializer_list<std::string_view> pattern)
-	{
-		std::vector<std::vector<const Block*>> res;
-		std::unordered_map<char, const Block*> map;
-		map[' '] = &Blocks::air;
-		for (const auto& [c, block] : mappings)
-			map[c] = &block;
-		for (const auto& row : pattern)
-		{
-			std::vector<const Block*> resultRow;
-			for (const char c : row)
-				resultRow.push_back(map.at(c));
-			res.push_back(std::move(resultRow));
-			assert(res.back().size() == res.front().size());
-		}
-		return res;
-	};
-	// spell-checker:disable
-	std::vector<std::vector<std::vector<const Block*>>> treePatterns;
-	treePatterns.push_back(makePattern(
-		{{'S', Blocks::oakLeaves}, {'H', Blocks::oakLog}},
-		{"   S   ",
-		 "  SSS  ",
-		 " SSHSS ",
-		 "SSSHSSS",
-		 "SSSHSSS",
-		 "   H   ",
-		 "   H   "}));
-	treePatterns.push_back(makePattern(
-		{{'S', Blocks::cherryLeaves}, {'H', Blocks::cherryLog}},
-		{"    SSSSS    ",
-		 "  SSSSSSSSS  ",
-		 " SSSSSSSSSHS ",
-		 "SSSHSSSHHHSSS",
-		 " SSSHHHHSSSS ",
-		 "  SS  H  SS  ",
-		 "      H      ",
-		 "      H      "}));
-	// spell-checker:enable
-	return treePatterns;
 }

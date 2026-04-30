@@ -21,9 +21,11 @@ public:
 	static const Block oakLog;
 	static const Block oakPlanks;
 	static const Leaves oakLeaves;
+	static const Sapling oakSapling;
 	static const Block cherryLog;
 	static const Block cherryPlanks;
 	static const Leaves cherryLeaves;
+	static const Sapling cherrySapling;
 	static const CraftingTable craftingTable;
 	static const Block ladder;
 

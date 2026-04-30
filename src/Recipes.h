@@ -17,7 +17,7 @@ public:
 		const ItemStack result{};
 	};
 
-	static void loadRecipes();
+	static void init();
 
 	// Returns the inclusive bounds of the content area in the input
 	static std::optional<std::pair<olc::vi2d, olc::vi2d>>
