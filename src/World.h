@@ -88,8 +88,9 @@ private:
 	OopMineGame* game{};
 	FastNoiseLite noise{};
 	std::vector<int> blocksRaw{};
+	// std::mdspan is a multidimensional non owning span
 	// std::dextents = dynamic extents
-	// std::layout_left = column major (access by x, y)
+	// std::layout_left = column major, makes left most index contiguous when using it by [x, y]
 	std::mdspan<int, std::dextents<size_t, 2>, std::layout_left> blocks{};
 	std::unordered_map<int, std::unique_ptr<Entity>> entities{};
 	std::mt19937 random{};
