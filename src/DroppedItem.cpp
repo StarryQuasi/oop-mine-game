@@ -35,7 +35,7 @@ void DroppedItem::draw(OopMineGame& game) const
 				.count();
 		drawPos.y += -0.1f + std::sin(yes * (float)std::numbers::pi) * 0.1f;
 		Utils::drawDecalPatch(
-			game.getView(), drawPos, decalPatch.value(), getSize());
+			game.getView(), drawPos, decalPatch.value(), getSize(), game.getWorld().getTimeTint());
 	}
 	Entity::draw(game);
 }

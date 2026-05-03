@@ -1,8 +1,9 @@
 #pragma once
 
-#include <ranges>
 #include <format>
+#include <ranges>
 
+#include "Block.h"
 #include "libs/olcPGEX_TransformedView.h"
 
 class Utils
@@ -49,7 +50,8 @@ public:
 		olc::TileTransformedView& view,
 		const olc::vf2d& pos,
 		const olc::DecalPatch& patch,
-		const olc::vf2d& size)
+		const olc::vf2d& size,
+		const olc::Pixel& tint)
 	{
 		const olc::vf2d sourceSize =
 			olc::vf2d{
@@ -61,7 +63,8 @@ public:
 			size * olc::vi2d{32, 32},
 			patch.decal,
 			patch.coords[1] / patch.decal->vUVScale,
-			sourceSize);
+			sourceSize,
+			tint);
 	}
 
 	static std::string toString(const olc::vi2d& v)
@@ -83,7 +86,9 @@ public:
 	template <typename T>
 	static T map(T v, T min1, T max1, T min2, T max2)
 	{
-		return (T)((float)v - min1) / ((float)max1 - min1) * ((float)max2 - min2) + min2;
+		return (T)((float)v - min1) / ((float)max1 - min1) *
+				   ((float)max2 - min2) +
+			   min2;
 	}
 };
 

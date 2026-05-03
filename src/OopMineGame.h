@@ -30,6 +30,7 @@ public:
 	bool OnUserDestroy() override;
 	bool OnUserUpdate(float elapsed) override;
 	olc::TileTransformedView& getView();
+	World& getWorld();
 	std::optional<olc::Renderable>& getAsset(const std::string& path);
 	std::optional<olc::Renderable>& getBlockAsset(int id);
 	std::optional<olc::DecalPatch>& getBlockAssetPatch(int id);

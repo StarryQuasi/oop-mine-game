@@ -33,7 +33,7 @@ void Recipes::init()
 		recipes.push_back({
 			{(int)res[0].size(), (int)res.size()},
 			std::move(res),
-			std::move(result),
+			result,
 		});
 	};
 	addRecipe({{'w', {Items::oakLog, 1}}}, {Items::oakPlanks, 4}, {"w"});

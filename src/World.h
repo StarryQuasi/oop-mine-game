@@ -80,12 +80,18 @@ public:
 
 	void addParticle(Particle p);
 
+	olc::Pixel getTimeTint() const;
+
 	void update(float elapsed);
 	void draw(OopMineGame& game);
 
 private:
 	const GenerationSettings settings{};
+	const float dayPeriod{60.0f};
+	std::chrono::steady_clock::time_point worldStartTime{};
+	std::chrono::steady_clock::time_point lastRandomUpdate{};
 	OopMineGame* game{};
+	std::mt19937 random{};
 	FastNoiseLite noise{};
 	std::vector<int> blocksRaw{};
 	// std::mdspan is a multidimensional non owning span
@@ -93,12 +99,11 @@ private:
 	// std::layout_left = column major, makes left most index contiguous when using it by [x, y]
 	std::mdspan<int, std::dextents<size_t, 2>, std::layout_left> blocks{};
 	std::unordered_map<int, std::unique_ptr<Entity>> entities{};
-	std::mt19937 random{};
+	std::vector<Particle> particles{};
+
 	std::vector<olc::vf2d> drawBufPos{};
 	std::vector<olc::vf2d> drawBufUv{};
 	std::vector<olc::Pixel> drawBufColor{};
-	std::chrono::steady_clock::time_point lastRandomUpdate{};
-	std::vector<Particle> particles{};
 
 	void generateWorld();
 	// Returns [0, 1]

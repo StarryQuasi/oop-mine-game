@@ -431,6 +431,11 @@ bool OopMineGame::OnUserUpdate(float elapsed)
 
 olc::TileTransformedView& OopMineGame::getView() { return view; }
 
+World& OopMineGame::getWorld() 
+{
+	return *world.get();
+}
+
 std::optional<olc::Renderable>& OopMineGame::getAsset(const std::string& path)
 {
 	if (const auto it = assetsOther.find(path); it != assetsOther.end())

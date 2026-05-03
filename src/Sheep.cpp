@@ -33,6 +33,7 @@ void Sheep::draw(OopMineGame& game) const
 		getPos() - olc::vf2d{assetSize.x / 2.0f, assetSize.y},
 		game.getAsset("entity/sheep/sheep.png")->Decal(),
 		assetSize,
-		getDirection());
+		getDirection(),
+		game.getWorld().getTimeTint());
 	Mob::draw(game);
 }

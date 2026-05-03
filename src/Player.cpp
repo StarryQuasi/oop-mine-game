@@ -123,13 +123,15 @@ void Player::draw(OopMineGame& game) const
 		getPos() - olc::vf2d{1.0f, 2.0f},
 		hairBuffer.Decal(),
 		{2, 2},
-		false);
+		false,
+		game.getWorld().getTimeTint());
 	Utils::drawDecalFlipped(
 		game.getView(),
 		getPos() - olc::vf2d{1.0f, 2.0f},
 		game.getAsset("entity/player/player_no_hair.png")->Decal(),
 		{2, 2},
-		getDirection());
+		getDirection(),
+		game.getWorld().getTimeTint());
 	// Utils::drawRectOutline(
 	//	game.getView(),
 	//	getPos() - olc::vf2d{ 1.0f, 2.0f },

@@ -16,6 +16,7 @@
 #include "Utils.h"
 #include "Verify.h"
 #include "World.h"
+#include "libs/olcPGEX_TransformedView.h"
 
 World::World(OopMineGame& game, GenerationSettings settings) :
 	game(&game),
@@ -23,7 +24,8 @@ World::World(OopMineGame& game, GenerationSettings settings) :
 	noise(settings.seed),
 	blocksRaw(settings.size.area()),
 	blocks(blocksRaw.data(), settings.size.x, settings.size.y),
-	random(std::random_device()())
+	random(std::random_device()()),
+	worldStartTime(std::chrono::steady_clock::now())
 {
 	noise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
 	noise.SetFrequency(settings.noiseFrequency);
@@ -156,6 +158,21 @@ std::optional<std::reference_wrapper<Player>> World::getPlayer() const
 
 void World::addParticle(Particle p) { particles.push_back(std::move(p)); }
 
+olc::Pixel World::getTimeTint() const
+{
+	const float now = std::chrono::duration_cast<std::chrono::duration<float>>(
+						  std::chrono::steady_clock::now() - worldStartTime)
+						  .count();
+	const float halfPeriod = dayPeriod / 2.0f;
+	const float scale = std::fmod(now, halfPeriod) / halfPeriod;
+	const olc::Pixel tintDay = olc::WHITE;
+	const olc::Pixel tintNight = 0xFF7F7F5F;
+	if ((int)(now / halfPeriod) % 2 == 0)
+		return tintDay * (1.0f - scale) + tintNight * scale;
+	else
+		return tintNight * (1.0f - scale) + tintDay * scale;
+}
+
 void World::update(float elapsed)
 {
 	if (std::chrono::steady_clock::now() - lastRandomUpdate >=
@@ -221,6 +238,7 @@ void World::drawParticles(OopMineGame& game)
 	const auto now =
 		std::chrono::steady_clock::now().time_since_epoch().count();
 	const size_t capBefore = drawBufPos.capacity();
+	const olc::Pixel tint = getTimeTint();
 	for (const Particle& p : particles)
 	{
 		const float scale = Utils::map(
@@ -233,7 +251,7 @@ void World::drawParticles(OopMineGame& game)
 		const olc::vf2d tl = view.WorldToScreen(p.pos - size / 2.0f);
 		const olc::vf2d br = view.WorldToScreen(p.pos + size / 2.0f);
 		const olc::vf2d ss = br - tl; // Size in screen space
-		olc::Pixel color = p.color;
+		olc::Pixel color = p.color * tint;
 		color.a = color.a * scale;
 		drawBufPos.emplace_back(tl.x, tl.y + ss.y);
 		drawBufPos.emplace_back(tl.x, tl.y);
@@ -270,48 +288,76 @@ void World::drawParticles(OopMineGame& game)
 void World::draw(OopMineGame& game)
 {
 	auto& view = game.getView();
-
-	const olc::vi2d tl = view.GetTopLeftTile().max({0, 0});
-	const olc::vi2d br = view.GetBottomRightTile().min(getSize());
-	const size_t capBefore = drawBufPos.capacity();
-	for (const auto& p : Iterate::over(tl, br))
+	const olc::Pixel tint = getTimeTint();
 	{
-		const Block& block = getBlock(p);
-		if (auto& asset = game.getBlockAssetPatch(block.getId());
-			asset.has_value())
-		{
-			const olc::vf2d size = olc::vf2d{1, 1};
-			const olc::vf2d tl = view.WorldToScreen(p);
-			const olc::vf2d br = view.WorldToScreen(p + size);
-			const olc::vf2d ss = br - tl; // Size in screen space
-			drawBufPos.emplace_back(tl.x, tl.y + ss.y);
-			drawBufPos.emplace_back(tl.x, tl.y);
-			drawBufPos.emplace_back(tl.x + ss.x, tl.y);
-			drawBufUv.emplace_back(asset->coords[0]);
-			drawBufUv.emplace_back(asset->coords[1]);
-			drawBufUv.emplace_back(asset->coords[2]);
-			drawBufPos.emplace_back(tl.x, tl.y + ss.y);
-			drawBufPos.emplace_back(tl.x + ss.x, tl.y);
-			drawBufPos.emplace_back(tl.x + ss.x, tl.y + ss.y);
-			drawBufUv.emplace_back(asset->coords[0]);
-			drawBufUv.emplace_back(asset->coords[2]);
-			drawBufUv.emplace_back(asset->coords[3]);
-		}
+		const float now =
+			std::chrono::duration_cast<std::chrono::duration<float>>(
+				std::chrono::steady_clock::now() - worldStartTime)
+				.count();
+		const olc::vf2d size = olc::vf2d{64, 64};
+		const float x = Utils::map(
+			view.ScreenToWorld(game.GetScreenSize() / 2.0f).x,
+			0.0f,
+			getSize().x + 1.0f,
+			view.ScreenToWorld(game.GetScreenSize()).x,
+			view.ScreenToWorld({}).x);
+		const float y = Utils::map(
+			std::fmod(now, dayPeriod / 2.0f),
+			0.0f,
+			dayPeriod / 2.0f,
+			view.ScreenToWorld(-size / 2.0f).y,
+			view.ScreenToWorld(game.GetScreenSize() + size / 2.0f).y);
+		const olc::vf2d center = {x, y};
+		olc::Decal* asset;
+		if ((int)(now / (dayPeriod / 2.0f)) % 2 == 0)
+			asset = game.getAsset("env/sun.png").value().Decal();
+		else
+			asset = game.getAsset("env/moon.png").value().Decal();
+		view.DrawDecal(center - size / 32.0f / 2.0f, asset, size / 32.0f, tint);
 	}
-	if (drawBufPos.capacity() > capBefore)
-		std::println(
-			"Vertex buffer size increased from {} to {}",
-			capBefore,
-			drawBufPos.capacity());
-	game.SetDecalStructure(olc::DecalStructure::LIST);
-	game.DrawPolygonDecal(
-		game.getAsset("atlas").value().Decal(),
-		drawBufPos,
-		drawBufUv,
-		olc::WHITE);
-	game.SetDecalStructure(olc::DecalStructure::FAN);
-	drawBufPos.clear();
-	drawBufUv.clear();
+	{
+		const olc::vi2d tl = view.GetTopLeftTile().max({0, 0});
+		const olc::vi2d br = view.GetBottomRightTile().min(getSize());
+		const size_t capBefore = drawBufPos.capacity();
+		for (const auto& p : Iterate::over(tl, br))
+		{
+			const Block& block = getBlock(p);
+			if (const auto& asset = game.getBlockAssetPatch(block.getId());
+				asset.has_value())
+			{
+				const olc::vf2d size = olc::vf2d{1, 1};
+				const olc::vf2d tl = view.WorldToScreen(p);
+				const olc::vf2d br = view.WorldToScreen(p + size);
+				const olc::vf2d ss = br - tl; // Size in screen space
+				drawBufPos.emplace_back(tl.x, tl.y + ss.y);
+				drawBufPos.emplace_back(tl.x, tl.y);
+				drawBufPos.emplace_back(tl.x + ss.x, tl.y);
+				drawBufUv.emplace_back(asset->coords[0]);
+				drawBufUv.emplace_back(asset->coords[1]);
+				drawBufUv.emplace_back(asset->coords[2]);
+				drawBufPos.emplace_back(tl.x, tl.y + ss.y);
+				drawBufPos.emplace_back(tl.x + ss.x, tl.y);
+				drawBufPos.emplace_back(tl.x + ss.x, tl.y + ss.y);
+				drawBufUv.emplace_back(asset->coords[0]);
+				drawBufUv.emplace_back(asset->coords[2]);
+				drawBufUv.emplace_back(asset->coords[3]);
+			}
+		}
+		if (drawBufPos.capacity() > capBefore)
+			std::println(
+				"Vertex buffer size increased from {} to {}",
+				capBefore,
+				drawBufPos.capacity());
+		game.SetDecalStructure(olc::DecalStructure::LIST);
+		game.DrawPolygonDecal(
+			game.getAsset("atlas").value().Decal(),
+			drawBufPos,
+			drawBufUv,
+			tint);
+		game.SetDecalStructure(olc::DecalStructure::FAN);
+		drawBufPos.clear();
+		drawBufUv.clear();
+	}
 
 	for (auto& [id, entity] : entities)
 	{
@@ -342,9 +388,14 @@ void World::generateWorld()
 		const float sample = (sampleAt(x, terrainHeightNoiseY) +
 							  sampleAt(noise2, x, terrainHeightNoiseY)) /
 							 2.0f;
-		const int terrainHeight = settings.terrainHeightMin -
+		const int terrainHeight = settings.terrainHeightMin +
 								  (int)(sample * (settings.terrainHeightMax -
 												  settings.terrainHeightMin));
+		assert(
+			Verify::in(
+				terrainHeight,
+				settings.terrainHeightMin,
+				settings.terrainHeightMax));
 		int y = terrainHeight;
 		setBlock({x, y++}, Blocks::grassBlock);
 		setBlock({x, y++}, Blocks::dirt);
@@ -354,10 +405,11 @@ void World::generateWorld()
 		{
 			if (sampleAt(x + 1337, y + 1337) >= settings.diamondThreshold)
 				setBlock({x, y}, Blocks::diamondOre);
-			else if (Verify::inExclusive(
-						 sampleAt(x + 420, y + 420),
-						 settings.copperThresholdMin,
-						 settings.copperThresholdMax))
+			else if (
+				Verify::inExclusive(
+					sampleAt(x + 420, y + 420),
+					settings.copperThresholdMin,
+					settings.copperThresholdMax))
 				setBlock({x, y}, Blocks::copperOre);
 			else if (sampleAt(x, y) >= settings.coalThreshold)
 				setBlock({x, y}, Blocks::coalOre);
@@ -399,11 +451,13 @@ void World::generateWorld()
 	}
 
 	// Place player
-	const olc::vi2d nicePoint = findNiceSpawnPoint(getSize().x / 2);
-	addEntity<Player>(olc::vf2d{nicePoint.x + 0.5f, (float)nicePoint.y});
+	olc::vf2d nicePoint = findNiceSpawnPoint(getSize().x / 2);
+	nicePoint.x += 0.5f;
+	nicePoint.y -= 0.0001f;
+	addEntity<Player>(nicePoint);
 
 	// Place animals
-	addEntity<Sheep>(getPlayer()->get().getPos());
+	addEntity<Sheep>(nicePoint);
 
 	const auto end = std::chrono::steady_clock::now();
 	const auto dur =
