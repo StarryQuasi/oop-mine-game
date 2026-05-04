@@ -28,6 +28,7 @@ public:
 	static const Sapling cherrySapling;
 	static const CraftingTable craftingTable;
 	static const Block ladder;
+	static const Torch torch;
 
 	static const Block& getById(int id);
 	static const std::vector<const Block*>& getAllBlocks();

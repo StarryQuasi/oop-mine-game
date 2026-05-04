@@ -28,6 +28,7 @@ public:
 	static const Item cherrySapling;
 	static const Item craftingTable;
 	static const Item ladder;
+	static const Item torch;
 	static const Item coal;
 	static const Item copperIngot;
 	static const Item diamond;

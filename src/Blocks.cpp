@@ -30,6 +30,7 @@ const Leaves Blocks::cherryLeaves         = builder().name("Cherry Leaves").item
 const Sapling Blocks::cherrySapling       = builder().name("Cherry Sapling").item(Items::cherrySapling).transparent(true).build<Sapling>();
 const CraftingTable Blocks::craftingTable = builder().name("Crafting Table").item(Items::craftingTable).build<CraftingTable>();
 const Block Blocks::ladder                = builder().name("Ladder").item(Items::ladder).build();
+const Torch Blocks::torch                 = builder().name("Torch").item(Items::torch).build<Torch>();
 
 const std::vector<const Block*> Blocks::list = {
 	&Blocks::air,
@@ -53,6 +54,7 @@ const std::vector<const Block*> Blocks::list = {
 	&Blocks::cherrySapling,
 	&Blocks::craftingTable,
 	&Blocks::ladder,
+	&Blocks::torch,
 };
 // clang-format on
 

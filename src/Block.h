@@ -17,7 +17,7 @@ class Block
 public:
 	int getId() const;
 	const std::string& getName() const;
-	virtual int getLightLevel() const;
+	virtual uint8_t getLightLevel() const;
 	virtual const std::string& getTextureName() const;
 	virtual const Item& getItem() const;
 
@@ -100,6 +100,14 @@ public:
 
 	bool requiresRandomUpdate() const override;
 	void randomUpdate(World& world, olc::vi2d pos) const override;
+};
+
+class Torch : public Block
+{
+public:
+	using Block::Block;
+
+	uint8_t getLightLevel() const override;
 };
 
 class BlockBuilder;

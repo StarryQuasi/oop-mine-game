@@ -30,6 +30,7 @@ const Item Items::cherryLeaves   = builder().name("Cherry Leaves").block(Blocks:
 const Item Items::cherrySapling  = builder().name("Cherry Sapling").block(Blocks::cherrySapling).build();
 const Item Items::craftingTable  = builder().name("Crafting Table").block(Blocks::craftingTable).build();
 const Item Items::ladder         = builder().name("Ladder").block(Blocks::ladder).build();
+const Item Items::torch          = builder().name("Torch").block(Blocks::torch).build();
 const Item Items::coal           = builder().name("Coal").build();
 const Item Items::copperIngot    = builder().name("Copper Ingot").build();
 const Item Items::diamond        = builder().name("Diamond").build();
@@ -61,6 +62,7 @@ const std::vector<const Item*> Items::list = {
 	&Items::cherrySapling,
 	&Items::craftingTable,
 	&Items::ladder,
+	&Items::torch,
 	&Items::coal,
 	&Items::copperIngot,
 	&Items::diamond,

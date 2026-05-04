@@ -39,7 +39,7 @@ int Block::getId() const { return id; }
 
 const std::string& Block::getName() const { return name; }
 
-int Block::getLightLevel() const { return 15; }
+uint8_t Block::getLightLevel() const { return 0; }
 
 const std::string& Block::getTextureName() const { return textureName; }
 
@@ -263,6 +263,11 @@ void Sapling::randomUpdate(World& world, olc::vi2d pos) const
 				->patterns;
 		world.pastePattern(pos, pats[world.randomInt(0, pats.size() - 1)]);
 	}
+}
+
+uint8_t Torch::getLightLevel() const
+{
+	return 15;
 }
 
 BlockBuilder& BlockBuilder::name(std::string v)
