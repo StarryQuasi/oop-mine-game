@@ -44,6 +44,7 @@ public:
 	olc::vi2d getSize() const;
 	int getSeed() const;
 	const Block& getBlock(olc::vi2d p) const;
+	uint8_t getLight(olc::vi2d p) const;
 
 	void setBlock(olc::vi2d p, const Block& block);
 	// Breaks a block at p, calling Block::onBreak()
@@ -80,6 +81,12 @@ public:
 
 	void addParticle(Particle p);
 
+	float getTime() const;
+	float getTimeOfDay() const;
+	float getDayPeriod() const;
+	bool isDay() const;
+	bool isNight() const;
+	uint8_t getTimeLight() const;
 	olc::Pixel getTimeTint() const;
 
 	void update(float elapsed);
@@ -87,7 +94,6 @@ public:
 
 private:
 	const GenerationSettings settings{};
-	const float dayPeriod{60.0f};
 	std::chrono::steady_clock::time_point worldStartTime{};
 	std::chrono::steady_clock::time_point lastRandomUpdate{};
 	OopMineGame* game{};
@@ -98,6 +104,8 @@ private:
 	// std::dextents = dynamic extents
 	// std::layout_left = column major, makes left most index contiguous when using it by [x, y]
 	std::mdspan<int, std::dextents<size_t, 2>, std::layout_left> blocks{};
+	std::vector<uint8_t> lightsRaw{};
+	std::mdspan<uint8_t, std::dextents<size_t, 2>, std::layout_left> lights{};
 	std::unordered_map<int, std::unique_ptr<Entity>> entities{};
 	std::vector<Particle> particles{};
 
@@ -114,6 +122,8 @@ private:
 	float sampleAt(olc::vi2d pos);
 	// Converts random unsigned to float [0, 1)
 	float randToFloat(unsigned v);
+
+	void setLight(olc::vi2d p, uint8_t light);
 
 	void randomUpdate(float elapsed);
 	void drawUpdate(float elapsed);

@@ -72,6 +72,10 @@ void Recipes::init()
 		{{'x', {Items::diamond, 1}}},
 		{Items::diamondBlock, 1},
 		{"xxx", "xxx", "xxx"});
+	addRecipe(
+		{{'x', {Items::coal, 1}}, {'i', {Items::stick, 1}}},
+		{Items::torch, 4},
+		{"x", "i"});
 }
 
 std::optional<std::pair<olc::vi2d, olc::vi2d>>

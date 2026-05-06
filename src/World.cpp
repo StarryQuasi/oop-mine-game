@@ -6,6 +6,8 @@
 #include <random>
 #include <ranges>
 
+#include "libs/olcPGEX_TransformedView.h"
+
 #include "Block.h"
 #include "Blocks.h"
 #include "Data.h"
@@ -16,7 +18,6 @@
 #include "Utils.h"
 #include "Verify.h"
 #include "World.h"
-#include "libs/olcPGEX_TransformedView.h"
 
 World::World(OopMineGame& game, GenerationSettings settings) :
 	game(&game),
@@ -24,6 +25,8 @@ World::World(OopMineGame& game, GenerationSettings settings) :
 	noise(settings.seed),
 	blocksRaw(settings.size.area()),
 	blocks(blocksRaw.data(), settings.size.x, settings.size.y),
+	lightsRaw(settings.size.area()),
+	lights(lightsRaw.data(), settings.size.x, settings.size.y),
 	random(std::random_device()()),
 	worldStartTime(std::chrono::steady_clock::now())
 {
@@ -54,10 +57,23 @@ const Block& World::getBlock(olc::vi2d p) const
 	return Blocks::getById(blocks[p.x, p.y]);
 }
 
+uint8_t World::getLight(olc::vi2d p) const
+{
+	assert(isValidPosition(p));
+	return lights[p.x, p.y];
+}
+
 void World::setBlock(olc::vi2d p, const Block& block)
 {
 	assert(isValidPosition(p));
 	blocks[p.x, p.y] = block.getId();
+	setLight(p, block.getLightLevel());
+}
+
+void World::setLight(olc::vi2d p, uint8_t light)
+{
+	assert(isValidPosition(p));
+	lights[p.x, p.y] = light;
 }
 
 void World::breakBlock(olc::vi2d p)
@@ -158,19 +174,55 @@ std::optional<std::reference_wrapper<Player>> World::getPlayer() const
 
 void World::addParticle(Particle p) { particles.push_back(std::move(p)); }
 
+float World::getTime() const
+{
+	return std::chrono::duration_cast<std::chrono::duration<float>>(
+			   std::chrono::steady_clock::now() - worldStartTime)
+		.count();
+}
+
+float World::getTimeOfDay() const 
+{
+	return std::fmod(getTime(), getDayPeriod());
+}
+
+float World::getDayPeriod() const
+{
+	return 60.0f;
+}
+
+bool World::isDay() const
+{
+	return (int)(getTime() / getDayPeriod() / 2.0f) % 2 == 0;
+}
+
+bool World::isNight() const
+{
+	return !isDay();
+}
+
+uint8_t World::getTimeLight() const
+{
+	const float halfPeriod = getDayPeriod() / 2.0f;
+	const float scale = std::fmod(getTime(), halfPeriod) / halfPeriod;
+	const uint8_t day = 15;
+	const uint8_t night = 0;
+	if (isDay())
+		return day * (1.0f - scale) + night * scale;
+	else
+		return night * (1.0f - scale) + day * scale;
+}
+
 olc::Pixel World::getTimeTint() const
 {
-	const float now = std::chrono::duration_cast<std::chrono::duration<float>>(
-						  std::chrono::steady_clock::now() - worldStartTime)
-						  .count();
-	const float halfPeriod = dayPeriod / 2.0f;
-	const float scale = std::fmod(now, halfPeriod) / halfPeriod;
-	const olc::Pixel tintDay = olc::WHITE;
-	const olc::Pixel tintNight = 0xFF7F7F5F;
-	if ((int)(now / halfPeriod) % 2 == 0)
-		return tintDay * (1.0f - scale) + tintNight * scale;
+	const float halfPeriod = getDayPeriod() / 2.0f;
+	const float scale = std::fmod(getTime(), halfPeriod) / halfPeriod;
+	const olc::Pixel night = 0xFF7F7F5F;
+	const olc::Pixel day = olc::WHITE;
+	if (isDay())
+		return day * (1.0f - scale) + night * scale;
 	else
-		return tintNight * (1.0f - scale) + tintDay * scale;
+		return night * (1.0f - scale) + day * scale;
 }
 
 void World::update(float elapsed)
@@ -289,6 +341,9 @@ void World::draw(OopMineGame& game)
 {
 	auto& view = game.getView();
 	const olc::Pixel tint = getTimeTint();
+	const uint8_t light = getTimeLight();
+	const olc::Pixel tintDay = olc::WHITE;
+	const olc::Pixel tintNight = 0xFF7F7F5F;
 	{
 		const float now =
 			std::chrono::duration_cast<std::chrono::duration<float>>(
@@ -302,14 +357,14 @@ void World::draw(OopMineGame& game)
 			view.ScreenToWorld(game.GetScreenSize()).x,
 			view.ScreenToWorld({}).x);
 		const float y = Utils::map(
-			std::fmod(now, dayPeriod / 2.0f),
+			std::fmod(now, getDayPeriod() / 2.0f),
 			0.0f,
-			dayPeriod / 2.0f,
+			getDayPeriod() / 2.0f,
 			view.ScreenToWorld(-size / 2.0f).y,
 			view.ScreenToWorld(game.GetScreenSize() + size / 2.0f).y);
 		const olc::vf2d center = {x, y};
 		olc::Decal* asset;
-		if ((int)(now / (dayPeriod / 2.0f)) % 2 == 0)
+		if (isDay())
 			asset = game.getAsset("env/sun.png").value().Decal();
 		else
 			asset = game.getAsset("env/moon.png").value().Decal();
@@ -341,6 +396,28 @@ void World::draw(OopMineGame& game)
 				drawBufUv.emplace_back(asset->coords[0]);
 				drawBufUv.emplace_back(asset->coords[2]);
 				drawBufUv.emplace_back(asset->coords[3]);
+				const uint8_t blockLight = getLight(p);
+				if (blockLight > light)
+				{
+					const olc::Pixel col =
+						tintDay * (blockLight / 15.0f) +
+						tintNight * (1.0f - blockLight / 15.0f);
+					drawBufColor.emplace_back(col);
+					drawBufColor.emplace_back(col);
+					drawBufColor.emplace_back(col);
+					drawBufColor.emplace_back(col);
+					drawBufColor.emplace_back(col);
+					drawBufColor.emplace_back(col);
+				}
+				else
+				{
+					drawBufColor.emplace_back(tint);
+					drawBufColor.emplace_back(tint);
+					drawBufColor.emplace_back(tint);
+					drawBufColor.emplace_back(tint);
+					drawBufColor.emplace_back(tint);
+					drawBufColor.emplace_back(tint);
+				}
 			}
 		}
 		if (drawBufPos.capacity() > capBefore)
@@ -353,10 +430,11 @@ void World::draw(OopMineGame& game)
 			game.getAsset("atlas").value().Decal(),
 			drawBufPos,
 			drawBufUv,
-			tint);
+			drawBufColor);
 		game.SetDecalStructure(olc::DecalStructure::FAN);
 		drawBufPos.clear();
 		drawBufUv.clear();
+		drawBufColor.clear();
 	}
 
 	for (auto& [id, entity] : entities)
