@@ -1,6 +1,6 @@
 # 文化大學 物件導向程式設計小專題
 
-# 主題：OopMineGame
+# 主題：挖礦遊戲
 
 ![](/docs/written-by-a-human.svg)
 
@@ -11,7 +11,7 @@
 - 組長：高憲成
 - 組員：張育溥、程昱銘
 - 報告：https://pres.quazyr.xyz/
-- 報告 pptx：[OopMineGame_mid.pptx](/docs/OopMineGame_mid.pptx)
+- 報告 pptx：[挖礦遊戲-final.pptx](/docs/挖礦遊戲-final.pptx)
 - 程式：https://github.com/StarryQuasi/oop-mine-game/tree/main/src
 
 ## 分工明細
