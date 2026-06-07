@@ -181,25 +181,19 @@ float World::getTime() const
 		.count();
 }
 
-float World::getTimeOfDay() const 
+float World::getTimeOfDay() const
 {
 	return std::fmod(getTime(), getDayPeriod());
 }
 
-float World::getDayPeriod() const
-{
-	return 60.0f;
-}
+float World::getDayPeriod() const { return 60.0f; }
 
 bool World::isDay() const
 {
-	return (int)(getTime() / getDayPeriod() / 2.0f) % 2 == 0;
+	return (int)(getTime() / (getDayPeriod() / 2.0f)) % 2 == 0;
 }
 
-bool World::isNight() const
-{
-	return !isDay();
-}
+bool World::isNight() const { return !isDay(); }
 
 uint8_t World::getTimeLight() const
 {
@@ -220,9 +214,9 @@ olc::Pixel World::getTimeTint() const
 	const olc::Pixel night = 0xFF7F7F5F;
 	const olc::Pixel day = olc::WHITE;
 	if (isDay())
-		return day * (1.0f - scale) + night * scale;
+		return olc::PixelLerp(day, night, scale);
 	else
-		return night * (1.0f - scale) + day * scale;
+		return olc::PixelLerp(night, day, scale);
 }
 
 void World::update(float elapsed)
