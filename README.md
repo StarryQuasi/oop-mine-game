@@ -40,26 +40,22 @@ Minecraft 沒有規則，這個也沒有規則
 - 左鍵 - 破壞方塊
 - 右鍵 - 互動方塊 (開啟工作臺)
 - 羊會對著玩家走 (計概的路徑搜尋 BFS)
-- 樹葉會產生粒子效果、隨機掉落
+- 樹葉會產生粒子效果、隨機掉落 (離散數學)
 - 工作臺可以做基礎合成 (物件導向 GUI)
 
 ## 系統架構
 
-由最基礎的[世界](/src/World.h)儲存多形[實體](/src/Entity.h)和[方塊](/src/Block.h)
+由最基礎的[世界](/src/World.h)儲存多形[實體](/src/Entity.h)和[方塊](/src/Block.h)；
 
-[實體](/src/Entity.h)和[方塊](/src/Block.h)封裝基礎資料
+[實體](/src/Entity.h)和[方塊](/src/Block.h)封裝基礎資料；
 
-由[實體](/src/Entity.h)向外繼承、擴展出
+由[實體](/src/Entity.h)向外繼承、擴展出[玩家](/src/Player.h)、[生物](/src/Mob.h)，處理頭髮渲染跟路徑搜尋；
 
-[玩家](/src/Player.h)、[生物](/src/Mob.h)，處理頭髮渲染跟路徑搜尋
+[生物](/src/Mob.h)繼承出[羊](/src/Sheep.h)，提供目標給[生物](/src/Mob.h)做移動；
 
-[生物](/src/Mob.h)繼承出[羊](/src/Sheep.h)，提供目標給[生物](/src/Mob.h)做移動
+[方塊](/src/Block.h)繼承出[樹葉](/src/Block.h)、[工作台](/src/Block.h)，負責粒子效果與介面開啟。
 
-[方塊](/src/Block.h)繼承出[樹葉](/src/Block.h)、[工作台](/src/Block.h)，負責粒子效果與介面開啟
-
-GUI 同上，[容器](/src/gui/Container.h)封裝基礎資料，多形儲存子元件，再向外繼承、擴展出
-
-[自動排序](/src/gui/FlowContainer.h)、[按鈕](/src/gui/Button.h)、[滑桿](/src/gui/Slider.h)、[文字](/src/gui/TextContainer.h)、[工作台](/src/gui/CraftingTable.h)等元件
+GUI 同上，[容器](/src/gui/Container.h)封裝基礎資料，多形儲存子元件，再向外繼承、擴展出[自動排序](/src/gui/FlowContainer.h)、[按鈕](/src/gui/Button.h)、[滑桿](/src/gui/Slider.h)、[文字](/src/gui/TextContainer.h)、[工作台](/src/gui/CraftingTable.h)等元件。
 
 ### 技術亮點
 
