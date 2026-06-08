@@ -16,32 +16,62 @@
 
 ## 分工明細
 
-- 高憲成：GUI 框架開發、程式設計、邏輯整合
-- 張育溥：UML/報告撰寫、核心架構 (World/Entity) 構建
+- 高憲成：程式設計、GUI 開發、邏輯整合
+- 張育溥：文件、報告撰寫、核心架構構建
 - 程昱銘：吃、睡、吃睡
 
 ## 遊戲介紹
 
-這是一個使用 C++23 製作的無規則 Minecraft like 2D 沙盒遊戲
+- 願景：打造一個類似 Minecraft 的無規則 2D 沙盒遊戲
+- 目標：
+    - 學習 C++
+    - 使用 OOP 三大特性 解決資源管理難題
+    - 設計樹狀、模組化的 GUI 排版系統
+    - 設計樹狀、可繼承的實體型別系統
 
-### 物件導向
+## 遊戲規則
 
-* **繼承**
-    * 實體系統：以 [`Entity`](/src/Entity.h) 為基礎，繼承出 [`Mob`](/src/Mob.h) (AI 生物) 與 [`Player`](/src/Player.h) (物理頭髮渲染)，[`Mob`](/src/Mob.h) 下進一步實作 [`Sheep`](/src/Sheep.h) 等生物實現目標選擇
-    * 方塊系統：[`Block`](/src/Block.h) 定義基本物理與貼圖，[`CraftingTable`](/src/gui/CraftingTable.h) 透過繼承以擴充介面功能
-* **封裝**
-    * 所有核心成員變數（如位置、速度、血量）均設為 `protected` 或 `private`，並透過 getter/setter 進行控管與更新偵測
-    * [`World`](/src/World.h) 類別封裝了地圖資料與實體列表，外部僅能透過定義好的介面與世界互動，確保資料完整性
-* **多型**:
-    * 動態綁定：[`World`](/src/World.h) 內部存儲 `std::vector<std::unique_ptr<Entity>>`，在每幀更新時透過虛擬函式 `update()` 與 `render()` 觸發不同實體的行為
-    * 虛擬解構子：確保所有繼承後的資源能被正確釋放，防止記憶體洩漏
+Minecraft 沒有規則，這個也沒有規則
+
+## 遊戲操作
+
+- A D - 左右移動
+- 空格 - 跳躍
+- 左鍵 - 破壞方塊
+- 右鍵 - 互動方塊 (開啟工作臺)
+- 羊會對著玩家走 (計概的路徑搜尋 BFS)
+- 樹葉會產生粒子效果、隨機掉落
+- 工作臺可以做基礎合成 (物件導向 GUI)
+
+## 系統架構
+
+由最基礎的[世界](/src/World.h)儲存多形[實體](/src/Entity.h)和[方塊](/src/Block.h)
+
+[實體](/src/Entity.h)和[方塊](/src/Block.h)封裝基礎資料
+
+由[實體](/src/Entity.h)向外繼承、擴展出
+
+[玩家](/src/Player.h)、[生物](/src/Mob.h)，處理頭髮渲染跟路徑搜尋
+
+[生物](/src/Mob.h)繼承出[羊](/src/Sheep.h)，提供目標給[生物](/src/Mob.h)做移動
+
+[方塊](/src/Block.h)繼承出[樹葉](/src/Block.h)、[工作台](/src/Block.h)，負責粒子效果與介面開啟
+
+GUI 同上，[容器](/src/gui/Container.h)封裝基礎資料，多形儲存子元件，再向外繼承、擴展出
+
+[自動排序](/src/gui/FlowContainer.h)、[按鈕](/src/gui/Button.h)、[滑桿](/src/gui/Slider.h)、[文字](/src/gui/TextContainer.h)、[工作台](/src/gui/CraftingTable.h)等元件
 
 ### 技術亮點
 
 * **程序化內容生成**：
     * 利用柏林噪音生成可重現的 2D 隨機世界
-* **模板元程式設計**：
-    * 運用 C++ 模板實作 [`Bindable<T>`](/src/Bindable.h) 屬性系統，支援任意資料類型的自動綁定與事件監聽
+* **OOP 設計模式運用**:
+    * 觀察者模式 (Observer)
+        * 運用 C++ 模板實作 [`Bindable<T>`](/src/Bindable.h) 物件屬性系統，可綁定屬性於物件改變時自動同步其他綁定的物件
+    * 建造者模式 (Builder)
+        * 優化方塊定義流程，只留必要參數，美化程式
+    * 組合模式 (Composite)
+        * 使用樹狀結構構建模組化 GUI
 
 ## 使用資源
 
